@@ -1,7 +1,8 @@
 import torch
 import logging
 import editdistance
-
+import numpy as np
+from scipy.io.wavfile import read
 
 class AttrDict(dict):
     """
@@ -21,6 +22,9 @@ class AttrDict(dict):
     def __setattr__(self, item, value):
         self.__dict__[item] = value
 
+def load_wav_to_torch(full_path):
+    sampling_rate, data = read(full_path)
+    return torch.FloatTensor(data.astype(np.float32)), sampling_rate
 
 def init_logger(log_file=None):
     log_format = logging.Formatter("[%(asctime)s %(levelname)s] %(message)s")

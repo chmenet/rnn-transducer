@@ -1,0 +1,70 @@
+units_type: word
+feature_source: kaldi
+feature_type: mel-spectrogram
+data:
+    name: toy
+    vocab: /home/chme/projects/rnn-transducer/AIhub/ASR_wordpiece.pkl
+    left_context_width: 0
+    right_context_width: 0
+    frame_rate: 10
+    apply_cmvn: False
+    max_input_length: 20
+    max_target_length: 20
+    batch_size: 1
+    encoding: True
+    short_first: False
+    shuffle: False
+    feature_flag: feats.txt
+    text_flag: target.txt
+    train: /home/chme/projects/rnn-transducer/AIhub/train/ #D:/RNN-Transducer/rnn-transducer/data/train/
+    dev: /home/chme/projects/rnn-transducer/AIhub/dev/ #D:/RNN-Transducer/rnn-transducer/data/dev/
+    test: /home/chme/projects/rnn-transducer/AIhub/test/ #D:/RNN-Transducer/rnn-transducer/data/test/
+hparam:
+    n_mel_channels: 80
+    sampling_rate: 16000
+    filter_length: 1024
+    hop_length: 256
+    win_length: 1024
+    max_abs_mel_value: 4.0
+    mel_fmin: 0.0
+    mel_fmax: 8000.0
+model:
+    type: transducer
+    enc:
+        type: lstm
+        hidden_size: 128
+        output_size: 128
+        n_layers: 3
+        bidirectional: True
+    dec:
+        type: lstm
+        hidden_size: 256
+        output_size: 128
+        n_layers: 1
+    joint:
+        input_size: 256
+        inner_size: 128
+    vocab_size: 8
+    share_weight: False
+    feature_dim: 20
+    dropout: 0.3
+    backend: c++
+training:
+    load_model: False
+    load_encoder: False
+    load_decoder: False
+    eval_or_not: True
+    seed: 2019
+    num_gpu: 1
+    epochs: 100
+    max_grad_norm: 200
+    visualization: True
+    show_interval: 10
+    save_model: aihub_test
+optim:
+    type: sgd
+    lr: 0.0001
+    momentum: 0.9
+    decay_ratio: 0.5
+    weight_decay: 0
+    begin_to_adjust_lr: 10
