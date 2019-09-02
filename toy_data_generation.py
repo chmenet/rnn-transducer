@@ -99,22 +99,22 @@ if __name__ == '__main__':
 
     chars = list('abcdefghijklnmopqrstuvwxyz')
     X, Y = toy_gen(chars, times=1)
-    with open('data/toy2/train/feats2.txt', 'w', encoding='utf-8') as f:
+    with open('data/toy2/train/feats.txt', 'w', encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i, x) for i, x in enumerate(X[:25])])
 
-    with open('data/toy2/train/target2.txt', 'w', encoding='utf-8') as f:
+    with open('data/toy2/train/target.txt', 'w', encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i, y) for i, y in enumerate(Y[:25])])
 
-    with open('data/toy2/dev/feats2.txt', 'w', encoding='utf-8') as f:
+    with open('data/toy2/dev/feats.txt', 'w', encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i, x) for i, x in enumerate(X[25:])])
 
-    with open('data/toy2/dev/target2.txt', 'w', encoding='utf-8') as f:
+    with open('data/toy2/dev/target.txt', 'w', encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i, y) for i, y in enumerate(Y[25:])])
 
-    with open('data/toy2/test/feats2.txt', 'w', encoding='utf-8') as f:
+    with open('data/toy2/test/feats.txt', 'w', encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i, x) for i, x in enumerate(X[25:])])
 
-    with open('data/toy2/test/target2.txt', 'w', encoding='utf-8') as f:
+    with open('data/toy2/test/target.txt', 'w', encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i, y) for i, y in enumerate(Y[25:])])
 
 
