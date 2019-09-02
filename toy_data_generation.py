@@ -85,11 +85,16 @@ if __name__ == '__main__':
     with open('data/train/target.txt','w',encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i,y) for i, y in enumerate(Y[:12])])
 
-    X, Y = toy_gen()
     with open('data/dev/feats.txt', 'w', encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i, x) for i, x in enumerate(X[12:])])
 
     with open('data/dev/target.txt', 'w', encoding='utf-8') as f:
+        f.writelines(['{},{}\n'.format(i, y) for i, y in enumerate(Y[12:])])
+
+    with open('data/test/feats.txt', 'w', encoding='utf-8') as f:
+        f.writelines(['{},{}\n'.format(i, x) for i, x in enumerate(X[12:])])
+
+    with open('data/test/target.txt', 'w', encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i, y) for i, y in enumerate(Y[12:])])
 
 
