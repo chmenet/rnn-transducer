@@ -129,6 +129,7 @@ class Text_Dataset(TextCollate):
             else:
                 encoded_seq.append(self.unit2idx_feat['<unk>'])
         features = np.asarray(encoded_seq) #kaldi_io.read_mat(feats_scp)
+        torch.manual_seed(self.config.training.seed)
         embedding = nn.Embedding(1000, self.config.model.feature_dim)
         with torch.no_grad():
             features = embedding(torch.from_numpy(features))
