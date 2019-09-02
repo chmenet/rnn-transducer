@@ -15,7 +15,7 @@ data:
     short_first: False
     shuffle: False
     feature_flag: feats.txt
-    text_flag: target.txt
+    text_flag: targets.txt
     train: /home/chme/projects/rnn-transducer/AIhub/train/ #D:/RNN-Transducer/rnn-transducer/data/train/
     dev: /home/chme/projects/rnn-transducer/AIhub/dev/ #D:/RNN-Transducer/rnn-transducer/data/dev/
     test: /home/chme/projects/rnn-transducer/AIhub/test/ #D:/RNN-Transducer/rnn-transducer/data/test/

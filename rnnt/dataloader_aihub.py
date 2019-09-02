@@ -6,6 +6,7 @@ import rnnt.layers as layers
 from rnnt.utils import load_wav_to_torch, load_filepaths_and_text
 import torch.nn as nn
 import torch
+import pickle
 
 class Dataset:
     def __init__(self, config, type):
@@ -18,10 +19,13 @@ class Dataset:
 
         self.max_input_length = config.max_input_length
         self.max_target_length = config.max_target_length
-        self.vocab = config.vocab
 
         self.features = os.path.join(config.__getattr__(type), config.feature_flag)
+        self.targets = os.path.join(config.__getattr__(type), config.text_flag)
+
         self.feats_list, self.feats_dict = self.get_feats_list()
+        self.targets_list, self.targets_dict = self.get_targets_list()
+
 
     def __len__(self):
         raise NotImplementedError
@@ -49,10 +53,20 @@ class Dataset:
         feats_dict = {}
         with open(self.features, 'r') as fid:
             for line in fid:
-                key, path = line.strip().split(' ')
+                key, path = line.strip().split(',')
                 feats_list.append(key)
                 feats_dict[key] = path
         return feats_list, feats_dict
+
+    def get_targets_list(self):
+        feats_list = []
+        feats_dict = {}
+        with open(self.targets, 'r') as fid:
+            for line in fid:
+                key, path = line.strip().split(',')
+                feats_list.append(key)
+                feats_dict[key] = path
+        return targets_list, targets_dict
 
     def concat_frame(self, features):
         time_steps, features_dim = features.shape
@@ -94,18 +108,8 @@ class AudioDataset(Dataset):
         super(AudioDataset, self).__init__(config, type)
 
         self.config = config.data
-        self.text = os.path.join(config.__getattr__(type), config.text_flag)
         self.stft = layers.TacotronSTFT(config.hparam)
-        if self.config.encoding:
-            self.unit2idx = self.get_vocab_map()
-        self.targets_dict = self.get_targets_dict()
-
-        if self.short_first and type == 'train':
-            self.sorted_list = sorted(self.targets_dict.items(), key=lambda x: len(x[1]), reverse=False)
-        else:
-            self.sorted_list = None
-
-        self.check_speech_and_text()
+        #self.check_speech_and_text()
         self.lengths = len(self.feats_list)
 
     def get_mel(self, filename):
@@ -126,41 +130,6 @@ class AudioDataset(Dataset):
                     melspec.size(0), self.stft.n_mel_channels))
         return melspec
 
-    def get_vocab_map(self):
-        unit2idx = {}
-        with codecs.open(self.vocab, 'r', encoding='utf-8') as fid:
-            for line in fid:
-                parts = line.strip().split()
-                unit = parts[0]
-                idx = int(parts[1])
-                unit2idx[unit] = idx
-        return unit2idx
-
-    def get_targets_dict(self):
-        targets_dict = {}
-        with codecs.open(self.text, 'r', encoding='utf-8') as fid:
-            for line in fid:
-                parts = line.strip().split(' ')
-                utt_id = parts[0]
-                contents = parts[1:]
-                if len(contents) < 0 or len(contents) > self.max_target_length:
-                    continue
-                if self.config.encoding:
-                    labels = self.encode(contents)
-                else:
-                    labels = [int(i) for i in contents]
-                targets_dict[utt_id] = labels
-        return targets_dict
-
-    def encode(self, seq):
-        encoded_seq = []
-        for unit in seq:
-            if unit in self.unit2idx:
-                encoded_seq.append(self.unit2idx[unit])
-            else:
-                encoded_seq.append(self.unit2idx['<unk>'])
-        return encoded_seq
-
     def check_speech_and_text(self):
         featslist = copy.deepcopy(self.feats_list)
         for utt_id in featslist:
@@ -169,15 +138,16 @@ class AudioDataset(Dataset):
 
     def __getitem__(self, index):
         utt_id = self.feats_list[index]
-        feats_path = self.feats_dict[utt_id]
-        mel = self.get_mel(feats_path)
-        seq = self.targets_dict[utt_id]
-        targets = np.array(seq)
 
-        inputs_length = np.array(mel.shape[0]).astype(np.int64)
+        feats_path = self.feats_dict[utt_id]
+        features = self.get_mel(feats_path)
+
+        targets = self.targets_dict[utt_id] # = np.array(seq)
+
+        inputs_length = np.array(features.shape[0]).astype(np.int64)
         targets_length = np.array(targets.shape[0]).astype(np.int64)
 
-        features = mel  # self.pad(features).astype(np.float32)
+        # features = self.pad(features).astype(np.float32)
         targets = self.pad(targets).astype(np.int64).reshape(-1)
 
         return features, inputs_length, targets, targets_length

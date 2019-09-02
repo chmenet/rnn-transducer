@@ -8,11 +8,10 @@ import torch.nn as nn
 import torch.utils.data
 from rnnt.model import Transducer
 from rnnt.optim import Optimizer
-#from rnnt.dataset import AudioDataset
+from rnnt.dataloader_aihub import AudioDataset
 from tensorboardX import SummaryWriter
 from rnnt.utils import AttrDict, init_logger, count_parameters, save_model, computer_cer
-import rnnt.loader_speech as loader
-from rnnt.loader_speech import AudioDataset
+
 
 
 def train(epoch, config, model, training_data, optimizer, logger, visualizer=None):
