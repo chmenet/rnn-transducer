@@ -106,7 +106,7 @@ class Text_Dataset(TextCollate):
         self.config = config
         self.text = os.path.join(config.data.__getattr__(type), config.data.text_flag)
 
-        if self.config.data.dataencoding:
+        if self.config.data.encoding:
             self.unit2idx = self.get_vocab_map(self.vocab)
             self.unit2idx_feat = self.get_vocab_map(self.vocab_feat)
         self.targets_dict = self.get_targets_dict() #target seq에 대해서 encoding해서  np 형태로 입력
