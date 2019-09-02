@@ -1,0 +1,596 @@
+[2019-08-31 06:35:39,056 INFO] Save config info.
+[2019-08-31 06:36:01,239 INFO] Save config info.
+[2019-08-31 06:36:04,537 INFO] Save config info.
+[2019-08-31 06:37:46,060 INFO] Save config info.
+[2019-08-31 06:38:15,158 INFO] Save config info.
+[2019-08-31 06:38:28,129 INFO] Save config info.
+[2019-08-31 06:38:42,771 INFO] Save config info.
+[2019-08-31 06:38:58,471 INFO] Save config info.
+[2019-08-31 06:39:15,809 INFO] Save config info.
+[2019-08-31 06:39:15,809 INFO] Load Train Set!
+[2019-08-31 06:39:15,810 INFO] Load Dev Set!
+[2019-08-31 06:39:15,810 INFO] Set random seed: 2019
+[2019-08-31 06:39:20,197 INFO] Loaded the model to 1 GPUs
+[2019-08-31 06:39:20,197 INFO] # the number of parameters in the whole model: 1572232
+[2019-08-31 06:39:20,197 INFO] # the number of parameters in the Encoder: 977024
+[2019-08-31 06:39:20,198 INFO] # the number of parameters in the Decoder: 561280
+[2019-08-31 06:39:20,198 INFO] # the number of parameters in the JointNet: 33928
+[2019-08-31 06:39:20,198 INFO] Created a sgd optimizer.
+[2019-08-31 06:39:20,199 INFO] Created a visualizer.
+[2019-08-31 06:52:56,979 INFO] Save config info.
+[2019-08-31 06:52:56,980 INFO] Load Train Set!
+[2019-08-31 06:52:56,980 INFO] Load Dev Set!
+[2019-08-31 06:52:56,981 INFO] Set random seed: 2019
+[2019-08-31 06:53:01,453 INFO] Loaded the model to 1 GPUs
+[2019-08-31 06:53:01,454 INFO] # the number of parameters in the whole model: 1572232
+[2019-08-31 06:53:01,454 INFO] # the number of parameters in the Encoder: 977024
+[2019-08-31 06:53:01,454 INFO] # the number of parameters in the Decoder: 561280
+[2019-08-31 06:53:01,454 INFO] # the number of parameters in the JointNet: 33928
+[2019-08-31 06:53:01,454 INFO] Created a sgd optimizer.
+[2019-08-31 06:53:01,455 INFO] Created a visualizer.
+[2019-08-31 06:53:01,709 INFO] -Training-Epoch:0(16.66667%), Global Step:10, Learning Rate:0.000100, Grad Norm:10.51623, Loss:18.40750, AverageLoss: 13.43107, Run Time:0.018
+[2019-08-31 06:53:01,875 INFO] -Training-Epoch:0(37.50000%), Global Step:20, Learning Rate:0.000100, Grad Norm:6.65624, Loss:11.04724, AverageLoss: 12.50861, Run Time:0.014
+[2019-08-31 06:53:02,053 INFO] -Training-Epoch:0(58.33333%), Global Step:30, Learning Rate:0.000100, Grad Norm:11.19225, Loss:19.97998, AverageLoss: 12.57106, Run Time:0.015
+[2019-08-31 06:53:02,220 INFO] -Training-Epoch:0(79.16667%), Global Step:40, Learning Rate:0.000100, Grad Norm:7.58603, Loss:12.91069, AverageLoss: 12.02143, Run Time:0.014
+[2019-08-31 06:53:02,392 INFO] -Training-Epoch:0, Average Loss: 11.99802, Epoch Time: 0.885
+[2019-08-31 06:53:02,474 INFO] -Validation-Epoch:0(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:02,539 INFO] -Validation-Epoch:0(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:02,606 INFO] -Validation-Epoch:0(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:02,672 INFO] -Validation-Epoch:0(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:02,763 INFO] -Validation-Epoch:0(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:02,840 INFO] -Validation-Epoch:   0, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:02,859 INFO] Epoch 0 model has been saved.
+[2019-08-31 06:53:02,942 INFO] -Training-Epoch:1(0.00000%), Global Step:50, Learning Rate:0.000100, Grad Norm:3.97811, Loss:6.22085, AverageLoss: 6.22085, Run Time:0.015
+[2019-08-31 06:53:03,099 INFO] -Training-Epoch:1(20.83333%), Global Step:60, Learning Rate:0.000100, Grad Norm:5.28707, Loss:8.35762, AverageLoss: 10.70346, Run Time:0.012
+[2019-08-31 06:53:03,260 INFO] -Training-Epoch:1(41.66667%), Global Step:70, Learning Rate:0.000100, Grad Norm:9.75026, Loss:14.85041, AverageLoss: 10.88601, Run Time:0.015
+[2019-08-31 06:53:03,426 INFO] -Training-Epoch:1(62.50000%), Global Step:80, Learning Rate:0.000100, Grad Norm:6.40592, Loss:8.71966, AverageLoss: 10.41912, Run Time:0.014
+[2019-08-31 06:53:03,593 INFO] -Training-Epoch:1(83.33333%), Global Step:90, Learning Rate:0.000100, Grad Norm:10.42456, Loss:15.95647, AverageLoss: 10.35801, Run Time:0.013
+[2019-08-31 06:53:03,731 INFO] -Training-Epoch:1, Average Loss: 10.09718, Epoch Time: 0.820
+[2019-08-31 06:53:03,812 INFO] -Validation-Epoch:1(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:03,892 INFO] -Validation-Epoch:1(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:03,967 INFO] -Validation-Epoch:1(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:04,037 INFO] -Validation-Epoch:1(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:04,112 INFO] -Validation-Epoch:1(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:04,193 INFO] -Validation-Epoch:   1, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:04,210 INFO] Epoch 1 model has been saved.
+[2019-08-31 06:53:04,332 INFO] -Training-Epoch:2(4.16667%), Global Step:100, Learning Rate:0.000100, Grad Norm:7.30469, Loss:10.23005, AverageLoss: 7.61824, Run Time:0.012
+[2019-08-31 06:53:04,491 INFO] -Training-Epoch:2(25.00000%), Global Step:110, Learning Rate:0.000100, Grad Norm:4.00125, Loss:5.01696, AverageLoss: 8.64316, Run Time:0.012
+[2019-08-31 06:53:04,648 INFO] -Training-Epoch:2(45.83333%), Global Step:120, Learning Rate:0.000100, Grad Norm:5.12615, Loss:6.61837, AverageLoss: 8.69650, Run Time:0.011
+[2019-08-31 06:53:04,806 INFO] -Training-Epoch:2(66.66667%), Global Step:130, Learning Rate:0.000100, Grad Norm:8.80576, Loss:11.49315, AverageLoss: 8.69512, Run Time:0.013
+[2019-08-31 06:53:04,960 INFO] -Training-Epoch:2(87.50000%), Global Step:140, Learning Rate:0.000100, Grad Norm:6.09203, Loss:6.56413, AverageLoss: 8.39307, Run Time:0.012
+[2019-08-31 06:53:05,067 INFO] -Training-Epoch:2, Average Loss: 8.30979, Epoch Time: 0.804
+[2019-08-31 06:53:05,146 INFO] -Validation-Epoch:2(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:05,218 INFO] -Validation-Epoch:2(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:05,290 INFO] -Validation-Epoch:2(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:05,360 INFO] -Validation-Epoch:2(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:05,435 INFO] -Validation-Epoch:2(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:05,512 INFO] -Validation-Epoch:   2, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:05,532 INFO] Epoch 2 model has been saved.
+[2019-08-31 06:53:05,687 INFO] -Training-Epoch:3(8.33333%), Global Step:150, Learning Rate:0.000100, Grad Norm:8.33952, Loss:12.60688, AverageLoss: 8.34651, Run Time:0.013
+[2019-08-31 06:53:05,836 INFO] -Training-Epoch:3(29.16667%), Global Step:160, Learning Rate:0.000100, Grad Norm:6.20814, Loss:7.97534, AverageLoss: 7.08173, Run Time:0.013
+[2019-08-31 06:53:05,998 INFO] -Training-Epoch:3(50.00000%), Global Step:170, Learning Rate:0.000100, Grad Norm:3.96202, Loss:4.02177, AverageLoss: 7.05722, Run Time:0.013
+[2019-08-31 06:53:06,160 INFO] -Training-Epoch:3(70.83333%), Global Step:180, Learning Rate:0.000100, Grad Norm:4.21298, Loss:5.29634, AverageLoss: 7.02591, Run Time:0.013
+[2019-08-31 06:53:06,323 INFO] -Training-Epoch:3(91.66667%), Global Step:190, Learning Rate:0.000100, Grad Norm:5.47062, Loss:9.37765, AverageLoss: 7.02687, Run Time:0.014
+[2019-08-31 06:53:14,405 INFO] Save config info.
+[2019-08-31 06:53:14,406 INFO] Load Train Set!
+[2019-08-31 06:53:14,406 INFO] Load Dev Set!
+[2019-08-31 06:53:14,407 INFO] Set random seed: 2019
+[2019-08-31 06:53:19,020 INFO] Loaded the model to 1 GPUs
+[2019-08-31 06:53:19,020 INFO] # the number of parameters in the whole model: 1572232
+[2019-08-31 06:53:19,020 INFO] # the number of parameters in the Encoder: 977024
+[2019-08-31 06:53:19,020 INFO] # the number of parameters in the Decoder: 561280
+[2019-08-31 06:53:19,020 INFO] # the number of parameters in the JointNet: 33928
+[2019-08-31 06:53:19,020 INFO] Created a sgd optimizer.
+[2019-08-31 06:53:19,022 INFO] Created a visualizer.
+[2019-08-31 06:53:19,266 INFO] -Training-Epoch:0(16.66667%), Global Step:10, Learning Rate:0.000100, Grad Norm:10.01872, Loss:18.08603, AverageLoss: 13.16981, Run Time:0.014
+[2019-08-31 06:53:19,431 INFO] -Training-Epoch:0(37.50000%), Global Step:20, Learning Rate:0.000100, Grad Norm:6.54106, Loss:10.79941, AverageLoss: 12.26981, Run Time:0.013
+[2019-08-31 06:53:19,595 INFO] -Training-Epoch:0(58.33333%), Global Step:30, Learning Rate:0.000100, Grad Norm:10.78387, Loss:19.68286, AverageLoss: 12.34291, Run Time:0.014
+[2019-08-31 06:53:19,758 INFO] -Training-Epoch:0(79.16667%), Global Step:40, Learning Rate:0.000100, Grad Norm:7.56456, Loss:12.66228, AverageLoss: 11.80948, Run Time:0.013
+[2019-08-31 06:53:19,941 INFO] -Training-Epoch:0, Average Loss: 11.79740, Epoch Time: 0.872
+[2019-08-31 06:53:20,010 INFO] -Validation-Epoch:0(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:20,084 INFO] -Validation-Epoch:0(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:20,156 INFO] -Validation-Epoch:0(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:20,220 INFO] -Validation-Epoch:0(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:20,289 INFO] -Validation-Epoch:0(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:20,365 INFO] -Validation-Epoch:   0, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:20,386 INFO] Epoch 0 model has been saved.
+[2019-08-31 06:53:20,464 INFO] -Training-Epoch:1(0.00000%), Global Step:50, Learning Rate:0.000100, Grad Norm:3.95142, Loss:6.12644, AverageLoss: 6.12644, Run Time:0.015
+[2019-08-31 06:53:20,621 INFO] -Training-Epoch:1(20.83333%), Global Step:60, Learning Rate:0.000100, Grad Norm:5.06724, Loss:8.29704, AverageLoss: 10.55848, Run Time:0.013
+[2019-08-31 06:53:20,780 INFO] -Training-Epoch:1(41.66667%), Global Step:70, Learning Rate:0.000100, Grad Norm:9.50455, Loss:14.72316, AverageLoss: 10.74368, Run Time:0.013
+[2019-08-31 06:53:20,931 INFO] -Training-Epoch:1(62.50000%), Global Step:80, Learning Rate:0.000100, Grad Norm:6.41652, Loss:8.53604, AverageLoss: 10.28423, Run Time:0.012
+[2019-08-31 06:53:21,085 INFO] -Training-Epoch:1(83.33333%), Global Step:90, Learning Rate:0.000100, Grad Norm:10.14484, Loss:15.85239, AverageLoss: 10.23407, Run Time:0.013
+[2019-08-31 06:53:21,218 INFO] -Training-Epoch:1, Average Loss: 9.98151, Epoch Time: 0.789
+[2019-08-31 06:53:21,282 INFO] -Validation-Epoch:1(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:21,357 INFO] -Validation-Epoch:1(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:21,431 INFO] -Validation-Epoch:1(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:21,502 INFO] -Validation-Epoch:1(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:21,575 INFO] -Validation-Epoch:1(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:21,652 INFO] -Validation-Epoch:   1, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:21,699 INFO] Epoch 1 model has been saved.
+[2019-08-31 06:53:21,812 INFO] -Training-Epoch:2(4.16667%), Global Step:100, Learning Rate:0.000100, Grad Norm:7.33400, Loss:10.04008, AverageLoss: 7.46996, Run Time:0.014
+[2019-08-31 06:53:21,977 INFO] -Training-Epoch:2(25.00000%), Global Step:110, Learning Rate:0.000100, Grad Norm:3.98750, Loss:4.93386, AverageLoss: 8.56451, Run Time:0.013
+[2019-08-31 06:53:22,148 INFO] -Training-Epoch:2(45.83333%), Global Step:120, Learning Rate:0.000100, Grad Norm:4.93412, Loss:6.67620, AverageLoss: 8.61868, Run Time:0.013
+[2019-08-31 06:53:22,314 INFO] -Training-Epoch:2(66.66667%), Global Step:130, Learning Rate:0.000100, Grad Norm:8.60098, Loss:11.51953, AverageLoss: 8.62156, Run Time:0.014
+[2019-08-31 06:53:22,478 INFO] -Training-Epoch:2(87.50000%), Global Step:140, Learning Rate:0.000100, Grad Norm:6.08403, Loss:6.41945, AverageLoss: 8.32389, Run Time:0.014
+[2019-08-31 06:53:22,594 INFO] -Training-Epoch:2, Average Loss: 8.25304, Epoch Time: 0.854
+[2019-08-31 06:53:22,661 INFO] -Validation-Epoch:2(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:22,734 INFO] -Validation-Epoch:2(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:22,806 INFO] -Validation-Epoch:2(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:22,875 INFO] -Validation-Epoch:2(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:22,948 INFO] -Validation-Epoch:2(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:23,026 INFO] -Validation-Epoch:   2, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:23,046 INFO] Epoch 2 model has been saved.
+[2019-08-31 06:53:23,192 INFO] -Training-Epoch:3(8.33333%), Global Step:150, Learning Rate:0.000100, Grad Norm:8.03891, Loss:12.68222, AverageLoss: 8.28812, Run Time:0.015
+[2019-08-31 06:53:23,356 INFO] -Training-Epoch:3(29.16667%), Global Step:160, Learning Rate:0.000100, Grad Norm:6.13064, Loss:7.84666, AverageLoss: 7.04318, Run Time:0.014
+[2019-08-31 06:53:23,530 INFO] -Training-Epoch:3(50.00000%), Global Step:170, Learning Rate:0.000100, Grad Norm:3.84435, Loss:3.95302, AverageLoss: 7.04571, Run Time:0.013
+[2019-08-31 06:53:23,702 INFO] -Training-Epoch:3(70.83333%), Global Step:180, Learning Rate:0.000100, Grad Norm:4.10780, Loss:5.44151, AverageLoss: 7.01831, Run Time:0.013
+[2019-08-31 06:53:23,883 INFO] -Training-Epoch:3(91.66667%), Global Step:190, Learning Rate:0.000100, Grad Norm:5.43395, Loss:9.50809, AverageLoss: 7.02343, Run Time:0.015
+[2019-08-31 06:53:23,968 INFO] -Training-Epoch:3, Average Loss: 6.92125, Epoch Time: 0.874
+[2019-08-31 06:53:24,040 INFO] -Validation-Epoch:3(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:24,117 INFO] -Validation-Epoch:3(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:24,193 INFO] -Validation-Epoch:3(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:24,264 INFO] -Validation-Epoch:3(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:24,337 INFO] -Validation-Epoch:3(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:24,418 INFO] -Validation-Epoch:   3, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:24,435 INFO] Epoch 3 model has been saved.
+[2019-08-31 06:53:24,616 INFO] -Training-Epoch:4(12.50000%), Global Step:200, Learning Rate:0.000100, Grad Norm:4.61001, Loss:5.03661, AverageLoss: 6.38878, Run Time:0.013
+[2019-08-31 06:53:24,779 INFO] -Training-Epoch:4(33.33333%), Global Step:210, Learning Rate:0.000100, Grad Norm:4.01259, Loss:11.21622, AverageLoss: 6.62877, Run Time:0.014
+[2019-08-31 06:53:24,940 INFO] -Training-Epoch:4(54.16667%), Global Step:220, Learning Rate:0.000100, Grad Norm:3.97574, Loss:6.79170, AverageLoss: 6.20593, Run Time:0.013
+[2019-08-31 06:53:25,103 INFO] -Training-Epoch:4(75.00000%), Global Step:230, Learning Rate:0.000100, Grad Norm:3.50844, Loss:3.46079, AverageLoss: 6.21243, Run Time:0.013
+[2019-08-31 06:53:25,271 INFO] -Training-Epoch:4(95.83333%), Global Step:240, Learning Rate:0.000100, Grad Norm:3.25556, Loss:4.91274, AverageLoss: 6.22473, Run Time:0.013
+[2019-08-31 06:53:25,327 INFO] -Training-Epoch:4, Average Loss: 6.24484, Epoch Time: 0.839
+[2019-08-31 06:53:25,398 INFO] -Validation-Epoch:4(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:25,474 INFO] -Validation-Epoch:4(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:25,550 INFO] -Validation-Epoch:4(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:25,622 INFO] -Validation-Epoch:4(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:25,689 INFO] -Validation-Epoch:4(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:25,764 INFO] -Validation-Epoch:   4, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:25,782 INFO] Epoch 4 model has been saved.
+[2019-08-31 06:53:26,001 INFO] -Training-Epoch:5(16.66667%), Global Step:250, Learning Rate:0.000100, Grad Norm:3.61403, Loss:8.95354, AverageLoss: 6.42842, Run Time:0.014
+[2019-08-31 06:53:26,163 INFO] -Training-Epoch:5(37.50000%), Global Step:260, Learning Rate:0.000100, Grad Norm:3.51271, Loss:4.53303, AverageLoss: 6.03273, Run Time:0.013
+[2019-08-31 06:53:26,325 INFO] -Training-Epoch:5(58.33333%), Global Step:270, Learning Rate:0.000100, Grad Norm:3.93751, Loss:10.96151, AverageLoss: 6.18141, Run Time:0.014
+[2019-08-31 06:53:26,482 INFO] -Training-Epoch:5(79.16667%), Global Step:280, Learning Rate:0.000100, Grad Norm:3.25946, Loss:6.49578, AverageLoss: 5.93017, Run Time:0.013
+[2019-08-31 06:53:26,657 INFO] -Training-Epoch:5, Average Loss: 5.99880, Epoch Time: 0.824
+[2019-08-31 06:53:26,724 INFO] -Validation-Epoch:5(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:26,794 INFO] -Validation-Epoch:5(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:26,861 INFO] -Validation-Epoch:5(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:26,925 INFO] -Validation-Epoch:5(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:26,992 INFO] -Validation-Epoch:5(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:27,070 INFO] -Validation-Epoch:   5, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:27,086 INFO] Epoch 5 model has been saved.
+[2019-08-31 06:53:27,167 INFO] -Training-Epoch:6(0.00000%), Global Step:290, Learning Rate:0.000100, Grad Norm:3.37022, Loss:3.32321, AverageLoss: 3.32321, Run Time:0.017
+[2019-08-31 06:53:27,345 INFO] -Training-Epoch:6(20.83333%), Global Step:300, Learning Rate:0.000100, Grad Norm:3.04252, Loss:4.70661, AverageLoss: 5.81813, Run Time:0.014
+[2019-08-31 06:53:27,525 INFO] -Training-Epoch:6(41.66667%), Global Step:310, Learning Rate:0.000100, Grad Norm:3.91879, Loss:8.77672, AverageLoss: 6.06498, Run Time:0.015
+[2019-08-31 06:53:27,696 INFO] -Training-Epoch:6(62.50000%), Global Step:320, Learning Rate:0.000100, Grad Norm:3.21852, Loss:4.34369, AverageLoss: 5.89226, Run Time:0.014
+[2019-08-31 06:53:27,871 INFO] -Training-Epoch:6(83.33333%), Global Step:330, Learning Rate:0.000100, Grad Norm:4.69282, Loss:10.82689, AverageLoss: 5.99668, Run Time:0.015
+[2019-08-31 06:53:28,026 INFO] -Training-Epoch:6, Average Loss: 5.87834, Epoch Time: 0.893
+[2019-08-31 06:53:28,096 INFO] -Validation-Epoch:6(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:28,183 INFO] -Validation-Epoch:6(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:28,274 INFO] -Validation-Epoch:6(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:28,351 INFO] -Validation-Epoch:6(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:28,429 INFO] -Validation-Epoch:6(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:28,510 INFO] -Validation-Epoch:   6, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:28,530 INFO] Epoch 6 model has been saved.
+[2019-08-31 06:53:28,647 INFO] -Training-Epoch:7(4.16667%), Global Step:340, Learning Rate:0.000100, Grad Norm:3.17094, Loss:6.34937, AverageLoss: 4.81300, Run Time:0.015
+[2019-08-31 06:53:28,823 INFO] -Training-Epoch:7(25.00000%), Global Step:350, Learning Rate:0.000100, Grad Norm:3.37808, Loss:3.30151, AverageLoss: 5.62469, Run Time:0.014
+[2019-08-31 06:53:29,000 INFO] -Training-Epoch:7(45.83333%), Global Step:360, Learning Rate:0.000100, Grad Norm:2.98902, Loss:4.55397, AverageLoss: 5.76041, Run Time:0.014
+[2019-08-31 06:53:29,176 INFO] -Training-Epoch:7(66.66667%), Global Step:370, Learning Rate:0.000100, Grad Norm:4.16727, Loss:8.61620, AverageLoss: 5.89877, Run Time:0.016
+[2019-08-31 06:53:29,352 INFO] -Training-Epoch:7(87.50000%), Global Step:380, Learning Rate:0.000100, Grad Norm:3.16100, Loss:4.22440, AverageLoss: 5.78915, Run Time:0.014
+[2019-08-31 06:53:29,474 INFO] -Training-Epoch:7, Average Loss: 5.78442, Epoch Time: 0.890
+[2019-08-31 06:53:29,545 INFO] -Validation-Epoch:7(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:29,619 INFO] -Validation-Epoch:7(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:29,693 INFO] -Validation-Epoch:7(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:29,766 INFO] -Validation-Epoch:7(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:29,841 INFO] -Validation-Epoch:7(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:29,919 INFO] -Validation-Epoch:   7, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:29,939 INFO] Epoch 7 model has been saved.
+[2019-08-31 06:53:30,089 INFO] -Training-Epoch:8(8.33333%), Global Step:390, Learning Rate:0.000100, Grad Norm:4.90035, Loss:10.64935, AverageLoss: 6.65466, Run Time:0.015
+[2019-08-31 06:53:30,257 INFO] -Training-Epoch:8(29.16667%), Global Step:400, Learning Rate:0.000100, Grad Norm:3.17414, Loss:6.23624, AverageLoss: 5.53711, Run Time:0.014
+[2019-08-31 06:53:30,420 INFO] -Training-Epoch:8(50.00000%), Global Step:410, Learning Rate:0.000100, Grad Norm:3.45369, Loss:3.31663, AverageLoss: 5.62343, Run Time:0.013
+[2019-08-31 06:53:30,582 INFO] -Training-Epoch:8(70.83333%), Global Step:420, Learning Rate:0.000100, Grad Norm:2.96775, Loss:4.42728, AverageLoss: 5.68002, Run Time:0.013
+[2019-08-31 06:53:30,744 INFO] -Training-Epoch:8(91.66667%), Global Step:430, Learning Rate:0.000100, Grad Norm:4.26337, Loss:8.44674, AverageLoss: 5.77522, Run Time:0.013
+[2019-08-31 06:53:30,821 INFO] -Training-Epoch:8, Average Loss: 5.69932, Epoch Time: 0.840
+[2019-08-31 06:53:30,890 INFO] -Validation-Epoch:8(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:30,964 INFO] -Validation-Epoch:8(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:31,037 INFO] -Validation-Epoch:8(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:31,108 INFO] -Validation-Epoch:8(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:31,180 INFO] -Validation-Epoch:8(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:31,257 INFO] -Validation-Epoch:   8, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:31,273 INFO] Epoch 8 model has been saved.
+[2019-08-31 06:53:31,456 INFO] -Training-Epoch:9(12.50000%), Global Step:440, Learning Rate:0.000100, Grad Norm:3.17569, Loss:4.13348, AverageLoss: 5.66981, Run Time:0.013
+[2019-08-31 06:53:31,616 INFO] -Training-Epoch:9(33.33333%), Global Step:450, Learning Rate:0.000100, Grad Norm:5.11151, Loss:10.48509, AverageLoss: 5.91783, Run Time:0.014
+[2019-08-31 06:53:31,774 INFO] -Training-Epoch:9(54.16667%), Global Step:460, Learning Rate:0.000100, Grad Norm:3.19357, Loss:6.13371, AverageLoss: 5.53855, Run Time:0.012
+[2019-08-31 06:53:31,937 INFO] -Training-Epoch:9(75.00000%), Global Step:470, Learning Rate:0.000100, Grad Norm:3.53190, Loss:3.33629, AverageLoss: 5.56790, Run Time:0.012
+[2019-08-31 06:53:32,100 INFO] -Training-Epoch:9(95.83333%), Global Step:480, Learning Rate:0.000100, Grad Norm:2.95945, Loss:4.31318, AverageLoss: 5.59856, Run Time:0.013
+[2019-08-31 06:53:32,149 INFO] -Training-Epoch:9, Average Loss: 5.62017, Epoch Time: 0.827
+[2019-08-31 06:53:32,220 INFO] -Validation-Epoch:9(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:32,290 INFO] -Validation-Epoch:9(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:32,364 INFO] -Validation-Epoch:9(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:32,436 INFO] -Validation-Epoch:9(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:32,513 INFO] -Validation-Epoch:9(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:32,596 INFO] -Validation-Epoch:   9, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:32,616 INFO] Epoch 9 model has been saved.
+[2019-08-31 06:53:32,816 INFO] -Training-Epoch:10(16.66667%), Global Step:490, Learning Rate:0.000100, Grad Norm:4.42130, Loss:8.29243, AverageLoss: 5.93889, Run Time:0.013
+[2019-08-31 06:53:32,964 INFO] -Training-Epoch:10(37.50000%), Global Step:500, Learning Rate:0.000100, Grad Norm:3.18809, Loss:4.04532, AverageLoss: 5.57916, Run Time:0.012
+[2019-08-31 06:53:33,116 INFO] -Training-Epoch:10(58.33333%), Global Step:510, Learning Rate:0.000100, Grad Norm:5.14944, Loss:10.30237, AverageLoss: 5.71938, Run Time:0.013
+[2019-08-31 06:53:33,265 INFO] -Training-Epoch:10(79.16667%), Global Step:520, Learning Rate:0.000100, Grad Norm:3.23289, Loss:6.03681, AverageLoss: 5.48798, Run Time:0.012
+[2019-08-31 06:53:33,428 INFO] -Training-Epoch:10, Average Loss: 5.54482, Epoch Time: 0.766
+[2019-08-31 06:53:33,493 INFO] -Validation-Epoch:10(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:33,563 INFO] -Validation-Epoch:10(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:33,637 INFO] -Validation-Epoch:10(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:33,705 INFO] -Validation-Epoch:10(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:33,775 INFO] -Validation-Epoch:10(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:33,853 INFO] -Validation-Epoch:  10, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:33,870 INFO] Epoch 10 model has been saved.
+[2019-08-31 06:53:33,870 INFO] Epoch 10 update learning rate: 0.000050
+[2019-08-31 06:53:33,947 INFO] -Training-Epoch:11(0.00000%), Global Step:530, Learning Rate:0.000050, Grad Norm:3.61749, Loss:3.35408, AverageLoss: 3.35408, Run Time:0.015
+[2019-08-31 06:53:34,094 INFO] -Training-Epoch:11(20.83333%), Global Step:540, Learning Rate:0.000050, Grad Norm:2.96018, Loss:4.21392, AverageLoss: 5.40939, Run Time:0.012
+[2019-08-31 06:53:34,248 INFO] -Training-Epoch:11(41.66667%), Global Step:550, Learning Rate:0.000050, Grad Norm:4.45353, Loss:8.15432, AverageLoss: 5.65424, Run Time:0.012
+[2019-08-31 06:53:34,394 INFO] -Training-Epoch:11(62.50000%), Global Step:560, Learning Rate:0.000050, Grad Norm:3.22979, Loss:3.98832, AverageLoss: 5.50524, Run Time:0.012
+[2019-08-31 06:53:34,548 INFO] -Training-Epoch:11(83.33333%), Global Step:570, Learning Rate:0.000050, Grad Norm:5.23473, Loss:10.18978, AverageLoss: 5.60523, Run Time:0.013
+[2019-08-31 06:53:34,681 INFO] -Training-Epoch:11, Average Loss: 5.48927, Epoch Time: 0.764
+[2019-08-31 06:53:34,747 INFO] -Validation-Epoch:11(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:34,820 INFO] -Validation-Epoch:11(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:34,889 INFO] -Validation-Epoch:11(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:34,954 INFO] -Validation-Epoch:11(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:35,021 INFO] -Validation-Epoch:11(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:35,096 INFO] -Validation-Epoch:  11, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:35,113 INFO] Epoch 11 model has been saved.
+[2019-08-31 06:53:35,113 INFO] Epoch 11 update learning rate: 0.000025
+[2019-08-31 06:53:35,219 INFO] -Training-Epoch:12(4.16667%), Global Step:580, Learning Rate:0.000025, Grad Norm:3.26061, Loss:5.98134, AverageLoss: 4.67298, Run Time:0.012
+[2019-08-31 06:53:35,369 INFO] -Training-Epoch:12(25.00000%), Global Step:590, Learning Rate:0.000025, Grad Norm:3.66814, Loss:3.36641, AverageLoss: 5.30801, Run Time:0.011
+[2019-08-31 06:53:35,521 INFO] -Training-Epoch:12(45.83333%), Global Step:600, Learning Rate:0.000025, Grad Norm:2.96195, Loss:4.17001, AverageLoss: 5.42274, Run Time:0.012
+[2019-08-31 06:53:35,671 INFO] -Training-Epoch:12(66.66667%), Global Step:610, Learning Rate:0.000025, Grad Norm:4.52695, Loss:8.10232, AverageLoss: 5.56365, Run Time:0.013
+[2019-08-31 06:53:35,824 INFO] -Training-Epoch:12(87.50000%), Global Step:620, Learning Rate:0.000025, Grad Norm:3.23937, Loss:3.96318, AverageLoss: 5.47136, Run Time:0.012
+[2019-08-31 06:53:35,927 INFO] -Training-Epoch:12, Average Loss: 5.46270, Epoch Time: 0.773
+[2019-08-31 06:53:35,994 INFO] -Validation-Epoch:12(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:36,063 INFO] -Validation-Epoch:12(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:36,133 INFO] -Validation-Epoch:12(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:36,198 INFO] -Validation-Epoch:12(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:36,265 INFO] -Validation-Epoch:12(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:36,341 INFO] -Validation-Epoch:  12, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:36,361 INFO] Epoch 12 model has been saved.
+[2019-08-31 06:53:36,361 INFO] Epoch 12 update learning rate: 0.000013
+[2019-08-31 06:53:36,506 INFO] -Training-Epoch:13(8.33333%), Global Step:630, Learning Rate:0.000013, Grad Norm:5.22335, Loss:10.13776, AverageLoss: 6.38336, Run Time:0.015
+[2019-08-31 06:53:36,668 INFO] -Training-Epoch:13(29.16667%), Global Step:640, Learning Rate:0.000013, Grad Norm:3.27570, Loss:5.96136, AverageLoss: 5.29484, Run Time:0.014
+[2019-08-31 06:53:36,828 INFO] -Training-Epoch:13(50.00000%), Global Step:650, Learning Rate:0.000013, Grad Norm:3.67454, Loss:3.36636, AverageLoss: 5.36770, Run Time:0.012
+[2019-08-31 06:53:36,991 INFO] -Training-Epoch:13(70.83333%), Global Step:660, Learning Rate:0.000013, Grad Norm:2.96320, Loss:4.15386, AverageLoss: 5.42119, Run Time:0.013
+[2019-08-31 06:53:37,156 INFO] -Training-Epoch:13(91.66667%), Global Step:670, Learning Rate:0.000013, Grad Norm:4.52612, Loss:8.07571, AverageLoss: 5.52143, Run Time:0.014
+[2019-08-31 06:53:37,233 INFO] -Training-Epoch:13, Average Loss: 5.44916, Epoch Time: 0.829
+[2019-08-31 06:53:37,299 INFO] -Validation-Epoch:13(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:37,371 INFO] -Validation-Epoch:13(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:37,440 INFO] -Validation-Epoch:13(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:37,507 INFO] -Validation-Epoch:13(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:37,575 INFO] -Validation-Epoch:13(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:37,650 INFO] -Validation-Epoch:  13, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:37,666 INFO] Epoch 13 model has been saved.
+[2019-08-31 06:53:37,667 INFO] Epoch 13 update learning rate: 0.000006
+[2019-08-31 06:53:37,839 INFO] -Training-Epoch:14(12.50000%), Global Step:680, Learning Rate:0.000006, Grad Norm:3.25603, Loss:3.95571, AverageLoss: 5.49441, Run Time:0.013
+[2019-08-31 06:53:38,005 INFO] -Training-Epoch:14(33.33333%), Global Step:690, Learning Rate:0.000006, Grad Norm:5.31245, Loss:10.13020, AverageLoss: 5.71778, Run Time:0.013
+[2019-08-31 06:53:38,161 INFO] -Training-Epoch:14(54.16667%), Global Step:700, Learning Rate:0.000006, Grad Norm:3.28519, Loss:5.95477, AverageLoss: 5.35698, Run Time:0.013
+[2019-08-31 06:53:38,318 INFO] -Training-Epoch:14(75.00000%), Global Step:710, Learning Rate:0.000006, Grad Norm:3.69337, Loss:3.37199, AverageLoss: 5.38688, Run Time:0.012
+[2019-08-31 06:53:38,476 INFO] -Training-Epoch:14(95.83333%), Global Step:720, Learning Rate:0.000006, Grad Norm:2.96443, Loss:4.14700, AverageLoss: 5.42077, Run Time:0.013
+[2019-08-31 06:53:38,523 INFO] -Training-Epoch:14, Average Loss: 5.44244, Epoch Time: 0.806
+[2019-08-31 06:53:38,588 INFO] -Validation-Epoch:14(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:38,658 INFO] -Validation-Epoch:14(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:38,726 INFO] -Validation-Epoch:14(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:38,791 INFO] -Validation-Epoch:14(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:38,859 INFO] -Validation-Epoch:14(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:38,936 INFO] -Validation-Epoch:  14, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:38,953 INFO] Epoch 14 model has been saved.
+[2019-08-31 06:53:38,953 INFO] Epoch 14 update learning rate: 0.000003
+[2019-08-31 06:53:39,165 INFO] -Training-Epoch:15(16.66667%), Global Step:730, Learning Rate:0.000003, Grad Norm:4.50273, Loss:8.06133, AverageLoss: 5.79879, Run Time:0.014
+[2019-08-31 06:53:39,331 INFO] -Training-Epoch:15(37.50000%), Global Step:740, Learning Rate:0.000003, Grad Norm:3.25084, Loss:3.95173, AverageLoss: 5.45769, Run Time:0.013
+[2019-08-31 06:53:39,497 INFO] -Training-Epoch:15(58.33333%), Global Step:750, Learning Rate:0.000003, Grad Norm:5.32264, Loss:10.12094, AverageLoss: 5.59991, Run Time:0.015
+[2019-08-31 06:53:39,664 INFO] -Training-Epoch:15(79.16667%), Global Step:760, Learning Rate:0.000003, Grad Norm:3.28394, Loss:5.94925, AverageLoss: 5.37950, Run Time:0.014
+[2019-08-31 06:53:39,845 INFO] -Training-Epoch:15, Average Loss: 5.43906, Epoch Time: 0.839
+[2019-08-31 06:53:39,912 INFO] -Validation-Epoch:15(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:39,990 INFO] -Validation-Epoch:15(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:40,065 INFO] -Validation-Epoch:15(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:40,139 INFO] -Validation-Epoch:15(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:40,219 INFO] -Validation-Epoch:15(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:40,304 INFO] -Validation-Epoch:  15, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:40,325 INFO] Epoch 15 model has been saved.
+[2019-08-31 06:53:40,326 INFO] Epoch 15 update learning rate: 0.000002
+[2019-08-31 06:53:40,406 INFO] -Training-Epoch:16(0.00000%), Global Step:770, Learning Rate:0.000002, Grad Norm:3.68955, Loss:3.36977, AverageLoss: 3.36977, Run Time:0.017
+[2019-08-31 06:53:40,599 INFO] -Training-Epoch:16(20.83333%), Global Step:780, Learning Rate:0.000002, Grad Norm:2.96374, Loss:4.14184, AverageLoss: 5.34463, Run Time:0.015
+[2019-08-31 06:53:40,793 INFO] -Training-Epoch:16(41.66667%), Global Step:790, Learning Rate:0.000002, Grad Norm:4.53452, Loss:8.06363, AverageLoss: 5.59215, Run Time:0.016
+[2019-08-31 06:53:40,979 INFO] -Training-Epoch:16(62.50000%), Global Step:800, Learning Rate:0.000002, Grad Norm:3.25315, Loss:3.94981, AverageLoss: 5.44924, Run Time:0.015
+[2019-08-31 06:53:41,173 INFO] -Training-Epoch:16(83.33333%), Global Step:810, Learning Rate:0.000002, Grad Norm:5.27694, Loss:10.11106, AverageLoss: 5.55127, Run Time:0.017
+[2019-08-31 06:53:41,341 INFO] -Training-Epoch:16, Average Loss: 5.43740, Epoch Time: 0.961
+[2019-08-31 06:53:41,412 INFO] -Validation-Epoch:16(0.00000%), CER: 100.00000 %
+[2019-08-31 06:53:41,497 INFO] -Validation-Epoch:16(20.83333%), CER: 100.00000 %
+[2019-08-31 06:53:41,578 INFO] -Validation-Epoch:16(41.66667%), CER: 100.00000 %
+[2019-08-31 06:53:41,659 INFO] -Validation-Epoch:16(62.50000%), CER: 100.00000 %
+[2019-08-31 06:53:41,744 INFO] -Validation-Epoch:16(83.33333%), CER: 100.00000 %
+[2019-08-31 06:53:41,828 INFO] -Validation-Epoch:  16, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-08-31 06:53:41,849 INFO] Epoch 16 model has been saved.
+[2019-08-31 06:53:41,849 INFO] The learning rate is too low to train.
+[2019-08-31 06:53:41,849 INFO] The training process is OVER!
+[2019-09-02 01:15:57,374 INFO] Save config info.
+[2019-09-02 01:16:17,653 INFO] Save config info.
+[2019-09-02 01:16:17,678 INFO] Load Train Set!
+[2019-09-02 01:16:17,726 INFO] Load Dev Set!
+[2019-09-02 01:16:17,734 INFO] Set random seed: 2019
+[2019-09-02 01:16:40,499 INFO] Loaded the model to 1 GPUs
+[2019-09-02 01:16:40,499 INFO] # the number of parameters in the whole model: 1572232
+[2019-09-02 01:16:40,499 INFO] # the number of parameters in the Encoder: 977024
+[2019-09-02 01:16:40,499 INFO] # the number of parameters in the Decoder: 561280
+[2019-09-02 01:16:40,500 INFO] # the number of parameters in the JointNet: 33928
+[2019-09-02 01:16:40,500 INFO] Created a sgd optimizer.
+[2019-09-02 01:16:40,515 INFO] Created a visualizer.
+[2019-09-02 01:16:42,111 INFO] -Training-Epoch:0(16.66667%), Global Step:10, Learning Rate:0.000100, Grad Norm:10.51725, Loss:19.28365, AverageLoss: 14.05356, Run Time:0.011
+[2019-09-02 01:16:42,238 INFO] -Training-Epoch:0(37.50000%), Global Step:20, Learning Rate:0.000100, Grad Norm:6.71157, Loss:11.74854, AverageLoss: 13.09064, Run Time:0.010
+[2019-09-02 01:16:42,365 INFO] -Training-Epoch:0(58.33333%), Global Step:30, Learning Rate:0.000100, Grad Norm:11.22921, Loss:20.88535, AverageLoss: 13.15348, Run Time:0.011
+[2019-09-02 01:16:42,488 INFO] -Training-Epoch:0(79.16667%), Global Step:40, Learning Rate:0.000100, Grad Norm:7.59111, Loss:13.64132, AverageLoss: 12.59463, Run Time:0.011
+[2019-09-02 01:16:42,634 INFO] -Training-Epoch:0, Average Loss: 12.57728, Epoch Time: 0.691
+[2019-09-02 01:16:42,711 INFO] -Validation-Epoch:0(0.00000%), CER: 100.00000 %
+[2019-09-02 01:16:42,770 INFO] -Validation-Epoch:0(20.83333%), CER: 100.00000 %
+[2019-09-02 01:16:42,832 INFO] -Validation-Epoch:0(41.66667%), CER: 100.00000 %
+[2019-09-02 01:16:42,891 INFO] -Validation-Epoch:0(62.50000%), CER: 100.00000 %
+[2019-09-02 01:16:42,950 INFO] -Validation-Epoch:0(83.33333%), CER: 100.00000 %
+[2019-09-02 01:16:43,015 INFO] -Validation-Epoch:   0, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:16:43,097 INFO] Epoch 0 model has been saved.
+[2019-09-02 01:16:43,168 INFO] -Training-Epoch:1(0.00000%), Global Step:50, Learning Rate:0.000100, Grad Norm:3.93649, Loss:6.51141, AverageLoss: 6.51141, Run Time:0.016
+[2019-09-02 01:16:43,301 INFO] -Training-Epoch:1(20.83333%), Global Step:60, Learning Rate:0.000100, Grad Norm:5.28988, Loss:8.65420, AverageLoss: 11.26744, Run Time:0.010
+[2019-09-02 01:16:43,429 INFO] -Training-Epoch:1(41.66667%), Global Step:70, Learning Rate:0.000100, Grad Norm:10.15917, Loss:15.62736, AverageLoss: 11.46339, Run Time:0.011
+[2019-09-02 01:16:43,559 INFO] -Training-Epoch:1(62.50000%), Global Step:80, Learning Rate:0.000100, Grad Norm:6.68565, Loss:9.35899, AverageLoss: 10.97407, Run Time:0.012
+[2019-09-02 01:16:43,690 INFO] -Training-Epoch:1(83.33333%), Global Step:90, Learning Rate:0.000100, Grad Norm:11.01233, Loss:16.70536, AverageLoss: 10.90097, Run Time:0.011
+[2019-09-02 01:16:43,806 INFO] -Training-Epoch:1, Average Loss: 10.62738, Epoch Time: 0.673
+[2019-09-02 01:16:43,865 INFO] -Validation-Epoch:1(0.00000%), CER: 100.00000 %
+[2019-09-02 01:16:43,923 INFO] -Validation-Epoch:1(20.83333%), CER: 100.00000 %
+[2019-09-02 01:16:43,985 INFO] -Validation-Epoch:1(41.66667%), CER: 100.00000 %
+[2019-09-02 01:16:44,044 INFO] -Validation-Epoch:1(62.50000%), CER: 100.00000 %
+[2019-09-02 01:16:44,108 INFO] -Validation-Epoch:1(83.33333%), CER: 100.00000 %
+[2019-09-02 01:16:44,173 INFO] -Validation-Epoch:   1, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:16:44,207 INFO] Epoch 1 model has been saved.
+[2019-09-02 01:16:44,304 INFO] -Training-Epoch:2(4.16667%), Global Step:100, Learning Rate:0.000100, Grad Norm:7.69142, Loss:10.83118, AverageLoss: 8.04417, Run Time:0.011
+[2019-09-02 01:16:44,436 INFO] -Training-Epoch:2(25.00000%), Global Step:110, Learning Rate:0.000100, Grad Norm:4.09500, Loss:5.27657, AverageLoss: 9.06385, Run Time:0.010
+[2019-09-02 01:16:44,567 INFO] -Training-Epoch:2(45.83333%), Global Step:120, Learning Rate:0.000100, Grad Norm:5.44038, Loss:6.76463, AverageLoss: 9.10375, Run Time:0.010
+[2019-09-02 01:16:44,703 INFO] -Training-Epoch:2(66.66667%), Global Step:130, Learning Rate:0.000100, Grad Norm:9.66384, Loss:11.86851, AverageLoss: 9.08239, Run Time:0.011
+[2019-09-02 01:16:44,832 INFO] -Training-Epoch:2(87.50000%), Global Step:140, Learning Rate:0.000100, Grad Norm:6.78064, Loss:6.90754, AverageLoss: 8.75099, Run Time:0.010
+[2019-09-02 01:16:44,922 INFO] -Training-Epoch:2, Average Loss: 8.64835, Epoch Time: 0.677
+[2019-09-02 01:16:44,981 INFO] -Validation-Epoch:2(0.00000%), CER: 100.00000 %
+[2019-09-02 01:16:45,043 INFO] -Validation-Epoch:2(20.83333%), CER: 100.00000 %
+[2019-09-02 01:16:45,108 INFO] -Validation-Epoch:2(41.66667%), CER: 100.00000 %
+[2019-09-02 01:16:45,170 INFO] -Validation-Epoch:2(62.50000%), CER: 100.00000 %
+[2019-09-02 01:16:45,236 INFO] -Validation-Epoch:2(83.33333%), CER: 100.00000 %
+[2019-09-02 01:16:45,307 INFO] -Validation-Epoch:   2, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:16:45,327 INFO] Epoch 2 model has been saved.
+[2019-09-02 01:16:45,455 INFO] -Training-Epoch:3(8.33333%), Global Step:150, Learning Rate:0.000100, Grad Norm:9.11759, Loss:12.81756, AverageLoss: 8.54348, Run Time:0.011
+[2019-09-02 01:16:45,586 INFO] -Training-Epoch:3(29.16667%), Global Step:160, Learning Rate:0.000100, Grad Norm:6.88775, Loss:8.20142, AverageLoss: 7.24936, Run Time:0.011
+[2019-09-02 01:16:45,720 INFO] -Training-Epoch:3(50.00000%), Global Step:170, Learning Rate:0.000100, Grad Norm:4.23769, Loss:4.16714, AverageLoss: 7.19263, Run Time:0.010
+[2019-09-02 01:16:45,851 INFO] -Training-Epoch:3(70.83333%), Global Step:180, Learning Rate:0.000100, Grad Norm:4.45755, Loss:5.18528, AverageLoss: 7.13766, Run Time:0.011
+[2019-09-02 01:16:45,982 INFO] -Training-Epoch:3(91.66667%), Global Step:190, Learning Rate:0.000100, Grad Norm:5.43631, Loss:9.41190, AverageLoss: 7.12300, Run Time:0.011
+[2019-09-02 01:16:46,047 INFO] -Training-Epoch:3, Average Loss: 7.00625, Epoch Time: 0.684
+[2019-09-02 01:16:46,102 INFO] -Validation-Epoch:3(0.00000%), CER: 100.00000 %
+[2019-09-02 01:16:46,162 INFO] -Validation-Epoch:3(20.83333%), CER: 100.00000 %
+[2019-09-02 01:16:46,223 INFO] -Validation-Epoch:3(41.66667%), CER: 100.00000 %
+[2019-09-02 01:16:46,282 INFO] -Validation-Epoch:3(62.50000%), CER: 100.00000 %
+[2019-09-02 01:16:46,342 INFO] -Validation-Epoch:3(83.33333%), CER: 100.00000 %
+[2019-09-02 01:16:46,408 INFO] -Validation-Epoch:   3, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:16:46,428 INFO] Epoch 3 model has been saved.
+[2019-09-02 01:16:46,598 INFO] -Training-Epoch:4(12.50000%), Global Step:200, Learning Rate:0.000100, Grad Norm:4.99587, Loss:5.19781, AverageLoss: 6.46120, Run Time:0.012
+[2019-09-02 01:16:46,746 INFO] -Training-Epoch:4(33.33333%), Global Step:210, Learning Rate:0.000100, Grad Norm:4.01451, Loss:11.11878, AverageLoss: 6.62154, Run Time:0.013
+[2019-09-02 01:16:46,892 INFO] -Training-Epoch:4(54.16667%), Global Step:220, Learning Rate:0.000100, Grad Norm:4.33708, Loss:6.90474, AverageLoss: 6.19908, Run Time:0.012
+[2019-09-02 01:16:47,051 INFO] -Training-Epoch:4(75.00000%), Global Step:230, Learning Rate:0.000100, Grad Norm:4.06363, Loss:3.58492, AverageLoss: 6.19137, Run Time:0.012
+[2019-09-02 01:16:47,193 INFO] -Training-Epoch:4(95.83333%), Global Step:240, Learning Rate:0.000100, Grad Norm:3.19959, Loss:4.58401, AverageLoss: 6.20346, Run Time:0.011
+[2019-09-02 01:16:47,233 INFO] -Training-Epoch:4, Average Loss: 6.21945, Epoch Time: 0.773
+[2019-09-02 01:16:47,301 INFO] -Validation-Epoch:4(0.00000%), CER: 100.00000 %
+[2019-09-02 01:16:47,367 INFO] -Validation-Epoch:4(20.83333%), CER: 100.00000 %
+[2019-09-02 01:16:47,433 INFO] -Validation-Epoch:4(41.66667%), CER: 100.00000 %
+[2019-09-02 01:16:47,496 INFO] -Validation-Epoch:4(62.50000%), CER: 100.00000 %
+[2019-09-02 01:16:47,561 INFO] -Validation-Epoch:4(83.33333%), CER: 100.00000 %
+[2019-09-02 01:16:47,626 INFO] -Validation-Epoch:   4, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:16:47,642 INFO] Epoch 4 model has been saved.
+[2019-09-02 01:16:47,814 INFO] -Training-Epoch:5(16.66667%), Global Step:250, Learning Rate:0.000100, Grad Norm:4.21372, Loss:8.94514, AverageLoss: 6.45326, Run Time:0.011
+[2019-09-02 01:16:47,943 INFO] -Training-Epoch:5(37.50000%), Global Step:260, Learning Rate:0.000100, Grad Norm:3.71753, Loss:4.66618, AverageLoss: 6.03797, Run Time:0.011
+[2019-09-02 01:16:48,078 INFO] -Training-Epoch:5(58.33333%), Global Step:270, Learning Rate:0.000100, Grad Norm:4.87025, Loss:10.93486, AverageLoss: 6.16630, Run Time:0.012
+[2019-09-02 01:16:48,220 INFO] -Training-Epoch:5(79.16667%), Global Step:280, Learning Rate:0.000100, Grad Norm:3.56048, Loss:6.58798, AverageLoss: 5.91741, Run Time:0.011
+[2019-09-02 01:16:48,377 INFO] -Training-Epoch:5, Average Loss: 5.97756, Epoch Time: 0.696
+[2019-09-02 01:16:48,434 INFO] -Validation-Epoch:5(0.00000%), CER: 100.00000 %
+[2019-09-02 01:16:48,496 INFO] -Validation-Epoch:5(20.83333%), CER: 100.00000 %
+[2019-09-02 01:16:48,558 INFO] -Validation-Epoch:5(41.66667%), CER: 100.00000 %
+[2019-09-02 01:16:48,620 INFO] -Validation-Epoch:5(62.50000%), CER: 100.00000 %
+[2019-09-02 01:16:48,685 INFO] -Validation-Epoch:5(83.33333%), CER: 100.00000 %
+[2019-09-02 01:16:48,755 INFO] -Validation-Epoch:   5, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:16:48,811 INFO] Epoch 5 model has been saved.
+[2019-09-02 01:16:48,880 INFO] -Training-Epoch:6(0.00000%), Global Step:290, Learning Rate:0.000100, Grad Norm:3.96748, Loss:3.43261, AverageLoss: 3.43261, Run Time:0.015
+[2019-09-02 01:16:49,024 INFO] -Training-Epoch:6(20.83333%), Global Step:300, Learning Rate:0.000100, Grad Norm:2.92200, Loss:4.39335, AverageLoss: 5.81580, Run Time:0.012
+[2019-09-02 01:16:49,166 INFO] -Training-Epoch:6(41.66667%), Global Step:310, Learning Rate:0.000100, Grad Norm:4.82976, Loss:8.77657, AverageLoss: 6.06414, Run Time:0.011
+[2019-09-02 01:16:49,296 INFO] -Training-Epoch:6(62.50000%), Global Step:320, Learning Rate:0.000100, Grad Norm:3.45613, Loss:4.47538, AverageLoss: 5.88753, Run Time:0.010
+[2019-09-02 01:16:49,429 INFO] -Training-Epoch:6(83.33333%), Global Step:330, Learning Rate:0.000100, Grad Norm:5.59895, Loss:10.77880, AverageLoss: 5.98000, Run Time:0.012
+[2019-09-02 01:16:49,547 INFO] -Training-Epoch:6, Average Loss: 5.85739, Epoch Time: 0.696
+[2019-09-02 01:16:49,602 INFO] -Validation-Epoch:6(0.00000%), CER: 100.00000 %
+[2019-09-02 01:16:49,660 INFO] -Validation-Epoch:6(20.83333%), CER: 100.00000 %
+[2019-09-02 01:16:49,724 INFO] -Validation-Epoch:6(41.66667%), CER: 100.00000 %
+[2019-09-02 01:16:49,785 INFO] -Validation-Epoch:6(62.50000%), CER: 100.00000 %
+[2019-09-02 01:16:49,848 INFO] -Validation-Epoch:6(83.33333%), CER: 100.00000 %
+[2019-09-02 01:16:49,912 INFO] -Validation-Epoch:   6, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:16:49,928 INFO] Epoch 6 model has been saved.
+[2019-09-02 01:16:50,024 INFO] -Training-Epoch:7(4.16667%), Global Step:340, Learning Rate:0.000100, Grad Norm:3.47348, Loss:6.43684, AverageLoss: 4.90416, Run Time:0.011
+[2019-09-02 01:16:50,158 INFO] -Training-Epoch:7(25.00000%), Global Step:350, Learning Rate:0.000100, Grad Norm:3.98293, Loss:3.41028, AverageLoss: 5.61158, Run Time:0.011
+[2019-09-02 01:16:50,289 INFO] -Training-Epoch:7(45.83333%), Global Step:360, Learning Rate:0.000100, Grad Norm:2.85488, Loss:4.26826, AverageLoss: 5.74527, Run Time:0.010
+[2019-09-02 01:16:50,423 INFO] -Training-Epoch:7(66.66667%), Global Step:370, Learning Rate:0.000100, Grad Norm:5.07096, Loss:8.59144, AverageLoss: 5.88638, Run Time:0.011
+[2019-09-02 01:16:50,551 INFO] -Training-Epoch:7(87.50000%), Global Step:380, Learning Rate:0.000100, Grad Norm:3.43840, Loss:4.35271, AverageLoss: 5.77586, Run Time:0.010
+[2019-09-02 01:16:50,641 INFO] -Training-Epoch:7, Average Loss: 5.76035, Epoch Time: 0.673
+[2019-09-02 01:16:50,697 INFO] -Validation-Epoch:7(0.00000%), CER: 100.00000 %
+[2019-09-02 01:16:50,760 INFO] -Validation-Epoch:7(20.83333%), CER: 100.00000 %
+[2019-09-02 01:16:50,824 INFO] -Validation-Epoch:7(41.66667%), CER: 100.00000 %
+[2019-09-02 01:16:50,891 INFO] -Validation-Epoch:7(62.50000%), CER: 100.00000 %
+[2019-09-02 01:16:50,951 INFO] -Validation-Epoch:7(83.33333%), CER: 100.00000 %
+[2019-09-02 01:16:51,024 INFO] -Validation-Epoch:   7, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:16:51,081 INFO] Epoch 7 model has been saved.
+[2019-09-02 01:16:51,211 INFO] -Training-Epoch:8(8.33333%), Global Step:390, Learning Rate:0.000100, Grad Norm:5.81783, Loss:10.58676, AverageLoss: 6.65958, Run Time:0.012
+[2019-09-02 01:16:51,343 INFO] -Training-Epoch:8(29.16667%), Global Step:400, Learning Rate:0.000100, Grad Norm:3.46210, Loss:6.31206, AverageLoss: 5.53306, Run Time:0.011
+[2019-09-02 01:16:51,474 INFO] -Training-Epoch:8(50.00000%), Global Step:410, Learning Rate:0.000100, Grad Norm:4.02746, Loss:3.41316, AverageLoss: 5.60216, Run Time:0.010
+[2019-09-02 01:16:51,603 INFO] -Training-Epoch:8(70.83333%), Global Step:420, Learning Rate:0.000100, Grad Norm:2.82629, Loss:4.16254, AverageLoss: 5.65849, Run Time:0.010
+[2019-09-02 01:16:51,737 INFO] -Training-Epoch:8(91.66667%), Global Step:430, Learning Rate:0.000100, Grad Norm:5.15605, Loss:8.41148, AverageLoss: 5.75606, Run Time:0.013
+[2019-09-02 01:16:51,803 INFO] -Training-Epoch:8, Average Loss: 5.67263, Epoch Time: 0.687
+[2019-09-02 01:16:51,861 INFO] -Validation-Epoch:8(0.00000%), CER: 100.00000 %
+[2019-09-02 01:16:51,922 INFO] -Validation-Epoch:8(20.83333%), CER: 100.00000 %
+[2019-09-02 01:16:51,984 INFO] -Validation-Epoch:8(41.66667%), CER: 100.00000 %
+[2019-09-02 01:16:52,048 INFO] -Validation-Epoch:8(62.50000%), CER: 100.00000 %
+[2019-09-02 01:16:52,117 INFO] -Validation-Epoch:8(83.33333%), CER: 100.00000 %
+[2019-09-02 01:16:52,183 INFO] -Validation-Epoch:   8, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:16:52,200 INFO] Epoch 8 model has been saved.
+[2019-09-02 01:16:52,345 INFO] -Training-Epoch:9(12.50000%), Global Step:440, Learning Rate:0.000100, Grad Norm:3.45122, Loss:4.24716, AverageLoss: 5.70405, Run Time:0.010
+[2019-09-02 01:16:52,474 INFO] -Training-Epoch:9(33.33333%), Global Step:450, Learning Rate:0.000100, Grad Norm:5.92238, Loss:10.39768, AverageLoss: 5.89714, Run Time:0.011
+[2019-09-02 01:16:52,601 INFO] -Training-Epoch:9(54.16667%), Global Step:460, Learning Rate:0.000100, Grad Norm:3.47660, Loss:6.20641, AverageLoss: 5.52200, Run Time:0.011
+[2019-09-02 01:16:52,729 INFO] -Training-Epoch:9(75.00000%), Global Step:470, Learning Rate:0.000100, Grad Norm:4.08506, Loss:3.42377, AverageLoss: 5.54287, Run Time:0.011
+[2019-09-02 01:16:52,857 INFO] -Training-Epoch:9(95.83333%), Global Step:480, Learning Rate:0.000100, Grad Norm:2.81117, Loss:4.06921, AverageLoss: 5.57426, Run Time:0.010
+[2019-09-02 01:16:52,896 INFO] -Training-Epoch:9, Average Loss: 5.59198, Epoch Time: 0.663
+[2019-09-02 01:16:52,948 INFO] -Validation-Epoch:9(0.00000%), CER: 100.00000 %
+[2019-09-02 01:16:53,009 INFO] -Validation-Epoch:9(20.83333%), CER: 100.00000 %
+[2019-09-02 01:16:53,070 INFO] -Validation-Epoch:9(41.66667%), CER: 100.00000 %
+[2019-09-02 01:16:53,127 INFO] -Validation-Epoch:9(62.50000%), CER: 100.00000 %
+[2019-09-02 01:16:53,185 INFO] -Validation-Epoch:9(83.33333%), CER: 100.00000 %
+[2019-09-02 01:16:53,248 INFO] -Validation-Epoch:   9, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:16:53,383 INFO] Epoch 9 model has been saved.
+[2019-09-02 01:16:53,552 INFO] -Training-Epoch:10(16.66667%), Global Step:490, Learning Rate:0.000100, Grad Norm:5.18221, Loss:8.23325, AverageLoss: 5.94498, Run Time:0.011
+[2019-09-02 01:16:53,678 INFO] -Training-Epoch:10(37.50000%), Global Step:500, Learning Rate:0.000100, Grad Norm:3.48627, Loss:4.15491, AverageLoss: 5.57229, Run Time:0.010
+[2019-09-02 01:16:53,817 INFO] -Training-Epoch:10(58.33333%), Global Step:510, Learning Rate:0.000100, Grad Norm:5.98076, Loss:10.21695, AverageLoss: 5.69542, Run Time:0.013
+[2019-09-02 01:16:53,951 INFO] -Training-Epoch:10(79.16667%), Global Step:520, Learning Rate:0.000100, Grad Norm:3.50552, Loss:6.10527, AverageLoss: 5.46707, Run Time:0.010
+[2019-09-02 01:16:54,097 INFO] -Training-Epoch:10, Average Loss: 5.51680, Epoch Time: 0.677
+[2019-09-02 01:16:54,156 INFO] -Validation-Epoch:10(0.00000%), CER: 100.00000 %
+[2019-09-02 01:16:54,216 INFO] -Validation-Epoch:10(20.83333%), CER: 100.00000 %
+[2019-09-02 01:16:54,279 INFO] -Validation-Epoch:10(41.66667%), CER: 100.00000 %
+[2019-09-02 01:16:54,339 INFO] -Validation-Epoch:10(62.50000%), CER: 100.00000 %
+[2019-09-02 01:16:54,403 INFO] -Validation-Epoch:10(83.33333%), CER: 100.00000 %
+[2019-09-02 01:16:54,470 INFO] -Validation-Epoch:  10, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:16:54,487 INFO] Epoch 10 model has been saved.
+[2019-09-02 01:16:54,488 INFO] Epoch 10 update learning rate: 0.000050
+[2019-09-02 01:16:54,559 INFO] -Training-Epoch:11(0.00000%), Global Step:530, Learning Rate:0.000050, Grad Norm:4.15114, Loss:3.43508, AverageLoss: 3.43508, Run Time:0.013
+[2019-09-02 01:16:54,694 INFO] -Training-Epoch:11(20.83333%), Global Step:540, Learning Rate:0.000050, Grad Norm:2.80711, Loss:3.99181, AverageLoss: 5.39742, Run Time:0.011
+[2019-09-02 01:16:54,827 INFO] -Training-Epoch:11(41.66667%), Global Step:550, Learning Rate:0.000050, Grad Norm:5.22744, Loss:8.09562, AverageLoss: 5.64070, Run Time:0.011
+[2019-09-02 01:16:54,960 INFO] -Training-Epoch:11(62.50000%), Global Step:560, Learning Rate:0.000050, Grad Norm:3.50496, Loss:4.09121, AverageLoss: 5.49071, Run Time:0.011
+[2019-09-02 01:16:55,093 INFO] -Training-Epoch:11(83.33333%), Global Step:570, Learning Rate:0.000050, Grad Norm:6.09258, Loss:10.10977, AverageLoss: 5.58117, Run Time:0.012
+[2019-09-02 01:16:55,212 INFO] -Training-Epoch:11, Average Loss: 5.46230, Epoch Time: 0.682
+[2019-09-02 01:16:55,270 INFO] -Validation-Epoch:11(0.00000%), CER: 100.00000 %
+[2019-09-02 01:16:55,331 INFO] -Validation-Epoch:11(20.83333%), CER: 100.00000 %
+[2019-09-02 01:16:55,391 INFO] -Validation-Epoch:11(41.66667%), CER: 100.00000 %
+[2019-09-02 01:16:55,449 INFO] -Validation-Epoch:11(62.50000%), CER: 100.00000 %
+[2019-09-02 01:16:55,509 INFO] -Validation-Epoch:11(83.33333%), CER: 100.00000 %
+[2019-09-02 01:16:55,580 INFO] -Validation-Epoch:  11, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:16:55,811 INFO] Epoch 11 model has been saved.
+[2019-09-02 01:16:55,812 INFO] Epoch 11 update learning rate: 0.000025
+[2019-09-02 01:16:55,911 INFO] -Training-Epoch:12(4.16667%), Global Step:580, Learning Rate:0.000025, Grad Norm:3.52804, Loss:6.04775, AverageLoss: 4.73789, Run Time:0.012
+[2019-09-02 01:16:56,054 INFO] -Training-Epoch:12(25.00000%), Global Step:590, Learning Rate:0.000025, Grad Norm:4.18269, Loss:3.44297, AverageLoss: 5.28945, Run Time:0.011
+[2019-09-02 01:16:56,190 INFO] -Training-Epoch:12(45.83333%), Global Step:600, Learning Rate:0.000025, Grad Norm:2.80820, Loss:3.95949, AverageLoss: 5.40401, Run Time:0.010
+[2019-09-02 01:16:56,328 INFO] -Training-Epoch:12(66.66667%), Global Step:610, Learning Rate:0.000025, Grad Norm:5.22648, Loss:8.03319, AverageLoss: 5.54530, Run Time:0.011
+[2019-09-02 01:16:56,460 INFO] -Training-Epoch:12(87.50000%), Global Step:620, Learning Rate:0.000025, Grad Norm:3.52134, Loss:4.06494, AverageLoss: 5.45334, Run Time:0.010
+[2019-09-02 01:16:56,557 INFO] -Training-Epoch:12, Average Loss: 5.43571, Epoch Time: 0.705
+[2019-09-02 01:16:56,614 INFO] -Validation-Epoch:12(0.00000%), CER: 100.00000 %
+[2019-09-02 01:16:56,684 INFO] -Validation-Epoch:12(20.83333%), CER: 100.00000 %
+[2019-09-02 01:16:56,750 INFO] -Validation-Epoch:12(41.66667%), CER: 100.00000 %
+[2019-09-02 01:16:56,813 INFO] -Validation-Epoch:12(62.50000%), CER: 100.00000 %
+[2019-09-02 01:16:56,877 INFO] -Validation-Epoch:12(83.33333%), CER: 100.00000 %
+[2019-09-02 01:16:56,948 INFO] -Validation-Epoch:  12, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:16:56,966 INFO] Epoch 12 model has been saved.
+[2019-09-02 01:16:56,966 INFO] Epoch 12 update learning rate: 0.000013
+[2019-09-02 01:16:57,094 INFO] -Training-Epoch:13(8.33333%), Global Step:630, Learning Rate:0.000013, Grad Norm:6.06147, Loss:10.05394, AverageLoss: 6.37942, Run Time:0.012
+[2019-09-02 01:16:57,230 INFO] -Training-Epoch:13(29.16667%), Global Step:640, Learning Rate:0.000013, Grad Norm:3.53882, Loss:6.02870, AverageLoss: 5.28609, Run Time:0.011
+[2019-09-02 01:16:57,365 INFO] -Training-Epoch:13(50.00000%), Global Step:650, Learning Rate:0.000013, Grad Norm:4.19896, Loss:3.44504, AverageLoss: 5.34540, Run Time:0.010
+[2019-09-02 01:16:57,499 INFO] -Training-Epoch:13(70.83333%), Global Step:660, Learning Rate:0.000013, Grad Norm:2.80835, Loss:3.94567, AverageLoss: 5.39937, Run Time:0.010
+[2019-09-02 01:16:57,635 INFO] -Training-Epoch:13(91.66667%), Global Step:670, Learning Rate:0.000013, Grad Norm:5.26610, Loss:8.01040, AverageLoss: 5.50095, Run Time:0.011
+[2019-09-02 01:16:57,698 INFO] -Training-Epoch:13, Average Loss: 5.42264, Epoch Time: 0.696
+[2019-09-02 01:16:57,755 INFO] -Validation-Epoch:13(0.00000%), CER: 100.00000 %
+[2019-09-02 01:16:57,819 INFO] -Validation-Epoch:13(20.83333%), CER: 100.00000 %
+[2019-09-02 01:16:57,881 INFO] -Validation-Epoch:13(41.66667%), CER: 100.00000 %
+[2019-09-02 01:16:57,940 INFO] -Validation-Epoch:13(62.50000%), CER: 100.00000 %
+[2019-09-02 01:16:58,001 INFO] -Validation-Epoch:13(83.33333%), CER: 100.00000 %
+[2019-09-02 01:16:58,072 INFO] -Validation-Epoch:  13, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:16:58,088 INFO] Epoch 13 model has been saved.
+[2019-09-02 01:16:58,088 INFO] Epoch 13 update learning rate: 0.000006
+[2019-09-02 01:16:58,247 INFO] -Training-Epoch:14(12.50000%), Global Step:680, Learning Rate:0.000006, Grad Norm:3.51222, Loss:4.05040, AverageLoss: 5.52140, Run Time:0.011
+[2019-09-02 01:16:58,384 INFO] -Training-Epoch:14(33.33333%), Global Step:690, Learning Rate:0.000006, Grad Norm:6.04793, Loss:10.03373, AverageLoss: 5.69751, Run Time:0.012
+[2019-09-02 01:16:58,521 INFO] -Training-Epoch:14(54.16667%), Global Step:700, Learning Rate:0.000006, Grad Norm:3.54079, Loss:6.01912, AverageLoss: 5.33984, Run Time:0.013
+[2019-09-02 01:16:58,670 INFO] -Training-Epoch:14(75.00000%), Global Step:710, Learning Rate:0.000006, Grad Norm:4.20425, Loss:3.44411, AverageLoss: 5.36318, Run Time:0.011
+[2019-09-02 01:16:58,809 INFO] -Training-Epoch:14(95.83333%), Global Step:720, Learning Rate:0.000006, Grad Norm:2.80867, Loss:3.93895, AverageLoss: 5.39791, Run Time:0.010
+[2019-09-02 01:16:58,853 INFO] -Training-Epoch:14, Average Loss: 5.41585, Epoch Time: 0.721
+[2019-09-02 01:16:58,911 INFO] -Validation-Epoch:14(0.00000%), CER: 100.00000 %
+[2019-09-02 01:16:58,975 INFO] -Validation-Epoch:14(20.83333%), CER: 100.00000 %
+[2019-09-02 01:16:59,036 INFO] -Validation-Epoch:14(41.66667%), CER: 100.00000 %
+[2019-09-02 01:16:59,094 INFO] -Validation-Epoch:14(62.50000%), CER: 100.00000 %
+[2019-09-02 01:16:59,155 INFO] -Validation-Epoch:14(83.33333%), CER: 100.00000 %
+[2019-09-02 01:16:59,220 INFO] -Validation-Epoch:  14, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:16:59,237 INFO] Epoch 14 model has been saved.
+[2019-09-02 01:16:59,238 INFO] Epoch 14 update learning rate: 0.000003
+[2019-09-02 01:16:59,424 INFO] -Training-Epoch:15(16.66667%), Global Step:730, Learning Rate:0.000003, Grad Norm:5.26584, Loss:7.99942, AverageLoss: 5.80409, Run Time:0.012
+[2019-09-02 01:16:59,560 INFO] -Training-Epoch:15(37.50000%), Global Step:740, Learning Rate:0.000003, Grad Norm:3.53144, Loss:4.05090, AverageLoss: 5.45239, Run Time:0.011
+[2019-09-02 01:16:59,699 INFO] -Training-Epoch:15(58.33333%), Global Step:750, Learning Rate:0.000003, Grad Norm:6.06584, Loss:10.02845, AverageLoss: 5.57787, Run Time:0.013
+[2019-09-02 01:16:59,836 INFO] -Training-Epoch:15(79.16667%), Global Step:760, Learning Rate:0.000003, Grad Norm:3.54356, Loss:6.01595, AverageLoss: 5.35999, Run Time:0.012
+[2019-09-02 01:16:59,984 INFO] -Training-Epoch:15, Average Loss: 5.41282, Epoch Time: 0.712
+[2019-09-02 01:17:00,041 INFO] -Validation-Epoch:15(0.00000%), CER: 100.00000 %
+[2019-09-02 01:17:00,099 INFO] -Validation-Epoch:15(20.83333%), CER: 100.00000 %
+[2019-09-02 01:17:00,159 INFO] -Validation-Epoch:15(41.66667%), CER: 100.00000 %
+[2019-09-02 01:17:00,215 INFO] -Validation-Epoch:15(62.50000%), CER: 100.00000 %
+[2019-09-02 01:17:00,274 INFO] -Validation-Epoch:15(83.33333%), CER: 100.00000 %
+[2019-09-02 01:17:00,339 INFO] -Validation-Epoch:  15, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:17:00,354 INFO] Epoch 15 model has been saved.
+[2019-09-02 01:17:00,354 INFO] Epoch 15 update learning rate: 0.000002
+[2019-09-02 01:17:00,422 INFO] -Training-Epoch:16(0.00000%), Global Step:770, Learning Rate:0.000002, Grad Norm:4.19801, Loss:3.44202, AverageLoss: 3.44202, Run Time:0.013
+[2019-09-02 01:17:00,551 INFO] -Training-Epoch:16(20.83333%), Global Step:780, Learning Rate:0.000002, Grad Norm:2.81074, Loss:3.93790, AverageLoss: 5.33514, Run Time:0.010
+[2019-09-02 01:17:00,679 INFO] -Training-Epoch:16(41.66667%), Global Step:790, Learning Rate:0.000002, Grad Norm:5.27897, Loss:7.99652, AverageLoss: 5.57892, Run Time:0.011
+[2019-09-02 01:17:00,808 INFO] -Training-Epoch:16(62.50000%), Global Step:800, Learning Rate:0.000002, Grad Norm:3.52535, Loss:4.04918, AverageLoss: 5.43548, Run Time:0.010
+[2019-09-02 01:17:00,937 INFO] -Training-Epoch:16(83.33333%), Global Step:810, Learning Rate:0.000002, Grad Norm:6.08776, Loss:10.02686, AverageLoss: 5.52805, Run Time:0.012
+[2019-09-02 01:17:01,053 INFO] -Training-Epoch:16, Average Loss: 5.41166, Epoch Time: 0.666
+[2019-09-02 01:17:01,106 INFO] -Validation-Epoch:16(0.00000%), CER: 100.00000 %
+[2019-09-02 01:17:01,168 INFO] -Validation-Epoch:16(20.83333%), CER: 100.00000 %
+[2019-09-02 01:17:01,230 INFO] -Validation-Epoch:16(41.66667%), CER: 100.00000 %
+[2019-09-02 01:17:01,288 INFO] -Validation-Epoch:16(62.50000%), CER: 100.00000 %
+[2019-09-02 01:17:01,348 INFO] -Validation-Epoch:16(83.33333%), CER: 100.00000 %
+[2019-09-02 01:17:01,416 INFO] -Validation-Epoch:  16, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:17:01,433 INFO] Epoch 16 model has been saved.
+[2019-09-02 01:17:01,433 INFO] The learning rate is too low to train.
+[2019-09-02 01:17:01,433 INFO] The training process is OVER!
+[2019-09-02 01:20:26,529 INFO] Save config info.
+[2019-09-02 01:20:26,529 INFO] Load Train Set!
+[2019-09-02 01:20:26,530 INFO] Load Dev Set!
+[2019-09-02 01:20:26,530 INFO] Set random seed: 2019
+[2019-09-02 01:20:30,888 INFO] Loaded the model to 1 GPUs
+[2019-09-02 01:20:30,889 INFO] # the number of parameters in the whole model: 1572232
+[2019-09-02 01:20:30,889 INFO] # the number of parameters in the Encoder: 977024
+[2019-09-02 01:20:30,889 INFO] # the number of parameters in the Decoder: 561280
+[2019-09-02 01:20:30,889 INFO] # the number of parameters in the JointNet: 33928
+[2019-09-02 01:20:30,890 INFO] Created a sgd optimizer.
+[2019-09-02 01:20:30,891 INFO] Created a visualizer.
+[2019-09-02 01:20:31,151 INFO] -Training-Epoch:0(16.66667%), Global Step:10, Learning Rate:0.000100, Grad Norm:9.91776, Loss:18.58988, AverageLoss: 13.53194, Run Time:0.014
+[2019-09-02 01:20:31,300 INFO] -Training-Epoch:0(37.50000%), Global Step:20, Learning Rate:0.000100, Grad Norm:6.32984, Loss:11.23029, AverageLoss: 12.61135, Run Time:0.013
+[2019-09-02 01:20:31,451 INFO] -Training-Epoch:0(58.33333%), Global Step:30, Learning Rate:0.000100, Grad Norm:10.75691, Loss:20.21982, AverageLoss: 12.68688, Run Time:0.013
+[2019-09-02 01:20:31,599 INFO] -Training-Epoch:0(79.16667%), Global Step:40, Learning Rate:0.000100, Grad Norm:7.33984, Loss:13.11444, AverageLoss: 12.15143, Run Time:0.012
+[2019-09-02 01:20:31,763 INFO] -Training-Epoch:0, Average Loss: 12.14768, Epoch Time: 0.810
+[2019-09-02 01:20:31,838 INFO] -Validation-Epoch:0(0.00000%), CER: 100.00000 %
+[2019-09-02 01:20:31,907 INFO] -Validation-Epoch:0(20.83333%), CER: 100.00000 %
+[2019-09-02 01:20:31,968 INFO] -Validation-Epoch:0(41.66667%), CER: 100.00000 %
+[2019-09-02 01:20:32,033 INFO] -Validation-Epoch:0(62.50000%), CER: 100.00000 %
+[2019-09-02 01:20:32,099 INFO] -Validation-Epoch:0(83.33333%), CER: 100.00000 %
+[2019-09-02 01:20:32,173 INFO] -Validation-Epoch:   0, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:20:32,193 INFO] Epoch 0 model has been saved.
+[2019-09-02 01:20:32,274 INFO] -Training-Epoch:1(0.00000%), Global Step:50, Learning Rate:0.000100, Grad Norm:3.93707, Loss:6.29274, AverageLoss: 6.29274, Run Time:0.014
+[2019-09-02 01:20:32,415 INFO] -Training-Epoch:1(20.83333%), Global Step:60, Learning Rate:0.000100, Grad Norm:5.10007, Loss:8.51272, AverageLoss: 10.94692, Run Time:0.011
+[2019-09-02 01:20:32,555 INFO] -Training-Epoch:1(41.66667%), Global Step:70, Learning Rate:0.000100, Grad Norm:9.32752, Loss:15.35020, AverageLoss: 11.15438, Run Time:0.012
+[2019-09-02 01:20:32,691 INFO] -Training-Epoch:1(62.50000%), Global Step:80, Learning Rate:0.000100, Grad Norm:6.10137, Loss:9.11510, AverageLoss: 10.68912, Run Time:0.011
+[2019-09-02 01:20:32,828 INFO] -Training-Epoch:1(83.33333%), Global Step:90, Learning Rate:0.000100, Grad Norm:10.14758, Loss:16.48163, AverageLoss: 10.64057, Run Time:0.013
+[2019-09-02 01:20:32,951 INFO] -Training-Epoch:1, Average Loss: 10.39172, Epoch Time: 0.713
+[2019-09-02 01:20:33,029 INFO] -Validation-Epoch:1(0.00000%), CER: 100.00000 %
+[2019-09-02 01:20:33,094 INFO] -Validation-Epoch:1(20.83333%), CER: 100.00000 %
+[2019-09-02 01:20:33,160 INFO] -Validation-Epoch:1(41.66667%), CER: 100.00000 %
+[2019-09-02 01:20:33,224 INFO] -Validation-Epoch:1(62.50000%), CER: 100.00000 %
+[2019-09-02 01:20:33,290 INFO] -Validation-Epoch:1(83.33333%), CER: 100.00000 %
+[2019-09-02 01:20:33,363 INFO] -Validation-Epoch:   1, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:20:33,381 INFO] Epoch 1 model has been saved.
+[2019-09-02 01:20:33,493 INFO] -Training-Epoch:2(4.16667%), Global Step:100, Learning Rate:0.000100, Grad Norm:7.09622, Loss:10.62330, AverageLoss: 7.85256, Run Time:0.012
+[2019-09-02 01:20:33,629 INFO] -Training-Epoch:2(25.00000%), Global Step:110, Learning Rate:0.000100, Grad Norm:3.98420, Loss:5.09176, AverageLoss: 8.98911, Run Time:0.010
+[2019-09-02 01:20:33,767 INFO] -Training-Epoch:2(45.83333%), Global Step:120, Learning Rate:0.000100, Grad Norm:5.06140, Loss:6.86835, AverageLoss: 9.07330, Run Time:0.011
+[2019-09-02 01:20:33,908 INFO] -Training-Epoch:2(66.66667%), Global Step:130, Learning Rate:0.000100, Grad Norm:8.82909, Loss:12.19748, AverageLoss: 9.08848, Run Time:0.011
+[2019-09-02 01:20:34,048 INFO] -Training-Epoch:2(87.50000%), Global Step:140, Learning Rate:0.000100, Grad Norm:6.03263, Loss:7.08753, AverageLoss: 8.77939, Run Time:0.012
+[2019-09-02 01:20:34,144 INFO] -Training-Epoch:2, Average Loss: 8.69969, Epoch Time: 0.712
+[2019-09-02 01:20:34,220 INFO] -Validation-Epoch:2(0.00000%), CER: 100.00000 %
+[2019-09-02 01:20:34,282 INFO] -Validation-Epoch:2(20.83333%), CER: 100.00000 %
+[2019-09-02 01:20:34,346 INFO] -Validation-Epoch:2(41.66667%), CER: 100.00000 %
+[2019-09-02 01:20:34,410 INFO] -Validation-Epoch:2(62.50000%), CER: 100.00000 %
+[2019-09-02 01:20:34,475 INFO] -Validation-Epoch:2(83.33333%), CER: 100.00000 %
+[2019-09-02 01:20:34,546 INFO] -Validation-Epoch:   2, AverageLoss:0.00000, AverageCER: 100.00000 %
+[2019-09-02 01:20:34,568 INFO] Epoch 2 model has been saved.
+[2019-09-02 01:20:34,711 INFO] -Training-Epoch:3(8.33333%), Global Step:150, Learning Rate:0.000100, Grad Norm:8.77331, Loss:13.18500, AverageLoss: 8.69604, Run Time:0.011
