@@ -9,8 +9,8 @@ data:
     right_context_width: 0
     frame_rate: 10
     apply_cmvn: False
-    max_input_length: 20
-    max_target_length: 20
+    max_input_length: 40
+    max_target_length: 40
     batch_size: 1
     encoding: True
     short_first: False
