@@ -55,18 +55,17 @@
 #     tgt_vocab = os.path.join(path, 'vocab.target')
 #     shutil.copy(src_vocab, tgt_vocab)
 
-def toy_gen():
-    chars = ['a','b','c','d','e','f']
+def toy_gen(chars, times = 2):
     len_chars = len(chars)
 
     X = []
     Y = []
-    for i in range(len_chars*2): # length index
+    for i in range(len_chars*times): # length index
         if(i == 0):
             continue
         for j in range(len_chars): # first char index
             x = ''
-            y = 's'
+            y = '!'
             for k in range(i): # length index
                 x += chars[(j+k)%len_chars] if (j+k) % 2 == 0 else chars[(j+k)%len_chars]*2
                 y += chars[(j+k+1)%len_chars]
@@ -78,24 +77,45 @@ def toy_gen():
     return X, Y
 
 if __name__ == '__main__':
-    X,Y = toy_gen()
-    with open('data/train/feats.txt','w',encoding='utf-8') as f:
+    chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+    X,Y = toy_gen(chars)
+    with open('data/toy/train/feats.txt','w',encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i,x) for i, x in enumerate(X[:12])])
 
-    with open('data/train/target.txt','w',encoding='utf-8') as f:
+    with open('data/toy/train/target.txt','w',encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i,y) for i, y in enumerate(Y[:12])])
 
-    with open('data/dev/feats.txt', 'w', encoding='utf-8') as f:
+    with open('data/toy/dev/feats.txt', 'w', encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i, x) for i, x in enumerate(X[12:])])
 
-    with open('data/dev/target.txt', 'w', encoding='utf-8') as f:
+    with open('data/toy/dev/target.txt', 'w', encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i, y) for i, y in enumerate(Y[12:])])
 
-    with open('data/test/feats.txt', 'w', encoding='utf-8') as f:
+    with open('data/toy/test/feats.txt', 'w', encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i, x) for i, x in enumerate(X[12:])])
 
-    with open('data/test/target.txt', 'w', encoding='utf-8') as f:
+    with open('data/toy/test/target.txt', 'w', encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i, y) for i, y in enumerate(Y[12:])])
+
+    chars = list('abcdefghijklnmopqrstuvwxyz')
+    X, Y = toy_gen(chars, times=1)
+    with open('data/toy2/train/feats2.txt', 'w', encoding='utf-8') as f:
+        f.writelines(['{},{}\n'.format(i, x) for i, x in enumerate(X[:25])])
+
+    with open('data/toy2/train/target2.txt', 'w', encoding='utf-8') as f:
+        f.writelines(['{},{}\n'.format(i, y) for i, y in enumerate(Y[:25])])
+
+    with open('data/toy2/dev/feats2.txt', 'w', encoding='utf-8') as f:
+        f.writelines(['{},{}\n'.format(i, x) for i, x in enumerate(X[25:])])
+
+    with open('data/toy2/dev/target2.txt', 'w', encoding='utf-8') as f:
+        f.writelines(['{},{}\n'.format(i, y) for i, y in enumerate(Y[25:])])
+
+    with open('data/toy2/test/feats2.txt', 'w', encoding='utf-8') as f:
+        f.writelines(['{},{}\n'.format(i, x) for i, x in enumerate(X[25:])])
+
+    with open('data/toy2/test/target2.txt', 'w', encoding='utf-8') as f:
+        f.writelines(['{},{}\n'.format(i, y) for i, y in enumerate(Y[25:])])
 
 
     # data_dir = args.dir
