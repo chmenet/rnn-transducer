@@ -123,13 +123,13 @@ def main():
     logger.info('Save config info.')
 
     num_workers = config.training.num_gpu * 2
-    train_dataset = Text_Dataset(config.data, 'train')
+    train_dataset = Text_Dataset(config, 'train')
     training_data = torch.utils.data.DataLoader(
         train_dataset, batch_size=config.data.batch_size * config.training.num_gpu,
         shuffle=config.data.shuffle, num_workers=num_workers)
     logger.info('Load Train Set!')
 
-    dev_dataset = Text_Dataset(config.data, 'dev')
+    dev_dataset = Text_Dataset(config, 'dev')
     validate_data = torch.utils.data.DataLoader(
         dev_dataset, batch_size=config.data.batch_size * config.training.num_gpu,
         shuffle=False, num_workers=num_workers)

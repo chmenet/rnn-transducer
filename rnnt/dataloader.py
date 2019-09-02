@@ -8,26 +8,26 @@ import torch
 class TextCollate():
     def __init__(self, config, type):
         self.type = type
-        self.name = config.name
-        self.left_context_width = config.left_context_width
-        self.right_context_width = config.right_context_width
-        self.frame_rate = config.frame_rate
-        self.apply_cmvn = config.apply_cmvn 
+        self.name = config.data.name
+        self.left_context_width = config.data.left_context_width
+        self.right_context_width = config.data.right_context_width
+        self.frame_rate = config.data.frame_rate
+        self.apply_cmvn = config.data.apply_cmvn
 
-        self.max_input_length = config.max_input_length
-        self.max_target_length = config.max_target_length
-        self.vocab = config.vocab
-        self.vocab_feat = config.vocab_feat
+        self.max_input_length = config.data.max_input_length
+        self.max_target_length = config.data.max_target_length
+        self.vocab = config.data.vocab
+        self.vocab_feat = config.data.vocab_feat
 
-        self.arkscp = os.path.join(config.__getattr__(type), 'feats.txt')
+        self.arkscp = os.path.join(config.data.__getattr__(type), 'feats.txt')
 
         if self.apply_cmvn:
             self.utt2spk = {}
-            with open(os.path.join(config.__getattr__(type), 'utt2spk'), 'r') as fid:
+            with open(os.path.join(config.data.__getattr__(type), 'utt2spk'), 'r') as fid:
                 for line in fid:
                     parts = line.strip().split()
                     self.utt2spk[parts[0]] = parts[1]
-            self.cmvnscp = os.path.join(config.__getattr__(type), 'cmvn.scp')
+            self.cmvnscp = os.path.join(config.data.__getattr__(type), 'cmvn.scp')
             self.cmvn_stats_dict = {}
             self.get_cmvn_dict()
 
@@ -104,9 +104,9 @@ class Text_Dataset(TextCollate):
         super(Text_Dataset, self).__init__(config, type)
         #self.input_path = hparams.input_path
         self.config = config
-        self.text = os.path.join(config.__getattr__(type), config.text_flag)
+        self.text = os.path.join(config.data.__getattr__(type), config.data.text_flag)
 
-        if self.config.encoding:
+        if self.config.data.dataencoding:
             self.unit2idx = self.get_vocab_map(self.vocab)
             self.unit2idx_feat = self.get_vocab_map(self.vocab_feat)
         self.targets_dict = self.get_targets_dict() #target seq에 대해서 encoding해서  np 형태로 입력
@@ -174,7 +174,7 @@ class Text_Dataset(TextCollate):
                 contents = parts[1:]
                 if len(contents) < 0 or len(contents) > self.max_target_length:
                     continue
-                if self.config.encoding:
+                if self.config.data.dataencoding:
                     labels = self.encode(contents)
                 else:
                     labels = [int(i) for i in contents]
