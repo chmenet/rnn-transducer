@@ -174,7 +174,7 @@ class Text_Dataset(TextCollate):
                 contents = parts[1:]
                 if len(contents) < 0 or len(contents) > self.max_target_length:
                     continue
-                if self.config.data.dataencoding:
+                if self.config.data.encoding:
                     labels = self.encode(contents)
                 else:
                     labels = [int(i) for i in contents]
