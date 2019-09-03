@@ -1,8 +1,8 @@
 import torch
 import numpy as np
 from librosa.filters import mel as librosa_mel_fn
-from audio_processing import dynamic_range_compression, dynamic_range_decompression, mel_normalize, mel_denormalize
-from stft import STFT
+from rnnt.audio_processing import dynamic_range_compression, dynamic_range_decompression, mel_normalize, mel_denormalize
+from rnnt.stft import STFT
 
 def dct(x, norm=None):
     """

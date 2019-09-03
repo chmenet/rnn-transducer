@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.utils.data
 from rnnt.model import Transducer
 from rnnt.optim import Optimizer
-from rnnt.dataloader_aihub import AudioDataset
+from rnnt.dataloader_aihub import AudioDataset, TextMelCollate
 from tensorboardX import SummaryWriter
 from rnnt.utils import AttrDict, init_logger, count_parameters, save_model, computer_cer
 
@@ -132,16 +132,17 @@ def main():
     logger.info('Save config info.')
 
     num_workers = config.training.num_gpu * 2
+    collate_fn = TextMelCollate(config.data.frame_rate)
     train_dataset = AudioDataset(config, 'train')
     training_data = torch.utils.data.DataLoader(
         train_dataset, batch_size=config.data.batch_size * config.training.num_gpu,
-        shuffle=config.data.shuffle, num_workers=num_workers)
+        shuffle=config.data.shuffle, num_workers=num_workers, collate_fn=collate_fn)
     logger.info('Load Train Set!')
 
     dev_dataset = AudioDataset(config, 'train')
     validate_data = torch.utils.data.DataLoader(
         dev_dataset, batch_size=config.data.batch_size * config.training.num_gpu,
-        shuffle=False, num_workers=num_workers)
+        shuffle=False, num_workers=num_workers, collate_fn=collate_fn)
     logger.info('Load Dev Set!')
 
     if config.training.num_gpu > 0:

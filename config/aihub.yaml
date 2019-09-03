@@ -1,24 +1,25 @@
 units_type: word
-feature_source: kaldi
+feature_source: AIhub
 feature_type: mel-spectrogram
 data:
-    name: toy
+    base_path: /home/chme/projects/rnn-transducer/AIhub
+    name: AIhub
     vocab: /home/chme/projects/rnn-transducer/AIhub/ASR_wordpiece.pkl
     left_context_width: 0
     right_context_width: 0
     frame_rate: 10
     apply_cmvn: False
-    max_input_length: 20
-    max_target_length: 20
+    max_input_length: 100
+    max_target_length: 100
     batch_size: 1
     encoding: True
     short_first: False
     shuffle: False
     feature_flag: feats.txt
     text_flag: targets.txt
-    train: /home/chme/projects/rnn-transducer/AIhub/train/ #D:/RNN-Transducer/rnn-transducer/data/train/
-    dev: /home/chme/projects/rnn-transducer/AIhub/dev/ #D:/RNN-Transducer/rnn-transducer/data/dev/
-    test: /home/chme/projects/rnn-transducer/AIhub/test/ #D:/RNN-Transducer/rnn-transducer/data/test/
+    train: /home/chme/projects/rnn-transducer/data/AIhub/train/ #D:/RNN-Transducer/rnn-transducer/data/train/
+    dev: /home/chme/projects/rnn-transducer/data/AIhub/dev/ #D:/RNN-Transducer/rnn-transducer/data/dev/
+    test: /home/chme/projects/rnn-transducer/data/AIhub/test/ #D:/RNN-Transducer/rnn-transducer/data/test/
 hparam:
     n_mel_channels: 80
     sampling_rate: 16000
@@ -28,6 +29,7 @@ hparam:
     max_abs_mel_value: 4.0
     mel_fmin: 0.0
     mel_fmax: 8000.0
+    max_wav_value: 32768.0
 model:
     type: transducer
     enc:
