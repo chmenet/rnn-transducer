@@ -11,7 +11,7 @@ from rnnt.optim import Optimizer
 from rnnt.dataset import AudioDataset
 from tensorboardX import SummaryWriter
 from rnnt.utils import AttrDict, init_logger, count_parameters, save_model, computer_cer
-from rnnt.dataloader import Text_Dataset
+from rnnt.toydataloader import Text_Dataset
 
 def train(epoch, config, model, training_data, optimizer, logger, visualizer=None):
 

@@ -3,8 +3,8 @@ feature_source: kaldi
 feature_type: mfcc
 data:
     name: toy
-    vocab_feat: /home/chme/projects/rnn-transducer/data/toy2/feature_vocab.txt
-    vocab: /home/chme/projects/rnn-transducer/data/toy2/target_vocab.txt #D:/RNN-Transducer/rnn-transducer/data/vocab.txt
+    vocab_feat: ./data/toy2/feature_vocab.txt
+    vocab: ./data/toy2/target_vocab.txt #D:/RNN-Transducer/rnn-transducer/data/vocab.txt
     left_context_width: 0
     right_context_width: 0
     frame_rate: 10
@@ -16,9 +16,9 @@ data:
     short_first: False
     shuffle: False
     text_flag: target.txt
-    train: /home/chme/projects/rnn-transducer/data/toy2/train/ #D:/RNN-Transducer/rnn-transducer/data/train/
-    dev: /home/chme/projects/rnn-transducer/data/toy2/dev #D:/RNN-Transducer/rnn-transducer/data/dev/
-    test: /home/chme/projects/rnn-transducer/data/toy2/test #D:/RNN-Transducer/rnn-transducer/data/test/
+    train: ./data/toy2/train/ #D:/RNN-Transducer/rnn-transducer/data/train/
+    dev: ./data/toy2/dev #D:/RNN-Transducer/rnn-transducer/data/dev/
+    test: ./data/toy2/test #D:/RNN-Transducer/rnn-transducer/data/test/
 model:
     type: transducer
     enc:
