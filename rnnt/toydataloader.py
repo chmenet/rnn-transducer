@@ -1,7 +1,8 @@
 import numpy as np
 import codecs
 import os
-import kaldi_io as kaldi_io
+import rnnt.kaldi_io as kaldi_io
+#import kaldi_io as kaldi_io
 import torch.nn as nn
 import torch
 
@@ -117,31 +118,36 @@ class Text_Dataset(TextCollate):
         #data = self.data[index]
         utt_id = self.feats_list[index]
         feats_scp = self.feats_dict[utt_id]
+        #print('utt_id:', utt_id)
+        #print('feats_scp', feats_scp)
 
         seq = self.targets_dict[utt_id]
-
         targets = np.array(seq)
 
         encoded_seq = []
         for unit in feats_scp:
+            tmp = [0]*self.config.model.feature_dim
             if unit in self.unit2idx_feat:
-                encoded_seq.append(self.unit2idx_feat[unit])
+                tmp[self.unit2idx_feat[unit]] = 1
+                encoded_seq.append(tmp)
             else:
-                encoded_seq.append(self.unit2idx_feat['<unk>'])
+                tmp[self.unit2idx_feat['<unk>']] = 1
+                encoded_seq.append(tmp)
         features = np.asarray(encoded_seq) #kaldi_io.read_mat(feats_scp)
-        torch.manual_seed(self.config.training.seed)
-        embedding = nn.Embedding(1000, self.config.model.feature_dim)
-        with torch.no_grad():
-            features = embedding(torch.from_numpy(features))
-        #features = self.concat_frame(features)
-        
+        #print('features', features)
+
+
         inputs_length = np.array(features.shape[0]).astype(np.int64)
         targets_length = np.array(targets.shape[0]).astype(np.int64)
 
         features = self.pad(features).astype(np.float32)
         targets = self.pad(targets).astype(np.int64).reshape(-1)
+        #print('features', features)
+        #print('seq', seq)
+        #print('targets', targets)
+        #print('\n')
 
-        #print(features, inputs_length, targets, targets_length)
+        ##print(features, inputs_length, targets, targets_length)
         return features, inputs_length, targets, targets_length
 
     def __len__(self):
@@ -200,7 +206,7 @@ if __name__ == '__main__':
     with open(path,'r') as f:
         config = AttrDict(yaml.load(f, Loader=yaml.FullLoader))
 
-    print(config)
+    ##print(config)
 
     torch.cuda.manual_seed(config.training.seed)
     torch.backends.cudnn.deterministic = True
