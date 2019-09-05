@@ -1,6 +1,8 @@
 import argparse
 import torch
 import numpy as np
+import yaml
+from rnnt.utils import AttrDict
 
 from rnnt.model import Transducer
 
@@ -34,6 +36,9 @@ def get_feature(seq, unit2idx_feat, featrue_dim):
 
 
 def inference(config, cpath, ipath):
+    configfile = open(config)
+    config = AttrDict(yaml.load(configfile, Loader=yaml.FullLoader))
+
     checkpoint = torch.load(cpath)
 
     model = Transducer(config.model)
