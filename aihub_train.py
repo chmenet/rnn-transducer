@@ -13,7 +13,6 @@ from tensorboardX import SummaryWriter
 from rnnt.utils import AttrDict, init_logger, count_parameters, save_model, computer_cer
 
 
-
 def train(epoch, config, model, training_data, optimizer, logger, visualizer=None):
 
     model.train()
@@ -207,8 +206,7 @@ def main():
               optimizer, logger, visualizer)
 
         _ = eval(epoch, config, model, validate_data, logger, visualizer)
-        if config.training.eval_or_not and (optimizer.global_step%config.training.eval_iteration)==0:
-            print("iteration:", optimizer.global_step)
+        if config.training.eval_or_not and (epoch%config.training.save_interval)==0:
             save_name = os.path.join(exp_name, '%s.epoch%d.chkpt' % (config.training.save_model, epoch))
             save_model(model, optimizer, config, save_name)
             logger.info('Epoch %d model has been saved.' % epoch)

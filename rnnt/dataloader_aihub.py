@@ -4,6 +4,8 @@ import numpy as np
 import os
 import rnnt.layers as layers
 from rnnt.utils import load_wav_to_torch
+import text
+from text import text_to_sequence
 import torch.nn as nn
 import torch
 import pickle
@@ -21,7 +23,6 @@ class Dataset:
 
         self.feats_list, self.feats_dict = self.get_feats_list()
         self.targets_list, self.targets_dict = self.get_targets_list()
-
 
     def __len__(self):
         raise NotImplementedError
@@ -41,9 +42,10 @@ class Dataset:
         targets_dict = {}
         with open(self.targets, 'r') as fid:
             for line in fid:
-                key, path = line.strip().split('|')
+                key, sentence = line.strip().split('|')
+                sentence = text_to_sequence(sentence, ['korean_cleaners'])
                 targets_list.append(key)
-                targets_dict[key] = path
+                targets_dict[key] = np.asarray(sentence)
         return targets_list, targets_dict
 
 
@@ -72,8 +74,7 @@ class AudioDataset(Dataset):
 
         feats_path = self.feats_dict[utt_id]
         features = self.get_mel(os.path.join(self.config.base_path, Path(PureWindowsPath((feats_path)))))
-        targets = np.fromstring(self.targets_dict[utt_id][1:-1], dtype=int, sep=',')
-
+        targets = self.targets_dict[utt_id] #np.fromstring([1:-1], dtype=int, sep=',')
         return targets, features
 
     def __len__(self):
