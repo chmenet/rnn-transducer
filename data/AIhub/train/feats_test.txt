@@ -1,0 +1,16 @@
+0|wavs\KsponSpeech_0001\KsponSpeech_000003.wav
+1|wavs\KsponSpeech_0001\KsponSpeech_000005.wav
+2|wavs\KsponSpeech_0001\KsponSpeech_000008.wav
+3|wavs\KsponSpeech_0001\KsponSpeech_000012.wav
+4|wavs\KsponSpeech_0001\KsponSpeech_000013.wav
+5|wavs\KsponSpeech_0001\KsponSpeech_000014.wav
+6|wavs\KsponSpeech_0001\KsponSpeech_000015.wav
+7|wavs\KsponSpeech_0001\KsponSpeech_000017.wav
+8|wavs\KsponSpeech_0001\KsponSpeech_000003.wav
+9|wavs\KsponSpeech_0001\KsponSpeech_000005.wav
+10|wavs\KsponSpeech_0001\KsponSpeech_000008.wav
+11|wavs\KsponSpeech_0001\KsponSpeech_000012.wav
+12|wavs\KsponSpeech_0001\KsponSpeech_000013.wav
+13|wavs\KsponSpeech_0001\KsponSpeech_000014.wav
+14|wavs\KsponSpeech_0001\KsponSpeech_000015.wav
+15|wavs\KsponSpeech_0001\KsponSpeech_000017.wav
