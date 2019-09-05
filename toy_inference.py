@@ -57,7 +57,7 @@ def inference(config, cpath, ipath):
         feature, input_length = get_feature(seq, unit2idx_feat, config.model.feature_dim)
         feature, input_length = torch.from_numpy(feature),torch.from_numpy(input_length)
         if config.training.num_gpu > 0:
-            feature, inputs_length = feature.cuda(), inputs_length.cuda()
+            feature, input_length = feature.cuda(), input_length.cuda()
         result = model.recognize(feature, input_length)
         print(result)
 
