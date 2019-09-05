@@ -16,9 +16,9 @@ data:
     short_first: False
     shuffle: False
     text_flag: target.txt
-    train: /home/chme/projects/rnn-transducer/data/toy/dev/ #D:/RNN-Transducer/rnn-transducer/data/train/
-    dev: /home/chme/projects/rnn-transducer/data/toy/train #D:/RNN-Transducer/rnn-transducer/data/dev/
-    test: /home/chme/projects/rnn-transducer/data/toy/train #D:/RNN-Transducer/rnn-transducer/data/test/
+    train: /home/chme/projects/rnn-transducer/data/toy/train/ #D:/RNN-Transducer/rnn-transducer/data/train/
+    dev: /home/chme/projects/rnn-transducer/data/toy/dev #D:/RNN-Transducer/rnn-transducer/data/dev/
+    test: /home/chme/projects/rnn-transducer/data/toy/test #D:/RNN-Transducer/rnn-transducer/data/test/
 model:
     type: transducer
     enc:
