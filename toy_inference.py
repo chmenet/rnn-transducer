@@ -50,6 +50,8 @@ def inference(config, cpath, ipath):
 
     for seq in seqs:
         feature, input_length = get_feature(seq, unit2idx_feat, config.model.feature_dim)
+        if config.training.num_gpu > 0:
+            feature, inputs_length = feature.cuda(), inputs_length.cuda()
         result = model.recognize(feature, input_length)
         print(result)
 
