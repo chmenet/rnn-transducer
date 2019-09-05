@@ -14,12 +14,7 @@ class Dataset:
 
         self.type = type
         self.name = config.data.name
-        self.left_context_width = config.data.left_context_width
-        self.right_context_width = config.data.right_context_width
         self.frame_rate = config.data.frame_rate
-
-        self.max_input_length = config.data.max_input_length
-        self.max_target_length = config.data.max_target_length
 
         self.features = os.path.join(config.data.__getattr__(type), config.data.feature_flag)
         self.targets = os.path.join(config.data.__getattr__(type), config.data.text_flag)
@@ -30,24 +25,6 @@ class Dataset:
 
     def __len__(self):
         raise NotImplementedError
-
-    def pad(self, inputs, max_length=None):
-        dim = len(inputs.shape)
-        if dim == 1:
-            if max_length is None:
-                max_length = self.max_target_length
-            pad_zeros_mat = np.zeros([1, max_length - inputs.shape[0]], dtype=np.int32)
-            padded_inputs = np.column_stack([inputs.reshape(1, -1), pad_zeros_mat])
-        elif dim == 2:
-            if max_length is None:
-                max_length = self.max_input_length
-            feature_dim = inputs.shape[1]
-            pad_zeros_mat = np.zeros([max_length - inputs.shape[0], feature_dim])
-            padded_inputs = np.row_stack([inputs, pad_zeros_mat])
-        else:
-            raise AssertionError(
-                'Features in inputs list must be one vector or two dimension matrix! ')
-        return padded_inputs
 
     def get_feats_list(self):
         feats_list = []
@@ -69,50 +46,15 @@ class Dataset:
                 targets_dict[key] = path
         return targets_list, targets_dict
 
-    def concat_frame(self, features):
-        time_steps, features_dim = features.shape
-        concated_features = np.zeros(
-            shape=[time_steps, features_dim *
-                   (1 + self.left_context_width + self.right_context_width)],
-            dtype=np.float32)
-        # middle part is just the uttarnce
-        concated_features[:, self.left_context_width * features_dim:
-                          (self.left_context_width + 1) * features_dim] = features
-
-        for i in range(self.left_context_width):
-            # add left context
-            concated_features[i + 1:time_steps,
-                              (self.left_context_width - i - 1) * features_dim:
-                              (self.left_context_width - i) * features_dim] = features[0:time_steps - i - 1, :]
-
-        for i in range(self.right_context_width):
-            # add right context
-            concated_features[0:time_steps - i - 1,
-                              (self.right_context_width + i + 1) * features_dim:
-                              (self.right_context_width + i + 2) * features_dim] = features[i + 1:time_steps, :]
-
-        return concated_features
-
-    def subsampling(self, features):
-        if self.frame_rate != 10:
-            interval = int(self.frame_rate / 10)
-            temp_mat = [features[i]
-                        for i in range(0, features.shape[0], interval)]
-            subsampled_features = np.row_stack(temp_mat)
-            return subsampled_features
-        else:
-            return features
-
 
 class AudioDataset(Dataset):
     def __init__(self, config, type):
         super(AudioDataset, self).__init__(config, type)
-
         self.config = config.data
         self.stft = layers.TacotronSTFT(config.hparam)
-        #self.check_speech_and_text()
         self.lengths = len(self.feats_list)
         self.hparam = config.hparam
+
     def get_mel(self, filename):
         audio, sampling_rate = load_wav_to_torch(filename)
         if sampling_rate != self.stft.sampling_rate:
@@ -123,29 +65,16 @@ class AudioDataset(Dataset):
         audio_norm = torch.autograd.Variable(audio_norm, requires_grad=False)
         melspec = self.stft.mel_spectrogram(audio_norm)
         melspec = torch.squeeze(melspec, 0)
-
         return melspec
-
-    def check_speech_and_text(self):
-        featslist = copy.deepcopy(self.feats_list)
-        for utt_id in featslist:
-            if utt_id not in self.targets_dict:
-                self.feats_list.remove(utt_id)
 
     def __getitem__(self, index):
         utt_id = self.feats_list[index]
 
         feats_path = self.feats_dict[utt_id]
         features = self.get_mel(os.path.join(self.config.base_path, Path(PureWindowsPath((feats_path)))))
-        targets = np.fromstring(self.targets_dict[utt_id][1:-1], dtype=int, sep=',') # = np.array(seq)
+        targets = np.fromstring(self.targets_dict[utt_id][1:-1], dtype=int, sep=',')
 
-        inputs_length = np.array(features.shape[0]).astype(np.int64)
-        targets_length = np.array(targets.shape[0]).astype(np.int64)
-
-        #features = self.pad(features).astype(np.float32)
-        targets = self.pad(targets).astype(np.int64).reshape(-1)
-
-        return features, inputs_length, targets, targets_length
+        return targets, features
 
     def __len__(self):
         return self.lengths
@@ -163,33 +92,30 @@ class TextMelCollate():
         batch: [[text_normalized, mel_normalized], ...]
         """
         # Right zero-pad all one-hot text sequences to max input length
-        input_lengths, ids_sorted_decreasing = torch.sort(
+        targets_length, ids_sorted_decreasing = torch.sort(
             torch.LongTensor([len(x[0]) for x in batch]),
             dim=0, descending=True)
-        max_input_len = input_lengths[0]
-
-        text_padded = torch.LongTensor(len(batch), max_input_len)
+        max_target_len = targets_length[0]
+        text_padded = torch.LongTensor(len(batch), max_target_len)
         text_padded.zero_()
         for i in range(len(ids_sorted_decreasing)):
-            text = batch[ids_sorted_decreasing[i]][0]
+            text = torch.from_numpy(batch[ids_sorted_decreasing[i]][0])
             text_padded[i, :text.size(0)] = text
 
         # Right zero-pad mel-spec
         num_mels = batch[0][1].size(0)
-        max_target_len = max([x[1].size(1) for x in batch])
-        if max_target_len % self.n_frames_per_step != 0:
-            max_target_len += self.n_frames_per_step - max_target_len % self.n_frames_per_step
-            assert max_target_len % self.n_frames_per_step == 0
+        max_mel_len = max([x[1].size(1) for x in batch])
+        if max_mel_len % self.n_frames_per_step != 0:
+            max_mel_len += self.n_frames_per_step - max_mel_len % self.n_frames_per_step
+            assert max_mel_len % self.n_frames_per_step == 0
 
         # include mel padded and gate padded
-        mel_padded = torch.FloatTensor(len(batch), num_mels, max_target_len)
+        mel_padded = torch.FloatTensor(len(batch), max_mel_len, num_mels)
         mel_padded.zero_()
-        gate_padded = torch.FloatTensor(len(batch), max_target_len)
-        gate_padded.zero_()
-        output_lengths = torch.LongTensor(len(batch))
+        mel_lengths = torch.LongTensor(len(batch))
         for i in range(len(ids_sorted_decreasing)):
             mel = batch[ids_sorted_decreasing[i]][1]
-            mel_padded[i, :, :mel.size(1)] = mel
-            gate_padded[i, mel.size(1)-1:] = 1
-            output_lengths[i] = mel.size(1)
-        return mel_padded,  output_lengths, text_padded, input_lengths
+            mel = torch.transpose(mel, 0, 1)
+            mel_padded[i, :mel.size(0), :] = mel
+            mel_lengths[i] = mel.size(0)
+        return mel_padded,  mel_lengths, text_padded, targets_length
