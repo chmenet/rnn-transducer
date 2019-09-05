@@ -26,7 +26,7 @@ model:
         hidden_size: 32
         output_size: 32
         n_layers: 1
-        bidirectional: True
+        bidirectional: False
     dec:
         type: lstm
         hidden_size: 32
