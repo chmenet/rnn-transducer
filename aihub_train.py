@@ -88,12 +88,10 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
         max_targets_length = targets_length.max().item()
         inputs = inputs[:, :max_inputs_length, :]
         targets = targets[:, :max_targets_length]
-
         preds = model.recognize(inputs, inputs_length)
 
         transcripts = [targets.cpu().numpy()[i][:targets_length[i].item()]
                        for i in range(targets.size(0))]
-
         dist, num_words = computer_cer(preds, transcripts)
         total_dist += dist
         total_word += num_words
@@ -208,12 +206,13 @@ def main():
         train(epoch, config, model, training_data,
               optimizer, logger, visualizer)
 
-        if config.training.eval_or_not:
-            _ = eval(epoch, config, model, validate_data, logger, visualizer)
+        _ = eval(epoch, config, model, validate_data, logger, visualizer)
+        if config.training.eval_or_not and (optimizer.global_step%config.training.eval_iteration)==0:
+            print("iteration:", optimizer.global_step)
+            save_name = os.path.join(exp_name, '%s.epoch%d.chkpt' % (config.training.save_model, epoch))
+            save_model(model, optimizer, config, save_name)
+            logger.info('Epoch %d model has been saved.' % epoch)
 
-        save_name = os.path.join(exp_name, '%s.epoch%d.chkpt' % (config.training.save_model, epoch))
-        save_model(model, optimizer, config, save_name)
-        logger.info('Epoch %d model has been saved.' % epoch)
 
         if epoch >= config.optim.begin_to_adjust_lr:
             optimizer.decay_lr()
@@ -223,7 +222,6 @@ def main():
                 break
             logger.info('Epoch %d update learning rate: %.6f' %
                         (epoch, optimizer.lr))
-
     logger.info('The training process is OVER!')
 
 
