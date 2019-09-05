@@ -60,4 +60,6 @@ if __name__ == '__main__':
     parser.add_argument('-config', type=str, default='config/toy.yaml')
     parser.add_argument('-cpath', type=str, help='checkpoint path')
     parser.add_argument('-ipath', type=str, default='toy_test.text', help='input file path')
-    opt = parser.parse_args()
+    args = parser.parse_args()
+
+    inference(args.config, args.cpath, args.ipath)
