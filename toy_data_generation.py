@@ -65,25 +65,23 @@ def toy_gen(chars, times = 2):
             continue
         for j in range(len_chars): # first char index
             x = ''
-            y = '!'
+            y = ''
             for k in range(i): # length index
                 x += chars[(j+k)%len_chars] if (j+k) % 2 == 0 else chars[(j+k)%len_chars]*2
                 y += chars[(j+k+1)%len_chars]
             X.append(x)
             Y.append(y)
 
-    # print(X)
-    # print(Y)
     return X, Y
 
 if __name__ == '__main__':
     chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     X,Y = toy_gen(chars)
     with open('data/toy/train/feats.txt','w',encoding='utf-8') as f:
-        f.writelines(['{},{}\n'.format(i,x) for i, x in enumerate(X[:12])])
+        f.writelines(['{},{}\n'.format(i,x) for i, x in enumerate(X[:12]*10)])
 
     with open('data/toy/train/target.txt','w',encoding='utf-8') as f:
-        f.writelines(['{},{}\n'.format(i,y) for i, y in enumerate(Y[:12])])
+        f.writelines(['{},{}\n'.format(i,y) for i, y in enumerate(Y[:12]*10)])
 
     with open('data/toy/dev/feats.txt', 'w', encoding='utf-8') as f:
         f.writelines(['{},{}\n'.format(i, x) for i, x in enumerate(X[12:])])
