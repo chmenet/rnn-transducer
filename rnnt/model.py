@@ -91,7 +91,7 @@ class Transducer(nn.Module):
                 out = F.softmax(logits, dim=0).detach()
                 pred = torch.argmax(out, dim=0)
                 pred = int(pred.item())
-
+                print(pred)
                 if pred != 0:
                     token_list.append(pred)
                     token = torch.LongTensor([[pred]])
