@@ -55,7 +55,7 @@ def inference(config, cpath, ipath):
 if __name__ == '__main__':
     """
         usage
-        python toy_inference.py -config config/toy.yaml -cpath egs/AIhub/exp/aihub_test/aihub_test.epoch1687.chkpt -ipath aihub_test.txt
+        python toy_inference.py -config config/aihub.yaml -cpath egs/AIhub/exp/aihub_test/aihub_test.epoch1687.chkpt -ipath aihub_test.txt
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('-config', type=str, default='config/aihub.yaml')
