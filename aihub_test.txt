@@ -1,3 +1,3 @@
-wavs\KsponSpeech_0001\KsponSpeech_000003.wav
-wavs\KsponSpeech_0001\KsponSpeech_000005.wav
-wavs\KsponSpeech_0001\KsponSpeech_000008.wav
+AIhub\wavs\KsponSpeech_0007\KsponSpeech_006174.wav
+AIhub\wavs\KsponSpeech_0007\KsponSpeech_006175.wav
+AIhub\wavs\KsponSpeech_0007\KsponSpeech_006176.wav
