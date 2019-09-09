@@ -1,0 +1,3 @@
+wavs\KsponSpeech_0001\KsponSpeech_000003.wav
+wavs\KsponSpeech_0001\KsponSpeech_000005.wav
+wavs\KsponSpeech_0001\KsponSpeech_000008.wav
