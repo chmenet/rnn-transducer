@@ -17,7 +17,8 @@ def get_mel(filename, stft, hparam):
     audio_norm = audio_norm.unsqueeze(0)
     audio_norm = torch.autograd.Variable(audio_norm, requires_grad=False)
     melspec = stft.mel_spectrogram(audio_norm)
-    mel_lengths = melspec.size(1)
+    mel_lengths = torch.LongTensor(1)
+    mel_lengths[0] = melspec.size(1)
 
     return melspec, mel_lengths
 
