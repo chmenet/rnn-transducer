@@ -76,6 +76,10 @@ def inference(config, cpath, ipath):
         print('Prediction result:', result_string)
 
 if __name__ == '__main__':
+    """
+        usage
+        python toy_inference.py -config config/toy.yaml -cpath egs/toy/exp/toy_test/toy_test.epoch5.chkpt -ipath toy_test.txt
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('-config', type=str, default='config/toy.yaml')
     parser.add_argument('-cpath', type=str, help='checkpoint path')
