@@ -19,8 +19,8 @@ def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
 
     beam_width = 5
     topk = 1  # how many sentence do you want to generate
-    SOS_token = 0
-    EOS_token = 2
+    #SOS_token = 0
+    #EOS_token = 2
 
     zero_token = torch.LongTensor([[0]])
     if encoder_outputs.is_cuda:
@@ -43,7 +43,7 @@ def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
 
         # Number of sentence to generate
         endnodes = []
-        number_required = min((topk + 1), topk - len(endnodes))
+        #number_required = min((topk + 1), topk - len(endnodes))
 
         # starting node -  hidden vector, previous node, word id, logp, length
         node = BeamSearchNode(decoder_hidden, None, zero_token, 0, 1)
@@ -63,9 +63,9 @@ def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
             # give up when decoding takes too long
             if qsize > 2000:
                 break
-            if n.wordid.item() == EOS_token and n.prevNode != None:
-                endnodes.append((score, n))
-                break
+            #if n.wordid.item() == EOS_token and n.prevNode != None:
+            #    endnodes.append((score, n))
+            #    break
             ##################################################################################
             # decode for one step using decoder
             logits = joint(encoder_output[t].view(-1), decoder_output.view(-1)) #decoder_input.item()]
@@ -73,6 +73,7 @@ def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
             # PUT HERE REAL BEAM SEARCH OF TOP
             log_prob, indexes = torch.topk(out, beam_width) #remove node except top k
             nextnodes = []
+
             for new_k in range(beam_width):
                 decoded_t = indexes[new_k].view(1, -1)
                 log_p = log_prob[new_k].item()
@@ -97,8 +98,8 @@ def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
             decoder_output, decoder_hidden = decoder(decoder_input, hidden=decoder_hidden)
 
         # choose nbest paths, back trace them
-        if len(endnodes) == 0 :#and nodes.qsize() >= topk:
-            endnodes = [nodes.get() for _ in range(topk)]
+        #if len(endnodes) == 0 :#and nodes.qsize() >= topk:
+        endnodes = [nodes.get() for _ in range(topk)]
         #else:
         #    return [[]]
         utterances = []
