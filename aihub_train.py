@@ -6,7 +6,8 @@ import time
 import torch
 import torch.nn as nn
 import torch.utils.data
-from rnnt.model import Transducer
+from rnnt.model_aihub import Transducer
+#from rnnt.model import Transducer
 from rnnt.optim import Optimizer
 from rnnt.dataloader_aihub import AudioDataset, TextMelCollate
 from tensorboardX import SummaryWriter
@@ -69,6 +70,7 @@ def train(epoch, config, model, training_data, optimizer, logger, visualizer=Non
     end_epoch = time.process_time()
     logger.info('-Training-Epoch:%d, Average Loss: %.5f, Epoch Time: %.3f' %
                 (epoch, total_loss / (step+1), end_epoch-start_epoch))
+    optimizer.current_epoch = epoch
 
 
 def eval(epoch, config, model, validating_data, logger, visualizer=None):
@@ -87,14 +89,14 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
         max_targets_length = targets_length.max().item()
         inputs = inputs[:, :max_inputs_length, :]
         targets = targets[:, :max_targets_length]
-        preds = model.recognize(inputs, inputs_length)
-
+        
+        preds = model.recognize(inputs, inputs_length) #need module for multi GPU
         transcripts = [targets.cpu().numpy()[i][:targets_length[i].item()]
                        for i in range(targets.size(0))]
         dist, num_words = computer_cer(preds, transcripts)
         total_dist += dist
         total_word += num_words
-
+        #print(preds, transcripts)
         cer = total_dist / total_word * 100
         if step % config.training.show_interval == 0:
             process = step / batch_steps * 100
@@ -136,7 +138,7 @@ def main():
         shuffle=config.data.shuffle, num_workers=num_workers, collate_fn=collate_fn)
     logger.info('Load Train Set!')
 
-    dev_dataset = AudioDataset(config, 'train')
+    dev_dataset = AudioDataset(config, 'dev')
     validate_data = torch.utils.data.DataLoader(
         dev_dataset, batch_size=config.data.batch_size * config.training.num_gpu,
         shuffle=False, num_workers=num_workers, collate_fn=collate_fn)
@@ -189,6 +191,7 @@ def main():
     if opt.mode == 'continue':
         optimizer.load_state_dict(checkpoint['optimizer'])
         start_epoch = checkpoint['epoch']
+        optimizer.global_step = checkpoint['step']
         logger.info('Load Optimizer State!')
     else:
         start_epoch = 0
@@ -206,7 +209,7 @@ def main():
               optimizer, logger, visualizer)
 
         _ = eval(epoch, config, model, validate_data, logger, visualizer)
-        if config.training.eval_or_not and (epoch%config.training.save_interval)==0:
+        if config.training.eval_or_not and (epoch%config.training.save_interval) == 0:
             save_name = os.path.join(exp_name, '%s.epoch%d.chkpt' % (config.training.save_model, epoch))
             save_model(model, optimizer, config, save_name)
             logger.info('Epoch %d model has been saved.' % epoch)
