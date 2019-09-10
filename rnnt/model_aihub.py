@@ -50,11 +50,11 @@ def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
         nodes = PriorityQueue()
 
         # start the queue
-        nodes.put((-node.eval(), node, -1))
+        nodes.put((-node.eval(), node))
         qsize = 1
 
         # fetch the best node
-        score, n, _ = nodes.get()
+        score, n = nodes.get()
         decoder_input = n.wordid
         decoder_hidden = n.h
 
@@ -64,7 +64,8 @@ def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
             if qsize > 2000:
                 break
             if n.wordid.item() == EOS_token and n.prevNode != None:
-                endnodes.append((score, n, t))
+                endnodes.append((score, n))
+                break
             ##################################################################################
             # decode for one step using decoder
             logits = joint(encoder_output[t].view(-1), decoder_output.view(-1)) #decoder_input.item()]
@@ -80,17 +81,17 @@ def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
 
                 node = BeamSearchNode(decoder_hidden, n, decoded_t, n.logp + log_p, n.leng + 1)
                 score = -node.eval()
-                nextnodes.append((score, node, t))
+                nextnodes.append((score, node))
             ###################################################################################
             # put them into queue
             for i in range(len(nextnodes)):
-                score, nn, t = nextnodes[i]
-                nodes.put((score, nn, t))
+                score, nn = nextnodes[i]
+                nodes.put((score, nn))
             # increase qsize
             qsize += len(nextnodes) - 1
 
             # fetch the best node
-            score, n, _ = nodes.get()
+            score, n = nodes.get()
             decoder_input = n.wordid
             decoder_hidden = n.h
             decoder_output, decoder_hidden = decoder(decoder_input, hidden=decoder_hidden)
@@ -102,7 +103,7 @@ def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
         #    return [[]]
         utterances = []
 
-        for score, n, _ in sorted(endnodes, key=operator.itemgetter(0)):
+        for score, n in sorted(endnodes, key=operator.itemgetter(0)):
             utterance = []
             utterance.append(n.wordid.item())
             # back trace
@@ -110,8 +111,8 @@ def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
                 n = n.prevNode
                 utterance.append(n.wordid.item())
             #utterance = utterance[::-1]
+            
             utterances.append(utterance)
-
         #decoded_batch.append(utterances)
     return utterances
 
@@ -161,6 +162,9 @@ class BeamSearchNode(object):
         self.wordid = wordId
         self.logp = logProb
         self.leng = length
+
+    def __lt__(self, other):
+        return self.logp < other.logp
 
     def eval(self, alpha=1.0):
         reward = 0
