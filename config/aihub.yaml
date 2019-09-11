@@ -4,8 +4,8 @@ feature_type: mel-spectrogram
 data:
     base_path: ./AIhub
     name: AIhub
-    frame_rate: 3
-    batch_size: 16
+    frame_rate: 10
+    batch_size: 24
     encoding: True
     short_first: False
     shuffle: True
@@ -51,7 +51,7 @@ training:
     eval_or_not: True
     seed: 2019
     num_gpu: 1
-    epochs: 20
+    epochs: 30
     max_grad_norm: 200
     visualization: True
     show_interval: 10
