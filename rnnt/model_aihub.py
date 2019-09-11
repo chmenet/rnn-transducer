@@ -9,7 +9,7 @@ from queue import PriorityQueue
 import operator
 import time
 
-def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
+def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=None):
     '''
     :param target_tensor: target indexes tensor of shape [B, T] where B is the batch size and T is the maximum length of the output sentence
     :param decoder_hidden: input tensor of shape [1, B, H] for start of the decoding
@@ -17,10 +17,10 @@ def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
     :return: decoded_batch
     '''
 
-    beam_width = 5
+    beam_width = 4
     topk = 1  # how many sentence do you want to generate
     #SOS_token = 0
-    #EOS_token = 2
+    #EOS_token = 1
 
     zero_token = torch.LongTensor([[0]])
     if encoder_outputs.is_cuda:
@@ -59,7 +59,7 @@ def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
         decoder_hidden = n.h
 
         # start beam search
-        for t in range(len(encoder_output)): #while True:
+        for t in range(inputs_length): #while True:
             # give up when decoding takes too long
             if qsize > 2000:
                 break
@@ -73,13 +73,11 @@ def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
             # PUT HERE REAL BEAM SEARCH OF TOP
             log_prob, indexes = torch.topk(out, beam_width) #remove node except top k
             nextnodes = []
-
             for new_k in range(beam_width):
-                decoded_t = indexes[new_k].view(1, -1)
-                log_p = log_prob[new_k].item()
-                if log_p == 0:
+                decoded_t = indexes[new_k].view(1, -1) #.add(1)
+                if int(decoded_t) == 0:
                     continue
-
+                log_p = log_prob[new_k].item()
                 node = BeamSearchNode(decoder_hidden, n, decoded_t, n.logp + log_p, n.leng + 1)
                 score = -node.eval()
                 nextnodes.append((score, node))
@@ -94,16 +92,16 @@ def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
             # fetch the best node
             score, n = nodes.get()
             decoder_input = n.wordid
+            if encoder_output.is_cuda:
+                decoder_input = decoder_input.cuda()
             decoder_hidden = n.h
             decoder_output, decoder_hidden = decoder(decoder_input, hidden=decoder_hidden)
 
         # choose nbest paths, back trace them
-        #if len(endnodes) == 0 :#and nodes.qsize() >= topk:
-        endnodes = [nodes.get() for _ in range(topk)]
-        #else:
-        #    return [[]]
-        utterances = []
+        if len(endnodes) == 0:
+            endnodes = [nodes.get() for _ in range(topk)]
 
+        utterances = []
         for score, n in sorted(endnodes, key=operator.itemgetter(0)):
             utterance = []
             utterance.append(n.wordid.item())
@@ -111,8 +109,6 @@ def beam_search(decoder, joint, target_tensor, encoder_outputs=None):
             while n.prevNode != None:
                 n = n.prevNode
                 utterance.append(n.wordid.item())
-            #utterance = utterance[::-1]
-            
             utterances.append(utterance)
         #decoded_batch.append(utterances)
     return utterances
@@ -171,7 +167,7 @@ class BeamSearchNode(object):
         reward = 0
         # Add here a function for shaping a reward
 
-        return self.logp / float(self.leng - 1 + 1e-6) + alpha * reward
+        return self.logp #/ float(self.leng - 1 + 1e-6) + alpha * reward
 
 
 
@@ -211,7 +207,7 @@ class Transducer(nn.Module):
         batch_size = inputs.size(0)
         enc_states, _ = self.encoder(inputs, inputs_length)
         target_tensor = torch.from_numpy(np.array([batch_size, max(inputs_length)], dtype=np.int8))
-        results = beam_search(self.decoder, self.joint, target_tensor, enc_states)
+        results = beam_search(self.decoder, self.joint, target_tensor, inputs_length, enc_states)
 
         return results
 
