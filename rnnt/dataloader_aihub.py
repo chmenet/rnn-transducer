@@ -1,5 +1,3 @@
-import codecs
-import copy
 import numpy as np
 import os
 import rnnt.layers as layers
@@ -8,8 +6,8 @@ import text
 from text import text_to_sequence
 import torch.nn as nn
 import torch
-import pickle
-from pathlib import Path, PureWindowsPath
+#from pathlib import Path, PureWindowsPath
+
 
 class Dataset:
     def __init__(self, config, type):
@@ -43,9 +41,8 @@ class Dataset:
         with open(self.targets, 'r') as fid:
             for line in fid:
                 key, sentence = line.strip().split('|')
-                sentence = text_to_sequence(sentence, ['korean_cleaners'])
                 targets_list.append(key)
-                targets_dict[key] = np.asarray(sentence)
+                targets_dict[key] = sentence
         return targets_list, targets_dict
 
 
@@ -73,21 +70,24 @@ class AudioDataset(Dataset):
         utt_id = self.feats_list[index]
 
         feats_path = self.feats_dict[utt_id]
-        features = self.get_mel(os.path.join(self.config.base_path, Path(PureWindowsPath((feats_path)))))
+        features = self.get_mel(os.path.join(self.config.base_path, feats_path))
         targets = self.targets_dict[utt_id] #np.fromstring([1:-1], dtype=int, sep=',')
+        targets = np.asarray(text_to_sequence(targets, ['korean_cleaners']))
         return targets, features
 
     def __len__(self):
         return self.lengths
 
 class TextMelCollate():
-    """ Zero-pads model inputs and targets based on number of frames per step
+    """
+    Zero-pads model inputs and targets based on number of frames per step
     """
     def __init__(self, n_frames_per_step):
         self.n_frames_per_step = n_frames_per_step
 
     def __call__(self, batch):
-        """Collate's training batch from normalized text and mel-spectrogram
+        """
+        Collate's training batch from normalized text and mel-spectrogram
         PARAMS
         ------
         batch: [[text_normalized, mel_normalized], ...]

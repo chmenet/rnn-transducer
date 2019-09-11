@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 import torch.utils.data
 from rnnt.model_aihub import Transducer
-# from rnnt.model import Transducer
+#from rnnt.model import Transducer
 from rnnt.optim import Optimizer
 from rnnt.dataloader_aihub import AudioDataset, TextMelCollate
 from tensorboardX import SummaryWriter
@@ -96,7 +96,7 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
         dist, num_words = computer_cer(preds, transcripts)
         total_dist += dist
         total_word += num_words
-        # print(preds, transcripts)
+        #print(preds, transcripts)
         cer = total_dist / total_word * 100
         if step % config.training.show_interval == 0:
             process = step / batch_steps * 100
