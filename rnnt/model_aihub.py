@@ -57,9 +57,9 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
         score, n = nodes.get()
         decoder_input = n.wordid
         decoder_hidden = n.h
-
+        length = inputs_length[idx].item()
         # start beam search
-        for t in range(inputs_length): #while True:
+        for t in range(length): #while True:
             # give up when decoding takes too long
             if qsize > 2000:
                 break
