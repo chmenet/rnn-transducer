@@ -1,9 +1,9 @@
 import torch
 import numpy as np
 from librosa.filters import mel as librosa_mel_fn
-from audio_processing import dynamic_range_compression
-from audio_processing import dynamic_range_decompression
-from stft import STFT
+from rnnt.audio_processing import dynamic_range_compression
+from rnnt.audio_processing import dynamic_range_decompression
+from rnnt.stft import STFT
 
 def dct(x, norm=None):
     """
@@ -71,15 +71,13 @@ class ConvNorm(torch.nn.Module):
 
 
 class TacotronSTFT(torch.nn.Module):
-    def __init__(self, filter_length=1024, hop_length=256, win_length=1024,
-                 n_mel_channels=80, sampling_rate=22050, mel_fmin=0.0,
-                 mel_fmax=8000.0):
+    def __init__(self, hparams):
         super(TacotronSTFT, self).__init__()
-        self.n_mel_channels = n_mel_channels
-        self.sampling_rate = sampling_rate
-        self.stft_fn = STFT(filter_length, hop_length, win_length)
+        self.n_mel_channels = hparams.n_mel_channels
+        self.sampling_rate = hparams.sampling_rate
+        self.stft_fn = STFT(hparams.filter_length, hparams.hop_length, hparams.win_length)
         mel_basis = librosa_mel_fn(
-            sampling_rate, filter_length, n_mel_channels, mel_fmin, mel_fmax)
+            hparams.sampling_rate, hparams.filter_length, hparams.n_mel_channels, hparams.mel_fmin, hparams.mel_fmax)
         mel_basis = torch.from_numpy(mel_basis).float()
         self.register_buffer('mel_basis', mel_basis)
 
