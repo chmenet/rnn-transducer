@@ -4,23 +4,22 @@ feature_type: mel-spectrogram
 data:
     base_path: ./AIhub
     name: AIhub
-    frame_rate: 10
-    batch_size: 1
+    frame_rate: 3
+    batch_size: 16
     encoding: True
     short_first: False
     shuffle: True
-    feature_flag: feats_test.txt
-    text_flag: targets_test.txt
+    feature_flag: feats.txt
+    text_flag: targets.txt
     train: ./data/AIhub/train/
     dev: ./data/AIhub/dev/
     test: ./data/AIhub/test/
 hparam:
     n_mel_channels: 80
     sampling_rate: 16000
-    filter_length: 512
-    hop_length: 128
-    win_length: 512
-    max_abs_mel_value: 4.0
+    filter_length: 400
+    hop_length: 160
+    win_length: 400
     mel_fmin: 0.0
     mel_fmax: 8000.0
     max_wav_value: 32768.0
@@ -46,22 +45,22 @@ model:
     dropout: 0.3
     backend: c++
 training:
-    load_model: False
+    load_model: False #./egs/AIhub/exp/aihub_test_beam_0910_enlen_noeos/aihub_test_beam_0910_enlen_noeos.epoch1650.chkpt
     load_encoder: False
     load_decoder: False
     eval_or_not: True
     seed: 2019
     num_gpu: 1
-    epochs: 2000
+    epochs: 20
     max_grad_norm: 200
     visualization: True
-    show_interval: 50
-    save_interval: 10
-    save_model: aihub_test
+    show_interval: 10
+    save_interval: 1
+    save_model: aihub_q3
 optim:
     type: sgd
     lr: 0.0001
     momentum: 0.9
     decay_ratio: 0.5
     weight_decay: 0
-    begin_to_adjust_lr: 1000
+    begin_to_adjust_lr: 10
