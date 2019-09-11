@@ -42,16 +42,16 @@ class Transducer(nn.Module):
         # define encoder
         self.config = config
         self.encoder = BaseNetwork(
-            input_size=config.model.feature_dim,
-            hidden_size=config.model.enc.hidden_size,
-            projection_size=config.model.enc.projection_size,
-            n_layers=config.model.enc.n_layers)
+            input_size=config.feature_dim,
+            hidden_size=config.enc.hidden_size,
+            projection_size=config.enc.projection_size,
+            n_layers=config.enc.n_layers)
         # define decoder
         self.decoder = BaseNetwork(
-            input_size=config.model.vocab_size,
-            hidden_size=config.model.dec.hidden_size,
-            projection_size=config.model.dec.projection_size,
-            n_layers=config.model.dec.n_layers)
+            input_size=config.vocab_size,
+            hidden_size=config.dec.hidden_size,
+            projection_size=config.dec.projection_size,
+            n_layers=config.dec.n_layers)
         # define JointNet
         self.joint = JointNet(
             input_size=config.joint.input_size,

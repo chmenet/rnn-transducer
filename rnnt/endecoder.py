@@ -11,7 +11,6 @@ class BaseNetwork(nn.Module):
                 nn.LSTM(
                     input_size = input_size,
                     hidden_size = hidden_size,
-                    output_size = hidden_size,
                     num_layers = 1,
                 ),
                 nn.LayerNorm(hidden_size),
@@ -23,7 +22,6 @@ class BaseNetwork(nn.Module):
                     nn.LSTM(
                         input_size=projection_size,
                         hidden_size=hidden_size,
-                        output_size=hidden_size,
                         num_layers=1,
                     ),
                     nn.LayerNorm(hidden_size),
@@ -50,11 +48,10 @@ class BaseNetwork(nn.Module):
             projected_output = Projection(LN(outputs_lstm))
             previous_output = projected_output
 
-            if input_lengths is not None:
-                _, desorted_indices = torch.sort(indices, descending=False)
-                projected_output, _ = nn.utils.rnn.pad_packed_sequence(previous_output, batch_first=True)
-
-        projected_output = projected_output[desorted_indices]
+        if input_lengths is not None:
+            _, desorted_indices = torch.sort(indices, descending=False)
+            projected_output, _ = nn.utils.rnn.pad_packed_sequence(previous_output, batch_first=True)
+            projected_output = projected_output[desorted_indices]
 
         logits = self.output_proj(projected_output)
 
