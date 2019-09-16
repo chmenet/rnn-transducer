@@ -42,7 +42,7 @@ class Transducer(nn.Module):
         # define encoder
         self.config = config
         self.encoder = BaseEncoder(
-            input_size=config.feature_dim,
+            input_size=config.feature_dim * config.stacking,
             hidden_size=config.enc.hidden_size,
             projection_size=config.enc.projection_size,
             n_layers=config.enc.n_layers)

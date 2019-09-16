@@ -4,7 +4,7 @@ feature_type: mel-spectrogram
 data:
     base_path: ./AIhub
     name: AIhub
-    frame_rate: 10
+    frame_rate: 30
     batch_size: 1
     encoding: True
     short_first: False
@@ -14,6 +14,8 @@ data:
     train: ./data/AIhub/train/
     dev: ./data/AIhub/dev/
     test: ./data/AIhub/test/
+    left_context_width: 1
+    right_context_width: 1
 hparam:
     n_mel_channels: 80
     sampling_rate: 16000
@@ -44,6 +46,7 @@ model:
     vocab_size: 80
     share_weight: False
     feature_dim: 80
+    stacking: 3
     backend: c++
 training:
     load_model: False #./egs/AIhub/exp/aihub_test_beam_0910_enlen_noeos/aihub_test_beam_0910_enlen_noeos.epoch1650.chkpt
