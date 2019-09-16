@@ -6,8 +6,8 @@ import time
 import torch
 import torch.nn as nn
 import torch.utils.data
-from rnnt.model_aihub import Transducer
-#from rnnt.model import Transducer
+#from rnnt.model_aihub import Transducer
+from rnnt.model import Transducer
 from rnnt.optim import Optimizer
 from rnnt.dataloader_aihub import AudioDataset, TextMelCollate
 from tensorboardX import SummaryWriter
@@ -20,6 +20,7 @@ def train(epoch, config, model, training_data, optimizer, logger, visualizer=Non
     start_epoch = time.process_time()
     total_loss = 0
     optimizer.epoch()
+    optimizer.current_epoch = epoch
     batch_steps = len(training_data)
 
     for step, (inputs, inputs_length, targets, targets_length) in enumerate(training_data):
@@ -89,7 +90,6 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
         max_targets_length = targets_length.max().item()
         inputs = inputs[:, :max_inputs_length, :]
         targets = targets[:, :max_targets_length]
-
         preds = model.recognize(inputs, inputs_length)  # need module for multi GPU
         transcripts = [targets.cpu().numpy()[i][:targets_length[i].item()]
                        for i in range(targets.size(0))]
@@ -192,7 +192,7 @@ def main():
 
     if opt.mode == 'continue':
         optimizer.load_state_dict(checkpoint['optimizer'])
-        start_epoch = checkpoint['epoch']
+        start_epoch = checkpoint['epoch'] + 1
         optimizer.global_step = checkpoint['step']
         logger.info('Load Optimizer State!')
     else:

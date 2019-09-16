@@ -9,6 +9,7 @@ from queue import PriorityQueue
 import operator
 import time
 
+
 def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=None):
     '''
     :param target_tensor: target indexes tensor of shape [B, T] where B is the batch size and T is the maximum length of the output sentence
@@ -17,7 +18,7 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
     :return: decoded_batch
     '''
 
-    beam_width = 4
+    beam_width = 5
     topk = 1  # how many sentence do you want to generate
     #SOS_token = 0
     #EOS_token = 1
@@ -70,14 +71,19 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
             # decode for one step using decoder
             logits = joint(encoder_output[t].view(-1), decoder_output.view(-1)) #decoder_input.item()]
             out = F.log_softmax(logits, dim=0).detach() #log probability for each class
+            pred = torch.argmax(out, dim=0)
+            pred = int(pred.item())
+            if pred == 0:
+                continue
             # PUT HERE REAL BEAM SEARCH OF TOP
             log_prob, indexes = torch.topk(out, beam_width) #remove node except top k
             nextnodes = []
             for new_k in range(beam_width):
                 decoded_t = indexes[new_k].view(1, -1) #.add(1)
-                if int(decoded_t) == 0:
-                    continue
+                #if int(decoded_t) == 0 :
+                #    continue
                 log_p = log_prob[new_k].item()
+
                 node = BeamSearchNode(decoder_hidden, n, decoded_t, n.logp + log_p, n.leng + 1)
                 score = -node.eval()
                 nextnodes.append((score, node))
@@ -109,41 +115,12 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
             while n.prevNode != None:
                 n = n.prevNode
                 utterance.append(n.wordid.item())
+            utterance = utterance[::-1][1:]
             utterances.append(utterance)
         #decoded_batch.append(utterances)
+
     return utterances
 
-
-class JointNet(nn.Module):
-    def __init__(self, input_size, inner_dim, vocab_size):
-        super(JointNet, self).__init__()
-
-        self.forward_layer = nn.Linear(input_size, inner_dim, bias=True)
-
-        self.tanh = nn.Tanh()
-        self.project_layer = nn.Linear(inner_dim, vocab_size, bias=True)
-
-    def forward(self, enc_state, dec_state):
-        if enc_state.dim() == 3 and dec_state.dim() == 3:
-            dec_state = dec_state.unsqueeze(1)
-            enc_state = enc_state.unsqueeze(2)
-
-            t = enc_state.size(1)
-            u = dec_state.size(2)
-
-            enc_state = enc_state.repeat([1, 1, u, 1])
-            dec_state = dec_state.repeat([1, t, 1, 1])
-        else:
-            assert enc_state.dim() == dec_state.dim()
-        #인코더와 pred.network의 아웃풋을 그냥 concat해서 fc, tanh, projection layer 통과
-        concat_state = torch.cat((enc_state, dec_state), dim=-1)
-        outputs = self.forward_layer(concat_state)
-
-        outputs = self.tanh(outputs)
-        #voca size 크기로 projection
-        outputs = self.project_layer(outputs)
-
-        return outputs
 
 class BeamSearchNode(object):
     def __init__(self, hiddenstate, previousNode, wordId, logProb, length):
@@ -167,8 +144,38 @@ class BeamSearchNode(object):
         reward = 0
         # Add here a function for shaping a reward
 
-        return self.logp #/ float(self.leng - 1 + 1e-6) + alpha * reward
+        return self.logp / float(self.leng - 1 + 1e-6) + alpha * reward
 
+
+class JointNet(nn.Module):
+    def __init__(self, input_size, inner_dim, vocab_size):
+        super(JointNet, self).__init__()
+
+        self.forward_layer = nn.Linear(input_size, inner_dim, bias=True)
+
+        self.tanh = nn.Tanh()
+        self.project_layer = nn.Linear(inner_dim, vocab_size, bias=True)
+
+    def forward(self, enc_state, dec_state):
+        if enc_state.dim() == 3 and dec_state.dim() == 3:
+            dec_state = dec_state.unsqueeze(1)
+            enc_state = enc_state.unsqueeze(2)
+
+            t = enc_state.size(1)
+            u = dec_state.size(2)
+
+            enc_state = enc_state.repeat([1, 1, u, 1])
+            dec_state = dec_state.repeat([1, t, 1, 1])
+        else:
+            assert enc_state.dim() == dec_state.dim()
+        concat_state = torch.cat((enc_state, dec_state), dim=-1)
+        outputs = self.forward_layer(concat_state)
+
+        outputs = self.tanh(outputs)
+        #voca size 크기로 projection
+        outputs = self.project_layer(outputs)
+
+        return outputs
 
 
 class Transducer(nn.Module):
