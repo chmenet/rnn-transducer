@@ -43,9 +43,9 @@ class BaseEncoder(nn.Module):
 
             LSTM.flatten_parameters()
             #print(previous_output.shape)
-            #if input_lengths is not None: previous_output = nn.utils.rnn.pack_padded_sequence(previous_output, sorted_seq_lengths, batch_first=True)
+            if input_lengths is not None: previous_output = nn.utils.rnn.pack_padded_sequence(previous_output, sorted_seq_lengths, batch_first=True)
             outputs_lstm, _ = LSTM(previous_output)
-            #if input_lengths is not None: outputs_lstm, _ = nn.utils.rnn.pad_packed_sequence(outputs_lstm)
+            if input_lengths is not None: outputs_lstm, _ = nn.utils.rnn.pad_packed_sequence(outputs_lstm)
             outputs_lstm = outputs_lstm.transpose(0,1)
             #print(outputs_lstm.shape)
             projected_output = Projection(LN(outputs_lstm))
@@ -92,10 +92,10 @@ class BaseDecoder(nn.Module):
         if share_weight:
             self.embedding.weight = self.output_proj.weight
 
-    def forward(self, inputs, input_lengths):
+    def forward(self, inputs, input_lengths = None):
 
         embed_inputs = self.embedding(inputs)
-        #print(embed_inputs.shape)
+        #dprint(embed_inputs.shape)
 
         if input_lengths is not None:
             sorted_seq_lengths, indices = torch.sort(input_lengths, descending=True)
@@ -109,9 +109,9 @@ class BaseDecoder(nn.Module):
 
             LSTM.flatten_parameters()
             #print(previous_output.shape)
-            #if input_lengths is not None: previous_output = nn.utils.rnn.pack_padded_sequence(previous_output, sorted_seq_lengths, batch_first=True)
+            if input_lengths is not None: previous_output = nn.utils.rnn.pack_padded_sequence(previous_output, sorted_seq_lengths, batch_first=True)
             outputs_lstm, _ = LSTM(previous_output)
-            #if input_lengths is not None: outputs_lstm, _ = nn.utils.rnn.pad_packed_sequence(outputs_lstm)
+            if input_lengths is not None: outputs_lstm, _ = nn.utils.rnn.pad_packed_sequence(outputs_lstm)
             outputs_lstm = outputs_lstm.transpose(0, 1)
             projected_output = Projection(LN(outputs_lstm))
             previous_output = projected_output
