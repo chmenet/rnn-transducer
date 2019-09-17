@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from rnnt.encoder import build_encoder
+from rnnt.encoder_aihub import build_encoder
 from rnnt.decoder import build_decoder
 from warprnnt_pytorch import RNNTLoss
 import numpy as np
@@ -173,7 +173,6 @@ class JointNet(nn.Module):
         outputs = self.forward_layer(concat_state)
 
         outputs = self.tanh(outputs)
-        #voca size 크기로 projection
         outputs = self.project_layer(outputs)
 
         return outputs

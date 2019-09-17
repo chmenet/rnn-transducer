@@ -6,8 +6,6 @@ import text
 from text import text_to_sequence
 import torch.nn as nn
 import torch
-#from pathlib import Path, PureWindowsPath
-
 
 class Dataset:
     def __init__(self, config, type):
@@ -53,6 +51,9 @@ class AudioDataset(Dataset):
         self.stft = layers.TacotronSTFT(config.hparam)
         self.lengths = len(self.feats_list)
         self.hparam = config.hparam
+        self.left_context_width = config.data.left_context_width
+        self.right_context_width = config.data.right_context_width
+        self.frame_rate = config.data.frame_rate
 
     def get_mel(self, filename):
         audio, sampling_rate = load_wav_to_torch(filename)
@@ -68,15 +69,54 @@ class AudioDataset(Dataset):
 
     def __getitem__(self, index):
         utt_id = self.feats_list[index]
-
         feats_path = self.feats_dict[utt_id]
         features = self.get_mel(os.path.join(self.config.base_path, feats_path))
-        targets = self.targets_dict[utt_id] #np.fromstring([1:-1], dtype=int, sep=',')
+        features = features.transpose(0, 1)
+        features = self.concat_frame(features)
+        features = self.subsampling(features)
+        features = torch.from_numpy(features)
+        features = features.transpose(0, 1)
+        targets = self.targets_dict[utt_id]
         targets = np.asarray(text_to_sequence(targets, ['korean_cleaners']))
         return targets, features
 
     def __len__(self):
         return self.lengths
+
+    def concat_frame(self, features):
+        time_steps, features_dim = features.shape
+        concated_features = np.zeros(
+            shape=[time_steps, features_dim *
+                   (1 + self.left_context_width + self.right_context_width)],
+            dtype=np.float32)
+        # middle part is just the uttarnce
+        concated_features[:, self.left_context_width * features_dim:
+                          (self.left_context_width + 1) * features_dim] = features
+
+        for i in range(self.left_context_width):
+            # add left context
+            concated_features[i + 1:time_steps,
+                              (self.left_context_width - i - 1) * features_dim:
+                              (self.left_context_width - i) * features_dim] = features[0:time_steps - i - 1, :]
+
+        for i in range(self.right_context_width):
+            # add right context
+            concated_features[0:time_steps - i - 1,
+                              (self.right_context_width + i + 1) * features_dim:
+                              (self.right_context_width + i + 2) * features_dim] = features[i + 1:time_steps, :]
+
+        return concated_features
+
+    def subsampling(self, features):
+        if self.frame_rate != 10:
+            interval = int(self.frame_rate / 10)
+            temp_mat = [features[i]
+                        for i in range(0, features.shape[0], interval)]
+            subsampled_features = np.row_stack(temp_mat)
+            return subsampled_features
+        else:
+            return features
+
 
 class TextMelCollate():
     """
@@ -119,4 +159,5 @@ class TextMelCollate():
             mel = torch.transpose(mel, 0, 1)
             mel_padded[i, :mel.size(0), :] = mel
             mel_lengths[i] = mel.size(0)
+
         return mel_padded,  mel_lengths, text_padded, targets_length
