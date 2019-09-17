@@ -6,29 +6,40 @@ import time
 import torch
 import torch.nn as nn
 import torch.utils.data
-#from rnnt.model_aihub import Transducer
-from rnnt.model import Transducer
+from rnnt.model_aihub import Transducer
+#from rnnt.model import Transducer
 from rnnt.optim import Optimizer
 from rnnt.dataloader_aihub import AudioDataset, TextMelCollate
 from tensorboardX import SummaryWriter
-from rnnt.utils import AttrDict, init_logger, count_parameters, save_model, computer_cer
+from rnnt.utils_aihub import AttrDict, init_logger, count_parameters, save_model, computer_cer
 from torchsummary import summary
+from rnnt.fp16_optimizer import FP16_Optimizer
 
 
-def train(epoch, config, model, training_data, optimizer, logger, visualizer=None):
+def batchnorm_to_float(module):
+    """Converts batch norm modules to FP32"""
+    if isinstance(module, torch.nn.modules.batchnorm._BatchNorm):
+        module.float()
+    for child in module.children():
+        batchnorm_to_float(child)
+    return module
+
+def train(epoch, config, model, training_data, optimizer, logger, iteration, learning_rate, visualizer=None):
     model.train()
     start_epoch = time.process_time()
     total_loss = 0
-    optimizer.epoch()
+    #optimizer.step() #epoch()
     optimizer.current_epoch = epoch
     batch_steps = len(training_data)
 
     for step, (inputs, inputs_length, targets, targets_length) in enumerate(training_data):
-
+        
+        for param_group in optimizer.param_groups:
+            param_group['lr'] = learning_rate
+            
         if config.training.num_gpu > 0:
             inputs, inputs_length = inputs.cuda(), inputs_length.cuda()
             targets, targets_length = targets.cuda(), targets_length.cuda()
-
         max_inputs_length = inputs_length.max().item()
         max_targets_length = targets_length.max().item()
         inputs = inputs[:, :max_inputs_length, :]
@@ -44,30 +55,34 @@ def train(epoch, config, model, training_data, optimizer, logger, visualizer=Non
         if config.training.num_gpu > 1:
             loss = torch.mean(loss)
 
-        loss.backward()
-
+        if config.training.fp16_run:
+            optimizer.backward(loss)
+            grad_norm = optimizer.clip_fp32_grads(config.training.max_grad_norm)
+        else:
+            loss.backward()
+            grad_norm = nn.utils.clip_grad_norm_(model.parameters(), config.training.max_grad_norm)
+            
         total_loss += loss.item()
-
-        grad_norm = nn.utils.clip_grad_norm_(
-            model.parameters(), config.training.max_grad_norm)
 
         optimizer.step()
 
+        overflow = optimizer.overflow if config.training.fp16_run else False
+
         if visualizer is not None:
             visualizer.add_scalar(
-                'train_loss', loss.item(), optimizer.global_step)
+                'train_loss', loss.item(), iteration)
             visualizer.add_scalar(
-                'learn_rate', optimizer.lr, optimizer.global_step)
+                'learn_rate', learning_rate, iteration)
 
         avg_loss = total_loss / (step + 1)
-        if optimizer.global_step % config.training.show_interval == 0:
+        if not overflow and iteration % config.training.show_interval == 0:
             end = time.process_time()
             process = step / batch_steps * 100
             logger.info('-Training-Epoch:%d(%.5f%%), Global Step:%d, Learning Rate:%.6f, Grad Norm:%.5f, Loss:%.5f, '
-                        'AverageLoss: %.5f, Run Time:%.3f' % (epoch, process, optimizer.global_step, optimizer.lr,
+                        'AverageLoss: %.5f, Run Time:%.3f' % (epoch, process, iteration, learning_rate,
                                                               grad_norm, loss.item(), avg_loss, end - start))
 
-        # break
+        iteration += 1
     end_epoch = time.process_time()
     logger.info('-Training-Epoch:%d, Average Loss: %.5f, Epoch Time: %.3f' %
                 (epoch, total_loss / (step + 1), end_epoch - start_epoch))
@@ -151,7 +166,10 @@ def main():
         torch.manual_seed(config.training.seed)
     logger.info('Set random seed: %d' % config.training.seed)
 
-    model = Transducer(config.model)
+    model = Transducer(config).cuda()
+
+    if config.training.fp16_run:
+        model = batchnorm_to_float(model.half())
 
     if config.training.load_model:
         checkpoint = torch.load(config.training.load_model)
@@ -187,16 +205,23 @@ def main():
     logger.info('# the number of parameters in the JointNet: %d' %
                 (n_params - dec - enc))
 
-    optimizer = Optimizer(model.parameters(), config.optim)
-    logger.info('Created a %s optimizer.' % config.optim.type)
+    learning_rate = config.optim.lr
+    #optimizer = Optimizer(model.parameters(), config.optim)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay)
 
+    logger.info('Created a %s optimizer.' % config.optim.type)
+    iteration = 1
     if opt.mode == 'continue':
         optimizer.load_state_dict(checkpoint['optimizer'])
         start_epoch = checkpoint['epoch'] + 1
-        optimizer.global_step = checkpoint['step']
+        iteration = checkpoint['step'] + 1
+        learning_rate = checkpoint['learning_rate']
         logger.info('Load Optimizer State!')
     else:
         start_epoch = 0
+
+    if config.training.fp16_run:
+        optimizer = FP16_Optimizer(optimizer, dynamic_loss_scale=config.training.dynamic_loss_scaling)
 
     # create a visualizer
     if config.training.visualization:
@@ -208,12 +233,12 @@ def main():
     for epoch in range(start_epoch, config.training.epochs):
 
         train(epoch, config, model, training_data,
-              optimizer, logger, visualizer)
+              optimizer, logger, iteration, learning_rate, visualizer)
 
         _ = eval(epoch, config, model, validate_data, logger, visualizer)
         if config.training.eval_or_not and (epoch % config.training.save_interval) == 0:
             save_name = os.path.join(exp_name, '%s.epoch%d.chkpt' % (config.training.save_model, epoch))
-            save_model(model, optimizer, config, save_name)
+            save_model(model, optimizer, iteration, learning_rate, config, save_name)
             logger.info('Epoch %d model has been saved.' % epoch)
 
         if epoch >= config.optim.begin_to_adjust_lr:

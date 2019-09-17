@@ -8,6 +8,7 @@ import numpy as np
 from queue import PriorityQueue
 import operator
 import time
+from rnnt.fp16_optimizer import fp32_to_fp16, fp16_to_fp32
 
 
 def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=None):
@@ -182,29 +183,42 @@ class Transducer(nn.Module):
     def __init__(self, config):
         super(Transducer, self).__init__()
         # define encoder
-        self.config = config
-        self.encoder = build_encoder(config)
+        self.config = config.model
+        self.fp16_run = config.training.fp16_run
+        self.encoder = build_encoder(config.model)
         # define decoder
-        self.decoder = build_decoder(config)
+        self.decoder = build_decoder(config.model)
         # define JointNet
         self.joint = JointNet(
-            input_size=config.joint.input_size,
-            inner_dim=config.joint.inner_size,
-            vocab_size=config.vocab_size
+            input_size=config.model.joint.input_size,
+            inner_dim=config.model.joint.inner_size,
+            vocab_size=config.model.vocab_size
             )
 
-        if config.share_embedding:
+        if config.model.share_embedding:
             assert self.decoder.embedding.weight.size() == self.joint.project_layer.weight.size(), '%d != %d' % (self.decoder.embedding.weight.size(1),  self.joint.project_layer.weight.size(1))
             self.joint.project_layer.weight = self.decoder.embedding.weight
 
         self.crit = RNNTLoss()
 
+    def parse_input(self, inputs):
+        inputs = fp32_to_fp16(inputs) if self.fp16_run else inputs
+        return inputs
+
+    def parse_output(self, outputs):
+        outputs = fp16_to_fp32(outputs) if self.fp16_run else outputs
+        return outputs
+
     def forward(self, inputs, inputs_length, targets, targets_length):
+        inputs = self.parse_input(inputs)
+        inputs_length = self.parse_input(inputs_length)
+        targets = self.parse_input(targets)
+        targets_length = self.parse_input(targets_length)
         enc_state, _ = self.encoder(inputs, inputs_length)
         concat_targets = F.pad(targets, pad=(1, 0, 0, 0), value=0)
         dec_state, _ = self.decoder(concat_targets, targets_length.add(1))
         logits = self.joint(enc_state, dec_state)
-
+        logits = self.parse_output(logits)
         loss = self.crit(logits, targets.int(), inputs_length.int(), targets_length.int())
 
         return loss
@@ -212,6 +226,8 @@ class Transducer(nn.Module):
     def recognize(self, inputs, inputs_length):
 
         batch_size = inputs.size(0)
+        inputs = self.parse_input(inputs)
+        inputs_length = self.parse_input(inputs_length)
         enc_states, _ = self.encoder(inputs, inputs_length)
         target_tensor = torch.from_numpy(np.array([batch_size, max(inputs_length)], dtype=np.int8))
         results = beam_search(self.decoder, self.joint, target_tensor, inputs_length, enc_states)
