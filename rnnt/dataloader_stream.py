@@ -74,8 +74,16 @@ class AudioDataset(Dataset):
 
         feats_path = self.feats_dict[utt_id]
         features = self.get_mel(os.path.join(self.config.base_path, feats_path))
+        #print(features.shape)
+        features = features.transpose(0,1)
+        #print(features.shape)
         features = self.concat_frame(features)
+        #print(features.shape)
         features = self.subsampling(features)
+        #print(features.shape)
+        features = torch.from_numpy(features)
+        features = features.transpose(0, 1)
+        #print(features.shape, '\n')
         targets = self.targets_dict[utt_id] #np.fromstring([1:-1], dtype=int, sep=',')
         targets = np.asarray(text_to_sequence(targets, ['korean_cleaners']))
         return targets, features
@@ -143,6 +151,7 @@ class TextMelCollate():
             text_padded[i, :text.size(0)] = text
 
         # Right zero-pad mel-spec
+        #print(batch[0][1].shape, batch[0][1])
         num_mels = batch[0][1].size(0)
         max_mel_len = max([x[1].size(1) for x in batch])
         if max_mel_len % self.n_frames_per_step != 0:
