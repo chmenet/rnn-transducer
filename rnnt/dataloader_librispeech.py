@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import rnnt.layers as layers
-from rnnt.utils import load_wav_to_torch
+from rnnt.utils_aihub import load_wav_to_torch
 import text
 from text import text_to_sequence
 import torch.nn as nn
@@ -70,14 +70,14 @@ class AudioDataset(Dataset):
     def __getitem__(self, index):
         utt_id = self.feats_list[index]
         feats_path = self.feats_dict[utt_id]
-        features = self.get_mel(os.path.join(self.config.base_path, feats_path))
+        features = self.get_mel(feats_path)
         features = features.transpose(0, 1)
         features = self.concat_frame(features)
         features = self.subsampling(features)
         features = torch.from_numpy(features)
         features = features.transpose(0, 1)
         targets = self.targets_dict[utt_id]
-        targets = np.asarray(text_to_sequence(targets, ['korean_cleaners']))
+        targets = np.asarray(text_to_sequence(targets, ['english_cleaners']))
         return targets, features
 
     def __len__(self):
@@ -159,5 +159,4 @@ class TextMelCollate():
             mel = torch.transpose(mel, 0, 1)
             mel_padded[i, :mel.size(0), :] = mel
             mel_lengths[i] = mel.size(0)
-
         return mel_padded,  mel_lengths, text_padded, targets_length

@@ -1,21 +1,21 @@
 units_type: word
-feature_source: AIhub
+feature_source: LibriSpeech
 feature_type: mel-spectrogram
 data:
-    base_path: ./AIhub
-    name: AIhub
+    base_path: ./LibriSpeech
+    name: LibriSpeech
     frame_rate: 30
     right_context_width: 1
     left_context_width: 1
-    batch_size: 80
+    batch_size: 16
     encoding: True
     short_first: False
     shuffle: True
     feature_flag: feats.txt
     text_flag: targets.txt
-    train: ./data/AIhub/train/
-    dev: ./data/AIhub/dev/
-    test: ./data/AIhub/test/
+    train: ./LibriSpeech/train/
+    dev: ./LibriSpeech/dev/
+    test: ./LibriSpeech/test/
 hparam:
     n_mel_channels: 80
     sampling_rate: 16000
@@ -41,7 +41,7 @@ model:
     joint:
         input_size: 256
         inner_size: 128
-    vocab_size: 80
+    vocab_size: 149
     share_weight: False
     feature_dim: 80
     stacking: 3
@@ -61,7 +61,7 @@ training:
     visualization: True
     show_interval: 10
     save_interval: 1
-    save_model: aihub_q3_fp16
+    save_model: librispeech_basic
 optim:
     type: sgd
     lr: 0.0001
