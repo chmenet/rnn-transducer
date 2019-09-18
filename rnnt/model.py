@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from rnnt.encoder import build_encoder
-from rnnt.decoder import build_decoder
+from rnnt.encoder import BaseEncoder
+from rnnt.decoder import BaseDecoder
 from warprnnt_pytorch import RNNTLoss
 
 
@@ -42,9 +42,17 @@ class Transducer(nn.Module):
         super(Transducer, self).__init__()
         # define encoder
         self.config = config
-        self.encoder = build_encoder(config)
+        self.encoder = BaseEncoder(
+            input_size=config.feature_dim * config.stacking,
+            hidden_size=config.enc.hidden_size,
+            projection_size=config.enc.projection_size,
+            n_layers=config.enc.n_layers)
         # define decoder
-        self.decoder = build_decoder(config)
+        self.decoder = BaseDecoder(
+            input_size=config.vocab_size,
+            hidden_size=config.dec.hidden_size,
+            projection_size=config.dec.projection_size,
+            n_layers=config.dec.n_layers)
         # define JointNet
         self.joint = JointNet(
             input_size=config.joint.input_size,
@@ -62,7 +70,6 @@ class Transducer(nn.Module):
 
         enc_state, _ = self.encoder(inputs, inputs_length)
         concat_targets = F.pad(targets, pad=(1, 0, 0, 0), value=0)
-
         dec_state, _ = self.decoder(concat_targets, targets_length.add(1))
 
         logits = self.joint(enc_state, dec_state)
@@ -91,7 +98,7 @@ class Transducer(nn.Module):
                 out = F.softmax(logits, dim=0).detach()
                 pred = torch.argmax(out, dim=0)
                 pred = int(pred.item())
-
+                #print(pred)
                 if pred != 0:
                     token_list.append(pred)
                     token = torch.LongTensor([[pred]])

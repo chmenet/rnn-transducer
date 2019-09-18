@@ -8,13 +8,13 @@ import torch.nn as nn
 import torch.utils.data
 from rnnt.model import Transducer
 from rnnt.optim import Optimizer
-from rnnt.dataset import AudioDataset
+from rnnt.dataset import AudioDataset, TextMelCollate
 from tensorboardX import SummaryWriter
 from rnnt.utils import AttrDict, init_logger, count_parameters, save_model, computer_cer
+#from torchsummary import summary
 
 
 def train(epoch, config, model, training_data, optimizer, logger, visualizer=None):
-
     model.train()
     start_epoch = time.process_time()
     total_loss = 0
@@ -63,12 +63,13 @@ def train(epoch, config, model, training_data, optimizer, logger, visualizer=Non
             process = step / batch_steps * 100
             logger.info('-Training-Epoch:%d(%.5f%%), Global Step:%d, Learning Rate:%.6f, Grad Norm:%.5f, Loss:%.5f, '
                         'AverageLoss: %.5f, Run Time:%.3f' % (epoch, process, optimizer.global_step, optimizer.lr,
-                                                              grad_norm, loss.item(), avg_loss, end-start))
+                                                              grad_norm, loss.item(), avg_loss, end - start))
 
         # break
     end_epoch = time.process_time()
     logger.info('-Training-Epoch:%d, Average Loss: %.5f, Epoch Time: %.3f' %
-                (epoch, total_loss / (step+1), end_epoch-start_epoch))
+                (epoch, total_loss / (step + 1), end_epoch - start_epoch))
+    optimizer.current_epoch = epoch
 
 
 def eval(epoch, config, model, validating_data, logger, visualizer=None):
@@ -88,21 +89,19 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
         inputs = inputs[:, :max_inputs_length, :]
         targets = targets[:, :max_targets_length]
 
-        preds = model.recognize(inputs, inputs_length)
-
+        preds = model.recognize(inputs, inputs_length)  # need module for multi GPU
         transcripts = [targets.cpu().numpy()[i][:targets_length[i].item()]
                        for i in range(targets.size(0))]
-
         dist, num_words = computer_cer(preds, transcripts)
         total_dist += dist
         total_word += num_words
-
+        #print(preds, transcripts)
         cer = total_dist / total_word * 100
         if step % config.training.show_interval == 0:
             process = step / batch_steps * 100
             logger.info('-Validation-Epoch:%d(%.5f%%), CER: %.5f %%' % (epoch, process, cer))
 
-    val_loss = total_loss/(step+1)
+    val_loss = total_loss / (step + 1)
     logger.info('-Validation-Epoch:%4d, AverageLoss:%.5f, AverageCER: %.5f %%' %
                 (epoch, val_loss, cer))
 
@@ -114,7 +113,7 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-config', type=str, default='config/aishell.yaml')
+    parser.add_argument('-config', type=str, default='config/aihub.yaml')
     parser.add_argument('-log', type=str, default='train.log')
     parser.add_argument('-mode', type=str, default='retrain')
     opt = parser.parse_args()
@@ -131,16 +130,17 @@ def main():
     logger.info('Save config info.')
 
     num_workers = config.training.num_gpu * 2
-    train_dataset = AudioDataset(config.data, 'train')
+    collate_fn = TextMelCollate(config.data.frame_rate)
+    train_dataset = AudioDataset(config, 'train')
     training_data = torch.utils.data.DataLoader(
         train_dataset, batch_size=config.data.batch_size * config.training.num_gpu,
-        shuffle=config.data.shuffle, num_workers=num_workers)
+        shuffle=config.data.shuffle, num_workers=num_workers, collate_fn=collate_fn)
     logger.info('Load Train Set!')
 
-    dev_dataset = AudioDataset(config.data, 'train')
+    dev_dataset = AudioDataset(config, 'dev')
     validate_data = torch.utils.data.DataLoader(
         dev_dataset, batch_size=config.data.batch_size * config.training.num_gpu,
-        shuffle=False, num_workers=num_workers)
+        shuffle=False, num_workers=num_workers, collate_fn=collate_fn)
     logger.info('Load Dev Set!')
 
     if config.training.num_gpu > 0:
@@ -177,6 +177,8 @@ def main():
             model = torch.nn.DataParallel(model, device_ids=device_ids)
         logger.info('Loaded the model to %d GPUs' % config.training.num_gpu)
 
+   # summary(model, (1, 1375, 80))
+
     n_params, enc, dec = count_parameters(model)
     logger.info('# the number of parameters in the whole model: %d' % n_params)
     logger.info('# the number of parameters in the Encoder: %d' % enc)
@@ -190,6 +192,7 @@ def main():
     if opt.mode == 'continue':
         optimizer.load_state_dict(checkpoint['optimizer'])
         start_epoch = checkpoint['epoch']
+        optimizer.global_step = checkpoint['step']
         logger.info('Load Optimizer State!')
     else:
         start_epoch = 0
@@ -206,12 +209,11 @@ def main():
         train(epoch, config, model, training_data,
               optimizer, logger, visualizer)
 
-        if config.training.eval_or_not:
-            _ = eval(epoch, config, model, validate_data, logger, visualizer)
-
-        save_name = os.path.join(exp_name, '%s.epoch%d.chkpt' % (config.training.save_model, epoch))
-        save_model(model, optimizer, config, save_name)
-        logger.info('Epoch %d model has been saved.' % epoch)
+        _ = eval(epoch, config, model, validate_data, logger, visualizer)
+        if config.training.eval_or_not and (epoch % config.training.save_interval) == 0:
+            save_name = os.path.join(exp_name, '%s.epoch%d.chkpt' % (config.training.save_model, epoch))
+            save_model(model, optimizer, config, save_name)
+            logger.info('Epoch %d model has been saved.' % epoch)
 
         if epoch >= config.optim.begin_to_adjust_lr:
             optimizer.decay_lr()
@@ -221,7 +223,6 @@ def main():
                 break
             logger.info('Epoch %d update learning rate: %.6f' %
                         (epoch, optimizer.lr))
-
     logger.info('The training process is OVER!')
 
 
