@@ -218,7 +218,7 @@ def main():
         learning_rate = checkpoint['learning_rate']
         logger.info('Load Optimizer State!')
     else:
-        start_epoch = 0
+        start_epoch = 1
 
     if config.training.fp16_run:
         optimizer = FP16_Optimizer(optimizer, dynamic_loss_scale=config.training.dynamic_loss_scaling)
