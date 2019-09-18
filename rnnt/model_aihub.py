@@ -105,8 +105,10 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
             decoder_output, decoder_hidden = decoder(decoder_input, hidden=decoder_hidden)
 
         # choose nbest paths, back trace them
-        if len(endnodes) == 0:
+        if len(endnodes) == 0 and qsize > 1:
             endnodes = [nodes.get() for _ in range(topk)]
+        else:
+            return [[]]
 
         utterances = []
         for score, n in sorted(endnodes, key=operator.itemgetter(0)):
