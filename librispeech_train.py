@@ -9,7 +9,7 @@ import torch.utils.data
 from rnnt.model_aihub import Transducer
 #from rnnt.model import Transducer
 from rnnt.optim import Optimizer
-from rnnt.dataloader_aihub import AudioDataset, TextMelCollate
+from rnnt.dataloader_librispeech import AudioDataset, TextMelCollate
 from tensorboardX import SummaryWriter
 from rnnt.utils_aihub import AttrDict, init_logger, count_parameters, save_model, computer_cer
 from torchsummary import summary
