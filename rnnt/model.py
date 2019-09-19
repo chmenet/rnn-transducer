@@ -20,8 +20,6 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
 
     beam_width = 5
     topk = 1  # how many sentence do you want to generate
-    #SOS_token = 0
-    #EOS_token = 1
 
     zero_token = torch.LongTensor([[0]])
     if encoder_outputs.is_cuda:
@@ -30,23 +28,11 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
     # decoding goes sentence by sentence
     for idx in range(target_tensor[0]):
         decoder_output, decoder_hidden = decoder(zero_token)
-        #inputs_length = inputs_length[idx]
-        #if isinstance(decoder_hiddens, tuple):  # LSTM case
-        #    decoder_hidden = (
-        #        decoder_hiddens[0][:, idx, :].unsqueeze(0), decoder_hiddens[1][:, idx, :].unsqueeze(0))
-        #else:
-        #    decoder_hidden = decoder_hiddens[:, idx, :].unsqueeze(0)
-        encoder_output = encoder_outputs[idx] #[:, idx, :].unsqueeze(1)
-        # Start with the start of the sentence token
-        #decoder_input = torch.LongTensor([[SOS_token]])
-        #if decoder_hiddens.is_cuda:
-        #    decoder_input = "cuda"
+        encoder_output = encoder_outputs[idx]
 
         # Number of sentence to generate
         endnodes = []
-        #number_required = min((topk + 1), topk - len(endnodes))
 
-        # starting node -  hidden vector, previous node, word id, logp, length
         node = BeamSearchNode(decoder_hidden, None, zero_token, 0, 1)
         nodes = PriorityQueue()
 
@@ -60,34 +46,28 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
         decoder_hidden = n.h
         length = inputs_length[idx].item()
         # start beam search
-        for t in range(length): #while True:
+        for t in range(length):
             # give up when decoding takes too long
             if qsize > 2000:
                 break
-            #if n.wordid.item() == EOS_token and n.prevNode != None:
-            #    endnodes.append((score, n))
-            #    break
-            ##################################################################################
             # decode for one step using decoder
-            logits = joint(encoder_output[t].view(-1), decoder_output.view(-1)) #decoder_input.item()]
-            out = F.log_softmax(logits, dim=0).detach() #log probability for each class
+            logits = joint(encoder_output[t].view(-1), decoder_output.view(-1))
+            out = F.softmax(logits, dim=0).detach()
             pred = torch.argmax(out, dim=0)
             pred = int(pred.item())
             if pred == 0:
                 continue
             # PUT HERE REAL BEAM SEARCH OF TOP
-            log_prob, indexes = torch.topk(out, beam_width) #remove node except top k
+            log_prob, indexes = torch.topk(out, beam_width)
             nextnodes = []
             for new_k in range(beam_width):
-                decoded_t = indexes[new_k].view(1, -1) #.add(1)
-                #if int(decoded_t) == 0 :
-                #    continue
+                decoded_t = indexes[new_k].view(1, -1)
+
                 log_p = log_prob[new_k].item()
 
                 node = BeamSearchNode(decoder_hidden, n, decoded_t, n.logp + log_p, n.leng + 1)
                 score = -node.eval()
                 nextnodes.append((score, node))
-            ###################################################################################
             # put them into queue
             for i in range(len(nextnodes)):
                 score, nn = nextnodes[i]
@@ -119,8 +99,6 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
                 utterance.append(n.wordid.item())
             utterance = utterance[::-1][1:]
             utterances.append(utterance)
-        #decoded_batch.append(utterances)
-
     return utterances
 
 class BeamSearchNode(object):
@@ -232,7 +210,7 @@ class Transducer(nn.Module):
 
         return loss
 
-    '''
+
     def recognize(self, inputs, inputs_length):
 
         batch_size = inputs.size(0)
@@ -243,15 +221,14 @@ class Transducer(nn.Module):
         results = beam_search(self.decoder, self.joint, target_tensor, inputs_length, enc_states)
 
         return results
-    '''
 
-    def recognize(self, inputs, inputs_length):
 
-        batch_size = inputs.size(0)
+    def greedy_recognize(self, inputs, inputs_length):
         inputs = self.parse_input(inputs)
         inputs_length = self.parse_input(inputs_length)
+        batch_size = inputs.size(0)
 
-        enc_states, _ = self.encoder(inputs, inputs_length)
+        enc_states, _ = self.encoder(inputs)
 
         zero_token = torch.LongTensor([[0]])
         if inputs.is_cuda:
@@ -261,13 +238,11 @@ class Transducer(nn.Module):
             token_list = []
 
             dec_state, hidden = self.decoder(zero_token)
-
             for t in range(lengths):
                 logits = self.joint(enc_state[t].view(-1), dec_state.view(-1))
                 out = F.softmax(logits, dim=0).detach()
                 pred = torch.argmax(out, dim=0)
                 pred = int(pred.item())
-                #print(pred)
                 if pred != 0:
                     token_list.append(pred)
                     token = torch.LongTensor([[pred]])
@@ -276,7 +251,6 @@ class Transducer(nn.Module):
                         token = token.cuda()
 
                     dec_state, hidden = self.decoder(token, hidden=hidden)
-
             return token_list
 
         results = []
