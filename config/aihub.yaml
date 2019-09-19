@@ -5,7 +5,7 @@ data:
     base_path: ./AIhub
     name: AIhub
     frame_rate: 60
-    batch_size: 8
+    batch_size: 1
     encoding: True
     short_first: False
     shuffle: True
@@ -53,6 +53,8 @@ training:
     load_encoder: False
     load_decoder: False
     eval_or_not: True
+    fp16_run: True
+    dynamic_loss_scaling: True
     seed: 2019
     num_gpu: 1
     epochs: 30

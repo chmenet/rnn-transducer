@@ -75,26 +75,30 @@ def init_parameters(model, type='xnormal'):
             pass
 
 
-def save_model(model, optimizer, config, save_name):
+def save_model(model, optimizer, iteration, learning_rate, config, save_name):
     multi_gpu = True if config.training.num_gpu > 1 else False
     checkpoint = {
         'encoder': model.module.encoder.state_dict() if multi_gpu else model.encoder.state_dict(),
         'decoder': model.module.decoder.state_dict() if multi_gpu else model.decoder.state_dict(),
         'joint': model.module.joint.state_dict() if multi_gpu else model.joint.state_dict(),
         'optimizer': optimizer.state_dict(),
+        'iteration': iteration,
+        'learning_rate': learning_rate,
         'epoch': optimizer.current_epoch,
-        'step': optimizer.global_step
+        'step': iteration
     }
 
     torch.save(checkpoint, save_name)
 
 
-def save_ctc_model(model, optimizer, config, save_name):
+def save_ctc_model(model, optimizer, iteration, learning_rate, config, save_name):
     multi_gpu = True if config.training.num_gpu > 1 else False
     checkpoint = {
         'encoder': model.module.encoder.state_dict() if multi_gpu else model.encoder.state_dict(),
         'project_layer': model.module.project_layer.state_dict() if multi_gpu else model.project_layer.state_dict(),
         'optimizer': optimizer.state_dict(),
+        'iteration': iteration,
+        'learning_rate': learning_rate,
         'epoch': optimizer.current_epoch,
         'step': optimizer.global_step
     }
@@ -102,15 +106,16 @@ def save_ctc_model(model, optimizer, config, save_name):
     torch.save(checkpoint, save_name)
 
 
-def save_language_model(model, optimizer, config, save_name):
+def save_language_model(model, optimizer, iteration, learning_rate, config, save_name):
     multi_gpu = True if config.training.num_gpu > 1 else False
     checkpoint = {
         'decoder': model.module.decoder.state_dict() if multi_gpu else model.decoder.state_dict(),
         'project_layer': model.module.project_layer.state_dict() if multi_gpu else model.project_layer.state_dict(),
         'optimizer': optimizer.state_dict(),
+        'iteration': iteration,
+        'learning_rate': learning_rate,
         'epoch': optimizer.current_epoch,
         'step': optimizer.global_step
     }
 
     torch.save(checkpoint, save_name)
-
