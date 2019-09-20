@@ -105,7 +105,11 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
         max_targets_length = targets_length.max().item()
         inputs = inputs[:, :max_inputs_length, :]
         targets = targets[:, :max_targets_length]
-        preds = model.recognize(inputs, inputs_length)  # need module for multi GPU
+        if config.training.num_gpu > 1:
+            preds = model.module.recognize(inputs, inputs_length)
+        else:
+            preds = model.recognize(inputs, inputs_length)
+
         transcripts = [targets.cpu().numpy()[i][:targets_length[i].item()]
                        for i in range(targets.size(0))]
         dist, num_words = computer_cer(preds, transcripts)
@@ -209,6 +213,9 @@ def main():
     #optimizer = Optimizer(model.parameters(), config.optim)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay)
 
+    if config.training.fp16_run:
+        optimizer = FP16_Optimizer(optimizer, dynamic_loss_scale=config.training.dynamic_loss_scaling)
+
     logger.info('Created a %s optimizer.' % config.optim.type)
     iteration = 1
     if opt.mode == 'continue':
@@ -220,8 +227,7 @@ def main():
     else:
         start_epoch = 1
 
-    if config.training.fp16_run:
-        optimizer = FP16_Optimizer(optimizer, dynamic_loss_scale=config.training.dynamic_loss_scaling)
+
 
     # create a visualizer
     if config.training.visualization:
@@ -234,8 +240,8 @@ def main():
 
         train(epoch, config, model, training_data,
               optimizer, logger, iteration, learning_rate, visualizer)
-
         _ = eval(epoch, config, model, validate_data, logger, visualizer)
+
         if config.training.eval_or_not and (epoch % config.training.save_interval) == 0:
             save_name = os.path.join(exp_name, '%s.epoch%d.chkpt' % (config.training.save_model, epoch))
             save_model(model, optimizer, iteration, learning_rate, config, save_name)
