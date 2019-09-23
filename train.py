@@ -49,7 +49,9 @@ def train(epoch, config, model, training_data, optimizer, logger, iteration, lea
 
         optimizer.zero_grad()
         start = time.process_time()
+        #cost, loss = model(inputs, inputs_length, targets, targets_length)
         loss = model(inputs, inputs_length, targets, targets_length)
+        #print(loss.shape)
 
         if config.training.num_gpu > 1:
             loss = torch.mean(loss)
@@ -245,11 +247,11 @@ def main():
             logger.info('Epoch %d model has been saved.' % epoch)
 
         if epoch >= config.optim.begin_to_adjust_lr:
-            optimizer.decay_lr()
-            # early stop
-            if optimizer.lr < 1e-6:
-                logger.info('The learning rate is too low to train.')
-                break
+            # optimizer.decay_lr()
+            # # early stop
+            # if optimizer.lr < 1e-6:
+            #     logger.info('The learning rate is too low to train.')
+            #     break
             logger.info('Epoch %d update learning rate: %.6f' %
                         (epoch, learning_rate))
     logger.info('The training process is OVER!')

@@ -1,14 +1,40 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn import Module
 from rnnt.encoder import BaseEncoder
 from rnnt.decoder import BaseDecoder
 from warprnnt_pytorch import RNNTLoss
+import warp_rnnt._C as warp_rnnt_core
+import warp_rnnt
 import numpy as np
 from queue import PriorityQueue
 import operator
 from rnnt.fp16_optimizer import fp32_to_fp16, fp16_to_fp32
 
+class RNNTLoss_(Module):
+    """
+    Parameters:
+        blank (int, optional): blank label. Default: 0.
+        reduction (string, optional): Specifies the reduction to apply to the output:
+            'none' | 'mean' | 'sum'. 'none': no reduction will be applied,
+            'mean': the output losses will be divided by the target lengths and
+            then the mean over the batch is taken. Default: 'mean'
+    """
+    def __init__(self, blank=0, reduction='mean'):
+        super(RNNTLoss_, self).__init__()
+        self.blank = blank
+        self.reduction = reduction
+        self.loss = warp_rnnt._WRNNT.apply
+
+    def forward(self, acts, labels, act_lens, label_lens):
+        """
+        acts: Tensor of (batch x seqLength x labelLength x outputDim) containing output from network
+        labels: 2 dimensional Tensor containing all the targets of the batch with zero padded
+        act_lens: Tensor of size (batch) containing size of each output sequence from the network
+        label_lens: Tensor of (batch) containing label length of each example
+        """
+        return self.loss(acts, labels, act_lens, label_lens, self.blank)
 
 def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=None):
     '''
@@ -52,7 +78,7 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
                 break
             # decode for one step using decoder
             logits = joint(encoder_output[t].view(-1), decoder_output.view(-1))
-            out = F.softmax(logits, dim=0).detach()
+            out = F.log_softmax(logits, dim=0).detach()
             pred = torch.argmax(out, dim=0)
             pred = int(pred.item())
             if pred == 0:
@@ -81,7 +107,7 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
             if encoder_output.is_cuda:
                 decoder_input = decoder_input.cuda()
             decoder_hidden = n.h
-            decoder_output, decoder_hidden = decoder(decoder_input, hidden=decoder_hidden)
+            decoder_output, decoder_hidden = decoder(decoder_input, hiddens=decoder_hidden)
 
         # choose nbest paths, back trace them
         if len(endnodes) == 0 and qsize > 1:
@@ -185,6 +211,7 @@ class Transducer(nn.Module):
             self.joint.project_layer.weight = self.decoder.embedding.weight
 
         self.crit = RNNTLoss()
+        self.crit2 = RNNTLoss_()
 
     def parse_input(self, inputs):
         inputs = fp32_to_fp16(inputs) if self.fp16_run else inputs
@@ -204,9 +231,19 @@ class Transducer(nn.Module):
         dec_state, _ = self.decoder(concat_targets, targets_length.add(1))
 
         logits = self.joint(enc_state, dec_state)
+        logits_logsft = F.log_softmax(logits, dim=3)
         logits = self.parse_output(logits)
+        logits_logsft = self.parse_output(logits_logsft)
+
+        # loss1, grad  = warp_rnnt_core.rnnt_loss(logits, targets.int(), inputs_length.int(), targets_length.int())
+        # print(loss1)
+        # print(grad.shape)
+
+        #loss1 = self.crit2(logits_logsft, targets.int(), inputs_length.int(), targets_length.int())
+        #print(loss1)
 
         loss = self.crit(logits, targets.int(), inputs_length.int(), targets_length.int())
+        #print(loss)
 
         return loss
 
@@ -240,7 +277,7 @@ class Transducer(nn.Module):
             dec_state, hidden = self.decoder(zero_token)
             for t in range(lengths):
                 logits = self.joint(enc_state[t].view(-1), dec_state.view(-1))
-                out = F.softmax(logits, dim=0).detach()
+                out = F.log_softmax(logits, dim=0).detach()
                 pred = torch.argmax(out, dim=0)
                 pred = int(pred.item())
                 if pred != 0:
@@ -250,7 +287,7 @@ class Transducer(nn.Module):
                     if enc_state.is_cuda:
                         token = token.cuda()
 
-                    dec_state, hidden = self.decoder(token, hidden=hidden)
+                    dec_state, hidden = self.decoder(token, hiddens=hidden)
             return token_list
 
         results = []

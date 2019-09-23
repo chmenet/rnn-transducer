@@ -35,7 +35,7 @@ class BaseDecoder(nn.Module):
         if share_weight:
             self.embedding.weight = self.output_proj.weight
 
-    def forward(self, inputs, input_lengths = None):
+    def forward(self, inputs, input_lengths = None, hiddens = None):
 
         embed_inputs = self.embedding(inputs)
         #dprint(embed_inputs.shape)
@@ -45,22 +45,24 @@ class BaseDecoder(nn.Module):
             embed_inputs = embed_inputs[indices]
 
         previous_output = embed_inputs
-        for ith_layer_set in self.layers:
+        next_hiddens = []
+        for i, ith_layer_set in enumerate(self.layers):
             LSTM = ith_layer_set[0]
             LN = ith_layer_set[1]
             Projection = ith_layer_set[2]
 
             LSTM.flatten_parameters()
-            #print(previous_output.shape)
+            # print(previous_output.shape)
             if input_lengths is not None: previous_output = nn.utils.rnn.pack_padded_sequence(previous_output, sorted_seq_lengths, batch_first=True)
-            outputs_lstm, _ = LSTM(previous_output)
+            outputs_lstm, hidden = LSTM(previous_output) if hiddens is None else LSTM(previous_output, hiddens[i])
             if input_lengths is not None: outputs_lstm, _ = nn.utils.rnn.pad_packed_sequence(outputs_lstm)
             outputs_lstm = outputs_lstm.transpose(0, 1)
             projected_output = Projection(LN(outputs_lstm))
             previous_output = projected_output
+            next_hiddens.append(hidden)
 
         if input_lengths is not None:
             _, desorted_indices = torch.sort(indices, descending=False)
             projected_output = projected_output[desorted_indices]
 
-        return projected_output, None
+        return projected_output, next_hiddens
