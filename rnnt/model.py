@@ -46,6 +46,7 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
 
     beam_width = 5
     topk = 1  # how many sentence do you want to generate
+    utterances = []
 
     zero_token = torch.LongTensor([[0]])
     if encoder_outputs.is_cuda:
@@ -115,7 +116,6 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
         else:
             return [[]]
 
-        utterances = []
         for score, n in sorted(endnodes, key=operator.itemgetter(0)):
             utterance = []
             utterance.append(n.wordid.item())
