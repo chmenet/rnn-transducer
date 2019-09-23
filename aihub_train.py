@@ -12,7 +12,7 @@ from rnnt.optim import Optimizer
 from rnnt.dataloader_aihub import AudioDataset, TextMelCollate
 from tensorboardX import SummaryWriter
 from rnnt.utils_aihub import AttrDict, init_logger, count_parameters, save_model, computer_cer
-from torchsummary import summary
+#from torchsummary import summary
 from rnnt.fp16_optimizer import FP16_Optimizer
 
 
@@ -95,31 +95,35 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
     total_dist = 0
     total_word = 0
     batch_steps = len(validating_data)
-    for step, (inputs, inputs_length, targets, targets_length) in enumerate(validating_data):
+    with torch.no_grad():
+        for step, (inputs, inputs_length, targets, targets_length) in enumerate(validating_data):
 
-        if config.training.num_gpu > 0:
-            inputs, inputs_length = inputs.cuda(), inputs_length.cuda()
-            targets, targets_length = targets.cuda(), targets_length.cuda()
+            if config.training.num_gpu > 0:
+                inputs, inputs_length = inputs.cuda(), inputs_length.cuda()
+                targets, targets_length = targets.cuda(), targets_length.cuda()
 
-        max_inputs_length = inputs_length.max().item()
-        max_targets_length = targets_length.max().item()
-        inputs = inputs[:, :max_inputs_length, :]
-        targets = targets[:, :max_targets_length]
-        preds = model.recognize(inputs, inputs_length)  # need module for multi GPU
-        transcripts = [targets.cpu().numpy()[i][:targets_length[i].item()]
-                       for i in range(targets.size(0))]
-        dist, num_words = computer_cer(preds, transcripts)
-        total_dist += dist
-        total_word += num_words
-        #print(preds, transcripts)
-        cer = total_dist / total_word * 100
-        if step % config.training.show_interval == 0:
-            process = step / batch_steps * 100
-            logger.info('-Validation-Epoch:%d(%.5f%%), CER: %.5f %%' % (epoch, process, cer))
+            max_inputs_length = inputs_length.max().item()
+            max_targets_length = targets_length.max().item()
+            inputs = inputs[:, :max_inputs_length, :]
+            targets = targets[:, :max_targets_length]
+            if num_gpu > 1:
+                preds = model.module.recognize(inputs, inputs_length)
+            else:
+                preds = model.recognize(inputs, inputs_length)
+            transcripts = [targets.cpu().numpy()[i][:targets_length[i].item()]
+                           for i in range(targets.size(0))]
+            dist, num_words = computer_cer(preds, transcripts)
+            total_dist += dist
+            total_word += num_words
+            #print(preds, transcripts)
+            cer = total_dist / total_word * 100
+            if step % config.training.show_interval == 0:
+                process = step / batch_steps * 100
+                logger.info('-Validation-Epoch:%d(%.5f%%), CER: %.5f %%' % (epoch, process, cer))
 
-    val_loss = total_loss / (step + 1)
-    logger.info('-Validation-Epoch:%4d, AverageLoss:%.5f, AverageCER: %.5f %%' %
-                (epoch, val_loss, cer))
+        val_loss = total_loss / (step + 1)
+        logger.info('-Validation-Epoch:%4d, AverageLoss:%.5f, AverageCER: %.5f %%' %
+                    (epoch, val_loss, cer))
 
     if visualizer is not None:
         visualizer.add_scalar('cer', cer, epoch)
@@ -166,7 +170,7 @@ def main():
         torch.manual_seed(config.training.seed)
     logger.info('Set random seed: %d' % config.training.seed)
 
-    model = Transducer(config).cuda()
+    model = Transducer(config)
 
     if config.training.fp16_run:
         model = batchnorm_to_float(model.half())
@@ -196,8 +200,6 @@ def main():
             model = torch.nn.DataParallel(model, device_ids=device_ids)
         logger.info('Loaded the model to %d GPUs' % config.training.num_gpu)
 
-   # summary(model, (1, 1375, 80))
-
     n_params, enc, dec = count_parameters(model)
     logger.info('# the number of parameters in the whole model: %d' % n_params)
     logger.info('# the number of parameters in the Encoder: %d' % enc)
@@ -206,8 +208,9 @@ def main():
                 (n_params - dec - enc))
 
     learning_rate = config.optim.lr
-    #optimizer = Optimizer(model.parameters(), config.optim)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay)
+    if config.training.fp16_run:
+        optimizer = FP16_Optimizer(optimizer, dynamic_loss_scale=config.training.dynamic_loss_scaling)
 
     logger.info('Created a %s optimizer.' % config.optim.type)
     iteration = 1
@@ -220,8 +223,7 @@ def main():
     else:
         start_epoch = 0
 
-    if config.training.fp16_run:
-        optimizer = FP16_Optimizer(optimizer, dynamic_loss_scale=config.training.dynamic_loss_scaling)
+
 
     # create a visualizer
     if config.training.visualization:

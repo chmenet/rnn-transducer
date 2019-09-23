@@ -21,8 +21,7 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
 
     beam_width = 5
     topk = 1  # how many sentence do you want to generate
-    #SOS_token = 0
-    #EOS_token = 1
+    utterances = []
 
     zero_token = torch.LongTensor([[0]])
     if encoder_outputs.is_cuda:
@@ -31,21 +30,11 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
     # decoding goes sentence by sentence
     for idx in range(target_tensor[0]):
         decoder_output, decoder_hidden = decoder(zero_token)
-        #inputs_length = inputs_length[idx]
-        #if isinstance(decoder_hiddens, tuple):  # LSTM case
-        #    decoder_hidden = (
-        #        decoder_hiddens[0][:, idx, :].unsqueeze(0), decoder_hiddens[1][:, idx, :].unsqueeze(0))
-        #else:
-        #    decoder_hidden = decoder_hiddens[:, idx, :].unsqueeze(0)
-        encoder_output = encoder_outputs[idx] #[:, idx, :].unsqueeze(1)
-        # Start with the start of the sentence token
-        #decoder_input = torch.LongTensor([[SOS_token]])
-        #if decoder_hiddens.is_cuda:
-        #    decoder_input = "cuda"
+
+        encoder_output = encoder_outputs[idx]
 
         # Number of sentence to generate
         endnodes = []
-        #number_required = min((topk + 1), topk - len(endnodes))
 
         # starting node -  hidden vector, previous node, word id, logp, length
         node = BeamSearchNode(decoder_hidden, None, zero_token, 0, 1)
@@ -61,17 +50,14 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
         decoder_hidden = n.h
         length = inputs_length[idx].item()
         # start beam search
-        for t in range(length): #while True:
+        for t in range(length):
             # give up when decoding takes too long
             if qsize > 2000:
                 break
-            #if n.wordid.item() == EOS_token and n.prevNode != None:
-            #    endnodes.append((score, n))
-            #    break
-            ##################################################################################
+
             # decode for one step using decoder
-            logits = joint(encoder_output[t].view(-1), decoder_output.view(-1)) #decoder_input.item()]
-            out = F.log_softmax(logits, dim=0).detach() #log probability for each class
+            logits = joint(encoder_output[t].view(-1), decoder_output.view(-1))
+            out = F.log_softmax(logits, dim=0).detach()
             pred = torch.argmax(out, dim=0)
             pred = int(pred.item())
             if pred == 0:
@@ -80,15 +66,12 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
             log_prob, indexes = torch.topk(out, beam_width) #remove node except top k
             nextnodes = []
             for new_k in range(beam_width):
-                decoded_t = indexes[new_k].view(1, -1) #.add(1)
-                #if int(decoded_t) == 0 :
-                #    continue
+                decoded_t = indexes[new_k].view(1, -1)
                 log_p = log_prob[new_k].item()
 
                 node = BeamSearchNode(decoder_hidden, n, decoded_t, n.logp + log_p, n.leng + 1)
                 score = -node.eval()
                 nextnodes.append((score, node))
-            ###################################################################################
             # put them into queue
             for i in range(len(nextnodes)):
                 score, nn = nextnodes[i]
@@ -110,7 +93,6 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
         else:
             return [[]]
 
-        utterances = []
         for score, n in sorted(endnodes, key=operator.itemgetter(0)):
             utterance = []
             utterance.append(n.wordid.item())
@@ -120,7 +102,6 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
                 utterance.append(n.wordid.item())
             utterance = utterance[::-1][1:]
             utterances.append(utterance)
-        #decoded_batch.append(utterances)
 
     return utterances
 
