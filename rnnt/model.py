@@ -36,7 +36,7 @@ class RNNTLoss_(Module):
         """
         return self.loss(acts, labels, act_lens, label_lens, self.blank)
 
-def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=None):
+def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None):
     '''
     :param target_tensor: target indexes tensor of shape [B, T] where B is the batch size and T is the maximum length of the output sentence
     :param decoder_hidden: input tensor of shape [1, B, H] for start of the decoding
@@ -53,7 +53,7 @@ def beam_search(decoder, joint, target_tensor, inputs_length, encoder_outputs=No
         zero_token = zero_token.cuda()
 
     # decoding goes sentence by sentence
-    for idx in range(target_tensor[0]):
+    for idx in range(batch_size):
         decoder_output, decoder_hidden = decoder(zero_token)
         encoder_output = encoder_outputs[idx]
 
@@ -254,8 +254,7 @@ class Transducer(nn.Module):
         inputs = self.parse_input(inputs)
         inputs_length = self.parse_input(inputs_length)
         enc_states, _ = self.encoder(inputs, inputs_length)
-        target_tensor = torch.from_numpy(np.array([batch_size, max(inputs_length)], dtype=np.int8))
-        results = beam_search(self.decoder, self.joint, target_tensor, inputs_length, enc_states)
+        results = beam_search(self.decoder, self.joint, batch_size, inputs_length, enc_states)
 
         return results
 
