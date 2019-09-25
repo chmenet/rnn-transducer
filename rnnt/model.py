@@ -144,7 +144,7 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
                     if encoder_output.is_cuda:
                         decoder_input = decoder_input.cuda()
                     decoder_hidden = n.h
-                    decoder_output, decoder_hidden = decoder(decoder_input, hiddens=decoder_hidden)
+                    decoder_output, decoder_hidden = decoder(decoder_input, hidden=decoder_hidden)
 
                     # decode for one step using decoder
                     logits = joint(encoder_output[t].view(-1), decoder_output.view(-1))

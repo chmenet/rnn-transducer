@@ -11,7 +11,7 @@ from rnnt.dataset import AudioDataset, TextMelCollate
 from tensorboardX import SummaryWriter
 from rnnt.utils import AttrDict, init_logger, count_parameters, save_model, computer_cer
 from rnnt.fp16_optimizer import FP16_Optimizer
-from pytorch_lamb import Lamb, log_lamb_rs0
+from pytorch_lamb import Lamb, log_lamb_rs
 
 #from torchsummary import summary
 
