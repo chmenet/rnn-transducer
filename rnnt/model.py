@@ -346,7 +346,7 @@ class Transducer(nn.Module):
         inputs_length = self.parse_input(inputs_length)
         batch_size = inputs.size(0)
 
-        enc_states, _ = self.encoder(inputs)
+        enc_states, _ = self.encoder(inputs, inputs_length)
 
         zero_token = torch.LongTensor([[0]])
         if inputs.is_cuda:
