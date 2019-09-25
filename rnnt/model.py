@@ -190,6 +190,8 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
                 for score, n in prev_topk:
                     nodes.put((score, n))
                 break
+            elif t == length:
+                break
 
         # choose nbest paths, back trace them
         if qsize > 1:
