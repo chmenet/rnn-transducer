@@ -85,7 +85,6 @@ def save_model(model, optimizer, iteration, learning_rate, config, save_name):
         'iteration': iteration,
         'learning_rate': learning_rate,
         'epoch': optimizer.current_epoch,
-        'step': iteration
     }
 
     torch.save(checkpoint, save_name)

@@ -11,7 +11,7 @@ from rnnt.dataset import AudioDataset, TextMelCollate
 from tensorboardX import SummaryWriter
 from rnnt.utils import AttrDict, init_logger, count_parameters, save_model, computer_cer
 from rnnt.fp16_optimizer import FP16_Optimizer
-from pytorch_lamb import Lamb, log_lamb_rs
+from pytorch_lamb import Lamb, log_lamb_rs0
 
 #from torchsummary import summary
 
@@ -90,6 +90,7 @@ def train(epoch, config, model, training_data, optimizer, logger, iteration, lea
                 (epoch, total_loss / (step + 1), end_epoch - start_epoch))
     optimizer.current_epoch = epoch
 
+    return iteration
 
 def eval(epoch, config, model, validating_data, logger, visualizer=None):
     model.eval()
@@ -226,7 +227,7 @@ def main():
     if opt.mode == 'continue':
         optimizer.load_state_dict(checkpoint['optimizer'])
         start_epoch = checkpoint['epoch'] + 1
-        iteration = checkpoint['step'] + 1
+        iteration = checkpoint['iteration'] + 1
         learning_rate = checkpoint['learning_rate']
         logger.info('Load Optimizer State!')
     else:
@@ -243,7 +244,7 @@ def main():
 
     for epoch in range(start_epoch, config.training.epochs):
 
-        train(epoch, config, model, training_data,
+        iteration = train(epoch, config, model, training_data,
               optimizer, logger, iteration, learning_rate, visualizer)
         _ = eval(epoch, config, model, validate_data, logger, visualizer)
 
