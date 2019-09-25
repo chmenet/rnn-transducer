@@ -76,6 +76,7 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
         length = inputs_length[idx].item()
         # start beam search
         t=0
+        prev_topk = []
         while True:
             # give up when decoding takes too long
             if t == 0:
@@ -185,9 +186,11 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
                         score, n = nodes.get()
                         prev_topk.append((score, n))
                 t = t+1
-            if t == length:
+            if t == length and len(prev_topk) > 0:
                 for score, n in prev_topk:
                     nodes.put((score, n))
+                break
+            elif t == length:
                 break
 
         # choose nbest paths, back trace them
