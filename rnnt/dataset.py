@@ -140,14 +140,16 @@ class TextMelCollate():
         batch: [[text_normalized, mel_normalized], ...]
         """
         # Right zero-pad all one-hot text sequences to max input length
-        targets_length, ids_sorted_decreasing = torch.sort(
-            torch.LongTensor([len(x[0]) for x in batch]),
-            dim=0, descending=True)
-        max_target_len = targets_length[0]
+        # targets_length, ids_sorted_decreasing = torch.sort(
+        #     torch.LongTensor([len(x[0]) for x in batch]),
+        #     dim=0, descending=True)
+        num_batch = len(batch)
+        targets_length = torch.LongTensor([len(x[0]) for x in batch])
+        max_target_len = targets_length.max()
         text_padded = torch.LongTensor(len(batch), max_target_len)
         text_padded.zero_()
-        for i in range(len(ids_sorted_decreasing)):
-            text = torch.from_numpy(batch[ids_sorted_decreasing[i]][0])
+        for i in range(num_batch):
+            text = torch.from_numpy(batch[i][0])
             text_padded[i, :text.size(0)] = text
 
         # Right zero-pad mel-spec
@@ -162,8 +164,8 @@ class TextMelCollate():
         mel_padded = torch.FloatTensor(len(batch), max_mel_len, num_mels)
         mel_padded.zero_()
         mel_lengths = torch.LongTensor(len(batch))
-        for i in range(len(ids_sorted_decreasing)):
-            mel = batch[ids_sorted_decreasing[i]][1]
+        for i in range(num_batch):
+            mel = batch[i][1]
             mel = torch.transpose(mel, 0, 1)
             mel_padded[i, :mel.size(0), :] = mel
             mel_lengths[i] = mel.size(0)
