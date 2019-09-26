@@ -256,7 +256,7 @@ def main():
         if epoch >= config.optim.begin_to_adjust_lr:
             learning_rate *= config.optim.decay_ratio
             # # early stop
-            if optimizer.lr < 1e-7:
+            if learning_rate < 1e-7:
                 logger.info('The learning rate is too low to train.')
                 break
             logger.info('Epoch %d update learning rate: %.6f' %
