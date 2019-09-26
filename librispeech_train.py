@@ -12,7 +12,7 @@ from rnnt.optim import Optimizer
 from rnnt.dataloader_librispeech import AudioDataset, TextMelCollate
 from tensorboardX import SummaryWriter
 from rnnt.utils_aihub import AttrDict, init_logger, count_parameters, save_model, computer_cer
-from torchsummary import summary
+#from torchsummary import summary
 from rnnt.fp16_optimizer import FP16_Optimizer
 
 
@@ -33,7 +33,7 @@ def train(epoch, config, model, training_data, optimizer, logger, iteration, lea
     batch_steps = len(training_data)
 
     for step, (inputs, inputs_length, targets, targets_length) in enumerate(training_data):
-        
+        learning_rate *= config.optim.decay_ratio
         for param_group in optimizer.param_groups:
             param_group['lr'] = learning_rate
             
@@ -96,7 +96,6 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
     total_word = 0
     batch_steps = len(validating_data)
     for step, (inputs, inputs_length, targets, targets_length) in enumerate(validating_data):
-
         if config.training.num_gpu > 0:
             inputs, inputs_length = inputs.cuda(), inputs_length.cuda()
             targets, targets_length = targets.cuda(), targets_length.cuda()
@@ -237,7 +236,6 @@ def main():
         visualizer = None
 
     for epoch in range(start_epoch, config.training.epochs):
-
         train(epoch, config, model, training_data,
               optimizer, logger, iteration, learning_rate, visualizer)
         _ = eval(epoch, config, model, validate_data, logger, visualizer)
