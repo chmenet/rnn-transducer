@@ -14,7 +14,7 @@ from tensorboardX import SummaryWriter
 from rnnt.utils_aihub import AttrDict, init_logger, count_parameters, save_model, computer_cer
 #from torchsummary import summary
 from rnnt.fp16_optimizer import FP16_Optimizer
-
+from pytorch_lamb import Lamb, log_lamb_rs
 
 def batchnorm_to_float(module):
     """Converts batch norm modules to FP32"""
@@ -33,7 +33,7 @@ def train(epoch, config, model, training_data, optimizer, logger, iteration, lea
     batch_steps = len(training_data)
 
     for step, (inputs, inputs_length, targets, targets_length) in enumerate(training_data):
-        
+        learning_rate *= config.optim.decay_ratio
         for param_group in optimizer.param_groups:
             param_group['lr'] = learning_rate
             
@@ -88,6 +88,7 @@ def train(epoch, config, model, training_data, optimizer, logger, iteration, lea
                 (epoch, total_loss / (step + 1), end_epoch - start_epoch))
     optimizer.current_epoch = epoch
 
+    return iteration
 
 def eval(epoch, config, model, validating_data, logger, visualizer=None):
     model.eval()
@@ -106,7 +107,7 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
             max_targets_length = targets_length.max().item()
             inputs = inputs[:, :max_inputs_length, :]
             targets = targets[:, :max_targets_length]
-            if num_gpu > 1:
+            if config.training.num_gpu > 1:
                 preds = model.module.recognize(inputs, inputs_length)
             else:
                 preds = model.recognize(inputs, inputs_length)
@@ -115,7 +116,7 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
             dist, num_words = computer_cer(preds, transcripts)
             total_dist += dist
             total_word += num_words
-            #print(preds, transcripts)
+
             cer = total_dist / total_word * 100
             if step % config.training.show_interval == 0:
                 process = step / batch_steps * 100
@@ -208,7 +209,9 @@ def main():
                 (n_params - dec - enc))
 
     learning_rate = config.optim.lr
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay)
+    optimizer = Lamb(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay, betas=(.9, .999), adam= True)
+
+    #optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay)
     if config.training.fp16_run:
         optimizer = FP16_Optimizer(optimizer, dynamic_loss_scale=config.training.dynamic_loss_scaling)
 
@@ -217,7 +220,7 @@ def main():
     if opt.mode == 'continue':
         optimizer.load_state_dict(checkpoint['optimizer'])
         start_epoch = checkpoint['epoch'] + 1
-        iteration = checkpoint['step'] + 1
+        iteration = checkpoint['iteration'] + 1
         learning_rate = checkpoint['learning_rate']
         logger.info('Load Optimizer State!')
     else:
@@ -234,10 +237,10 @@ def main():
 
     for epoch in range(start_epoch, config.training.epochs):
 
-        train(epoch, config, model, training_data,
+        iteration = train(epoch, config, model, training_data,
               optimizer, logger, iteration, learning_rate, visualizer)
-
         _ = eval(epoch, config, model, validate_data, logger, visualizer)
+
         if config.training.eval_or_not and (epoch % config.training.save_interval) == 0:
             save_name = os.path.join(exp_name, '%s.epoch%d.chkpt' % (config.training.save_model, epoch))
             save_model(model, optimizer, iteration, learning_rate, config, save_name)

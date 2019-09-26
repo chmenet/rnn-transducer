@@ -13,12 +13,10 @@ from rnnt.fp16_optimizer import fp32_to_fp16, fp16_to_fp32
 
 def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None):
     '''
-    :param target_tensor: target indexes tensor of shape [B, T] where B is the batch size and T is the maximum length of the output sentence
     :param decoder_hidden: input tensor of shape [1, B, H] for start of the decoding
     :param encoder_outputs: if you are using attention mechanism you can pass encoder outputs, [T, B, H] where T is the maximum length of input sentence
     :return: decoded_batch
     '''
-
     beam_width = 3
     topk = 1  # how many sentence do you want to generate
     utterances = []
@@ -31,7 +29,6 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
 
     for idx in range(batch_size):
         decoder_output, decoder_hidden = decoder(zero_token)
-
         encoder_output = encoder_outputs[idx]
 
         # Number of sentence to generate
@@ -52,18 +49,15 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
         length = inputs_length[idx].item()
         # start beam search
         t=0
+        prev_topk = []
         while True:
-        #for t in range(length):
-
             # give up when decoding takes too long
             if t == 0:
                 decoder_output, decoder_hidden = decoder(zero_token)
-
                 encoder_output = encoder_outputs[idx]
 
                 # Number of sentence to generate
                 endnodes = []
-
                 # starting node -  hidden vector, previous node, word id, logp, length
                 node = BeamSearchNode(decoder_hidden, None, zero_token, 0, 1)
                 nodes = PriorityQueue()
@@ -89,7 +83,7 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
                     pred = torch.argmax(out, dim=0)
                     pred = int(pred.item())
                     if pred == 0:
-                        t=t+1
+                        t = t+1
                         continue
                     # PUT HERE REAL BEAM SEARCH OF TOP
                     log_prob, indexes = torch.topk(out, beam_width)  # remove node except top k
@@ -165,9 +159,11 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
                         score, n = nodes.get()
                         prev_topk.append((score, n))
                 t = t+1
-            if t == length:
+            if t == length and len(prev_topk) > 0:
                 for score, n in prev_topk:
                     nodes.put((score, n))
+                break
+            elif t == length:
                 break
 
         # choose nbest paths, back trace them
@@ -280,6 +276,7 @@ class Transducer(nn.Module):
         concat_targets = F.pad(targets, pad=(1, 0, 0, 0), value=0)
         dec_state, _ = self.decoder(concat_targets, targets_length.add(1))
         logits = self.joint(enc_state, dec_state)
+        logits = F.log_softmax(logits, dim=3)
         logits = self.parse_output(logits)
         loss = self.crit(logits, targets.int(), inputs_length.int(), targets_length.int())
 
