@@ -111,9 +111,9 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
             targets = targets[:, :max_targets_length]
 
             if config.training.num_gpu > 1:
-                preds = model.module.recognize(inputs, inputs_length)
+                preds = model.module.greedy_recognize(inputs, inputs_length)
             else:
-                preds = model.recognize(inputs, inputs_length)
+                preds = model.greedy_recognize(inputs, inputs_length)
 
             transcripts = [targets.cpu().numpy()[i][:targets_length[i].item()]
                            for i in range(targets.size(0))]
