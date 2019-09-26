@@ -313,7 +313,7 @@ class Transducer(nn.Module):
         dec_state, _ = self.decoder(concat_targets, targets_length.add(1))
 
         logits = self.joint(enc_state, dec_state)
-        logits = F.log_softmax(logits, dim=3)
+        logits = F.log_softmax(logits, dim=-1)
         logits = self.parse_output(logits)
 
         # loss1, grad  = warp_rnnt_core.rnnt_loss(logits, targets.int(), inputs_length.int(), targets_length.int())

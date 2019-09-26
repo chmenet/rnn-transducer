@@ -254,11 +254,11 @@ def main():
             logger.info('Epoch %d model has been saved.' % epoch)
 
         if epoch >= config.optim.begin_to_adjust_lr:
-            # optimizer.decay_lr()
+            learning_rate *= config.optim.decay_ratio
             # # early stop
-            # if optimizer.lr < 1e-6:
-            #     logger.info('The learning rate is too low to train.')
-            #     break
+            if optimizer.lr < 1e-7:
+                logger.info('The learning rate is too low to train.')
+                break
             logger.info('Epoch %d update learning rate: %.6f' %
                         (epoch, learning_rate))
     logger.info('The training process is OVER!')
