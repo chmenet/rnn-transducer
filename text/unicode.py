@@ -8,7 +8,7 @@ FINAL = 0x100
 CHAR_LISTS = {
     INITIAL: list('ᄀᄁᄂᄃᄄᄅᄆᄇᄈᄉᄊᄋᄌᄍᄎᄏᄐᄑᄒ'),
     MEDIAL: list('ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ'),
-    FINAL: list('ㄱㄲㄳㄴㄵㄶㅇㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ')
+    FINAL: list('ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ')
 }
 CHAR_INITIALS = CHAR_LISTS[INITIAL]
 CHAR_MEDIALS = CHAR_LISTS[MEDIAL]
