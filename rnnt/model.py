@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import Module
-from rnnt.encoder import BaseEncoder
+from rnnt.encoder import BaseEncoder, TacoEncoder
 from rnnt.decoder import BaseDecoder
 from warprnnt_pytorch import RNNTLoss
 import warp_rnnt._C as warp_rnnt_core
@@ -270,11 +270,9 @@ class Transducer(nn.Module):
         # define encoder
         self.config = config.model
         self.fp16_run = config.training.fp16_run
-        self.encoder = BaseEncoder(
-            input_size=config.model.feature_dim * config.model.stacking,
-            hidden_size=config.model.enc.hidden_size,
-            projection_size=config.model.enc.projection_size,
-            n_layers=config.model.enc.n_layers)
+        self.encoder = TacoEncoder(
+            in_dim=config.model.feature_dim * config.model.stacking,
+            sizes=[config.model.enc.hidden_size, config.model.enc.hidden_size, config.model.enc.output_size])
         # define decoder
         self.decoder = BaseDecoder(
             input_size=config.model.vocab_size,
@@ -287,11 +285,9 @@ class Transducer(nn.Module):
             inner_dim=config.model.joint.inner_size,
             vocab_size=config.model.vocab_size
             )
-
         if config.model.share_embedding:
             assert self.decoder.embedding.weight.size() == self.joint.project_layer.weight.size(), '%d != %d' % (self.decoder.embedding.weight.size(1),  self.joint.project_layer.weight.size(1))
             self.joint.project_layer.weight = self.decoder.embedding.weight
-
         self.crit = RNNTLoss()
         self.crit2 = RNNTLoss_()
 
