@@ -43,7 +43,7 @@ def init_logger(log_file=None):
 
 
 def computer_cer(preds, labels):
-    dist = sum(editdistance.eval(label, pred) for label, pred in zip(labels, preds))
+    dist = sum(editdistance.eval(list(label), pred) for label, pred in zip(labels, preds))
     total = sum(len(l) for l in labels)
     return dist, total
 
@@ -85,7 +85,6 @@ def save_model(model, optimizer, iteration, learning_rate, config, save_name):
         'iteration': iteration,
         'learning_rate': learning_rate,
         'epoch': optimizer.current_epoch,
-        'step': iteration
     }
 
     torch.save(checkpoint, save_name)

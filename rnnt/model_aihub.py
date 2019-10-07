@@ -17,7 +17,7 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
     :param encoder_outputs: if you are using attention mechanism you can pass encoder outputs, [T, B, H] where T is the maximum length of input sentence
     :return: decoded_batch
     '''
-    beam_width = 3
+    beam_width = 4
     topk = 1  # how many sentence do you want to generate
     utterances = []
 

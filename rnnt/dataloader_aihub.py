@@ -70,7 +70,7 @@ class AudioDataset(Dataset):
     def __getitem__(self, index):
         utt_id = self.feats_list[index]
         feats_path = self.feats_dict[utt_id]
-        features = self.get_mel(os.path.join(self.config.base_path, feats_path))
+        features = self.get_mel(feats_path)
         features = features.transpose(0, 1)
         features = self.concat_frame(features)
         features = self.subsampling(features)
