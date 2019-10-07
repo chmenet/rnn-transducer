@@ -231,6 +231,7 @@ def tokenizer_fn(iterator, symbol_type):
 
 def normalize(text):
     text = text.strip()
+    text = text.upper()
 
     text = text.replace("'", "")
     text = text.replace('"', "")
@@ -285,8 +286,8 @@ def normalize_quote(text):
 
     return re.sub(quote_checker, fn, text)
 
-number_checker = "([+-]?\d[\d,]*)[\.]?\d*"
-count_checker = "(시|명|가지|살|마리|포기|송이|수|톨|통|점|개|벌|척|채|다발|그루|자루|줄|켤레|그릇|잔|마디|상자|사람|곡|병|판)"
+number_checker = "([+-]?\d[\d,]*)[\.]?\d*\s*?"
+count_checker = "(시|명|가지|컵|끼|가구|큰술|살|마리|포기|송이|수|톨|통|개(?!월)|벌|척|채|다발|그루|자리|자루|줄|켤레|그릇|잔|마디|상자|사람|곡|병|판|달)" # 개는 포함하고 개월은 빼야됨 # 번(13번 버스, 열세번)
 
 def normalize_number(text):
     text = normalize_with_dictionary(text, unit_to_kor1)
