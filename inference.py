@@ -85,8 +85,10 @@ def audio_path_to_text(audio_path, model, stft, config):
         mel, mel_lengths = mel.cuda(), mel_lengths.cuda()
     # print(mel.shape)
     recog_indexes = model.recognize(mel, mel_lengths)
-    result_seq = [r for r in recog_indexes[0]]
-    return sequence_to_text(result_seq)
+    result = []
+    for seq in recog_indexes:
+        result.append(sequence_to_text(seq))
+    return result
 
 
 def inference(config, cpath, ipath):
