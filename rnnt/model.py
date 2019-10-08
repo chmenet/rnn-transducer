@@ -44,8 +44,8 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
     :return: decoded_batch
     '''
 
-    beam_width = 3
-    topk = 1  # how many sentence do you want to generate
+    beam_width = 2
+    topk = 3  # how many sentence do you want to generate
     utterances = []
 
     zero_token = torch.LongTensor([[0]])
@@ -353,7 +353,7 @@ class Transducer(nn.Module):
             dec_state, hidden = self.decoder(zero_token)
             for t in range(lengths):
                 logits = self.joint(enc_state[t].view(-1), dec_state.view(-1))
-                out = F.log_softmax(logits, dim=0).detach()
+                out = F.log_softmax(logits, dim=-1).detach()
                 pred = torch.argmax(out, dim=0)
                 pred = int(pred.item())
                 if pred != 0:

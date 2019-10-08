@@ -24,7 +24,7 @@ class Prenet(nn.Module):
 
     def forward(self, x):
         for linear in self.layers:
-            x = F.dropout(F.relu(linear(x)), p=0.5, training=True)
+            x = F.dropout(F.relu(linear(x)), p=0.15, training=self.training)
         return x
 
 class TacoEncoder(nn.Module):
@@ -47,7 +47,7 @@ class TacoEncoder(nn.Module):
             hx = hx[indices]
 
         self.lstm.flatten_parameters()
-        if input_lengths is not None: hx = nn.utils.rnn.pack_padded_sequence(hx, input_lengths, batch_first=True)
+        if input_lengths is not None: hx = nn.utils.rnn.pack_padded_sequence(hx, sorted_seq_lengths, batch_first=True)
         hx, hidden = self.lstm(hx) if hidden is None else self.lstm(hx, hidden)
         if input_lengths is not None: hx, _ = nn.utils.rnn.pad_packed_sequence(hx)
         hx = hx.transpose(0, 1)
@@ -56,7 +56,7 @@ class TacoEncoder(nn.Module):
             _, desorted_indices = torch.sort(indices, descending=False)
             hx = hx[desorted_indices]
 
-        return hx
+        return hx, hidden
 
 class BaseEncoder(nn.Module):
     def __init__(self, input_size, hidden_size, projection_size, n_layers = 1):

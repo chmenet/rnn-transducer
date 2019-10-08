@@ -85,8 +85,10 @@ def audio_path_to_text(audio_path, model, stft, config):
         mel, mel_lengths = mel.cuda(), mel_lengths.cuda()
     # print(mel.shape)
     recog_indexes = model.recognize(mel, mel_lengths)
-    result_seq = [r for r in recog_indexes[0]]
-    return sequence_to_text(result_seq)
+    result = []
+    for seq in recog_indexes:
+        result.append(sequence_to_text(seq))
+    return result
 
 
 def inference(config, cpath, ipath):
@@ -122,6 +124,7 @@ if __name__ == '__main__':
         python inference.py -config egs/AIhub/exp/aihub_test/config.yaml -cpath egs/AIhub/exp/aihub_test/aihub_test.epoch0.chkpt -ipath aihub_test.txt
         python inference.py -config egs/AIhub/exp/AIhub/config.yaml -cpath ./egs/AIhub/exp/aihub_test_beam_0910.chkpt -ipath aihub_test.txt
         python inference.py -config egs/AIhub/exp/aihub_q3_fp16/config.yaml -cpath egs/AIhub/exp/aihub_q3_fp16/aihub_q3_fp16.epoch32.chkpt -ipath aihub_test.txt
+        python inference.py -config egs/AIhub/exp/aihub_tacoenc_test2/config.yaml -cpath egs/AIhub/exp/aihub_tacoenc_test2/aihub_tacoenc_test2.epoch246.chkpt -ipath aihub_test.txt
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('-config', type=str, default='config/aihub.yaml')
