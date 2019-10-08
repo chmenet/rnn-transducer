@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import Module
-from rnnt.encoder import BaseEncoder
+from rnnt.encoder import SamsungEncoder
 from rnnt.decoder import BaseDecoder
 from warprnnt_pytorch import RNNTLoss
 import warp_rnnt._C as warp_rnnt_core
@@ -270,11 +270,14 @@ class Transducer(nn.Module):
         # define encoder
         self.config = config.model
         self.fp16_run = config.training.fp16_run
-        self.encoder = BaseEncoder(
+        self.encoder = SamsungEncoder(
             input_size=config.model.feature_dim * config.model.stacking,
-            hidden_size=config.model.enc.hidden_size,
-            projection_size=config.model.enc.projection_size,
-            n_layers=config.model.enc.n_layers)
+            n_layers = config.model.enc.n_layers,
+            output_sizes = [config.model.enc.hidden_size] * config.model.enc.n_layers,
+            pad_sizes = [2 if (config.model.enc.reduction_size / (2^(i))) > 1 else 1 for i in range(config.model.enc.n_layers)],
+            dropout = 0.3,
+            bidirectional=True
+            )
         # define decoder
         self.decoder = BaseDecoder(
             input_size=config.model.vocab_size,
