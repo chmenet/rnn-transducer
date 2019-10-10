@@ -76,11 +76,6 @@ def train(epoch, config, model, training_data, optimizer, logger, iteration, lea
             visualizer.add_scalar(
                 'learn_rate', learning_rate, iteration)
 
-            for tag, value in model.named_parameters():
-                tag = tag.replace('.', '/')
-                visualizer.add_histogram(tag, value.data.cpu().numpy(), iteration)
-                visualizer.add_histogram(tag + '/grad', value.grad.data.cpu().numpy(), iteration)
-
         avg_loss = total_loss / (step + 1)
         if not overflow and iteration % config.training.show_interval == 0:
             end = time.process_time()
@@ -88,6 +83,11 @@ def train(epoch, config, model, training_data, optimizer, logger, iteration, lea
             logger.info('-Training-Epoch:%d(%.5f%%), Global Step:%d, Learning Rate:%.6f, Grad Norm:%.5f, Loss:%.5f, '
                         'AverageLoss: %.5f, Run Time:%.3f' % (epoch, process, iteration, learning_rate,
                                                               grad_norm, loss.item(), avg_loss, end - start))
+            for tag, value in model.named_parameters():
+                tag = tag.replace('.', '/')
+                visualizer.add_histogram(tag, value.data.cpu().numpy(), iteration)
+                visualizer.add_histogram(tag + '/grad', value.grad.data.cpu().numpy(), iteration)
+
         iteration += 1
 
     end_epoch = time.process_time()
