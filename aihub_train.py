@@ -33,7 +33,6 @@ def train(epoch, config, model, training_data, optimizer, logger, iteration, lea
     batch_steps = len(training_data)
 
     for step, (inputs, inputs_length, targets, targets_length) in enumerate(training_data):
-        learning_rate *= config.optim.decay_ratio
         for param_group in optimizer.param_groups:
             param_group['lr'] = learning_rate
             
@@ -130,7 +129,7 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
         visualizer.add_scalar('cer', cer, epoch)
         for tag, value in model.named_parameters():
             tag = tag.replace('.', '/')
-            visualizer.add_histogram(tag, value.data.cpu().numpy(), epoch) 
+            visualizer.add_histogram(tag, value.data.cpu().numpy(), epoch)
 
     return cer
 
@@ -227,7 +226,7 @@ def main():
         learning_rate = checkpoint['learning_rate']
         logger.info('Load Optimizer State!')
     else:
-        start_epoch = 0
+        start_epoch = 1
 
 
 
@@ -249,14 +248,13 @@ def main():
             save_model(model, optimizer, iteration, learning_rate, config, save_name)
             logger.info('Epoch %d model has been saved.' % epoch)
 
-        if epoch >= config.optim.begin_to_adjust_lr:
-            optimizer.decay_lr()
+        if epoch%10==0: #>= config.optim.begin_to_adjust_lr:
+            learning_rate *= config.optim.decay_ratio
             # early stop
             if optimizer.lr < 1e-6:
                 logger.info('The learning rate is too low to train.')
                 break
-            logger.info('Epoch %d update learning rate: %.6f' %
-                        (epoch, optimizer.lr))
+
     logger.info('The training process is OVER!')
 
 
