@@ -83,10 +83,6 @@ def train(epoch, config, model, training_data, optimizer, logger, iteration, lea
             logger.info('-Training-Epoch:%d(%.5f%%), Global Step:%d, Learning Rate:%.6f, Grad Norm:%.5f, Loss:%.5f, '
                         'AverageLoss: %.5f, Run Time:%.3f' % (epoch, process, iteration, learning_rate,
                                                               grad_norm, loss.item(), avg_loss, end - start))
-            for tag, value in model.named_parameters():
-                tag = tag.replace('.', '/')
-                visualizer.add_histogram(tag, value.data.cpu().numpy(), iteration)
-                #visualizer.add_histogram(tag + '/grad', value.grad.data.cpu().numpy(), iteration)
 
         iteration += 1
 
@@ -137,6 +133,10 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
 
     if visualizer is not None:
         visualizer.add_scalar('cer', cer, epoch)
+        for tag, value in model.named_parameters():
+            tag = tag.replace('.', '/')
+            visualizer.add_histogram(tag, value.data.cpu().numpy(), epoch)
+            # visualizer.add_histogram(tag + '/grad', value.grad.data.cpu().numpy(), epoch)
 
     return cer
 
