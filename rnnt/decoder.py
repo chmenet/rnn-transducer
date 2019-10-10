@@ -18,7 +18,8 @@ class BaseDecoder(nn.Module):
                     num_layers=1,
                 ),
                 nn.LayerNorm(hidden_size),
-                nn.Linear(hidden_size, projection_size))
+                nn.Linear(hidden_size, projection_size)),
+                nn.Tanh()
         )
         for i in range(n_layers - 1):
             self.layers.append(
@@ -29,7 +30,8 @@ class BaseDecoder(nn.Module):
                         num_layers=1,
                     ),
                     nn.LayerNorm(hidden_size),
-                    nn.Linear(hidden_size, projection_size))
+                    nn.Linear(hidden_size, projection_size)),
+                    nn.Tanh()
             )
 
         if share_weight:
@@ -50,6 +52,7 @@ class BaseDecoder(nn.Module):
             LSTM = ith_layer_set[0]
             LN = ith_layer_set[1]
             Projection = ith_layer_set[2]
+            tanh = ith_layer_set[3]
 
             LSTM.flatten_parameters()
             # print(previous_output.shape)
@@ -57,7 +60,7 @@ class BaseDecoder(nn.Module):
             outputs_lstm, hidden = LSTM(previous_output) if hiddens is None else LSTM(previous_output, hiddens[i])
             if input_lengths is not None: outputs_lstm, _ = nn.utils.rnn.pad_packed_sequence(outputs_lstm)
             outputs_lstm = outputs_lstm.transpose(0, 1)
-            projected_output = nn.Tanh(Projection(LN(outputs_lstm)))
+            projected_output = tanh(Projection(LN(outputs_lstm)))
             previous_output = projected_output
             next_hiddens.append(hidden)
 
