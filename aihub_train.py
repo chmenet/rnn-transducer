@@ -71,7 +71,7 @@ def train(epoch, config, model, training_data, optimizer, logger, iteration, lea
             visualizer.add_scalar(
                 'train_loss', loss.item(), iteration)
             visualizer.add_scalar(
-                'learn_rate', learning_rate, iteration)
+                'learn_rate', learning_rate, iteration) 
 
         avg_loss = total_loss / (step + 1)
         if not overflow and iteration % config.training.show_interval == 0:
