@@ -4,7 +4,7 @@ from torch.nn import functional as F
 
 class SamsungEncoder(nn.Module):
     def __init__(self, input_size, output_sizes, pad_sizes, n_layers=1,dropout = 0.3, bidirectional = True):
-        super(BaseEncoder, self).__init__()
+        super(SamsungEncoder, self).__init__()
         self.layers = nn.ModuleList()
 
         in_sizes = [input_size] + output_sizes[:-1]

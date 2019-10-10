@@ -270,11 +270,12 @@ class Transducer(nn.Module):
         # define encoder
         self.config = config.model
         self.fp16_run = config.training.fp16_run
+
         self.encoder = SamsungEncoder(
             input_size=config.model.feature_dim * config.model.stacking,
             n_layers = config.model.enc.n_layers,
             output_sizes = [config.model.enc.hidden_size] * config.model.enc.n_layers,
-            pad_sizes = [2 if (config.model.enc.reduction_size / (2^(i))) > 1 else 1 for i in range(config.model.enc.n_layers)],
+            pad_sizes = [2 if (config.model.enc.reduction_size / 2**(i) ) > 1 else 1 for i in range(config.model.enc.n_layers)],
             dropout = 0.3,
             bidirectional=True
             )
