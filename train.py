@@ -86,7 +86,7 @@ def train(epoch, config, model, training_data, optimizer, logger, iteration, lea
             for tag, value in model.named_parameters():
                 tag = tag.replace('.', '/')
                 visualizer.add_histogram(tag, value.data.cpu().numpy(), iteration)
-                visualizer.add_histogram(tag + '/grad', value.grad.data.cpu().numpy(), iteration)
+                #visualizer.add_histogram(tag + '/grad', value.grad.data.cpu().numpy(), iteration)
 
         iteration += 1
 
