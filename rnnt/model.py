@@ -44,8 +44,8 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
     :return: decoded_batch
     '''
 
-    beam_width = 2
-    topk = 3  # how many sentence do you want to generate
+    beam_width = 5
+    topk = 4  # how many sentence do you want to generate
     utterances = []
 
     zero_token = torch.LongTensor([[0]])
