@@ -18,8 +18,9 @@ class BaseDecoder(nn.Module):
                     num_layers=1,
                 ),
                 nn.LayerNorm(hidden_size),
-                nn.Linear(hidden_size, projection_size)),
-                nn.Tanh()
+                nn.Linear(hidden_size, projection_size),
+                nn.Tanh())
+
         )
         for i in range(n_layers - 1):
             self.layers.append(
@@ -30,8 +31,8 @@ class BaseDecoder(nn.Module):
                         num_layers=1,
                     ),
                     nn.LayerNorm(hidden_size),
-                    nn.Linear(hidden_size, projection_size)),
-                    nn.Tanh()
+                    nn.Linear(hidden_size, projection_size),
+                    nn.Tanh())
             )
 
         if share_weight:

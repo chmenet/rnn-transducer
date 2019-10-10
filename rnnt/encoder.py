@@ -14,8 +14,9 @@ class BaseEncoder(nn.Module):
                     num_layers = 1,
                 ),
                 nn.LayerNorm(hidden_size),
-                nn.Linear(hidden_size, projection_size)),
-                nn.Tanh()
+                nn.Linear(hidden_size, projection_size),
+                nn.Tanh())
+
         )
         for i in range(n_layers-1):
             self.layers.append(
@@ -26,8 +27,9 @@ class BaseEncoder(nn.Module):
                         num_layers=1,
                     ),
                     nn.LayerNorm(hidden_size),
-                    nn.Linear(hidden_size, projection_size)),
-                    nn.Tanh()
+                    nn.Linear(hidden_size, projection_size),
+                    nn.Tanh()),
+
             )
 
     def forward(self, inputs, input_lengths, hiddens = None):
