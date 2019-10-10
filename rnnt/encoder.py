@@ -49,7 +49,7 @@ class BaseEncoder(nn.Module):
             if input_lengths is not None: outputs_lstm, _ = nn.utils.rnn.pad_packed_sequence(outputs_lstm)
             outputs_lstm = outputs_lstm.transpose(0,1)
             #print(outputs_lstm.shape)
-            projected_output = Projection(LN(outputs_lstm))
+            projected_output = nn.Tanh(Projection(LN(outputs_lstm)))
             #print(projected_output.shape)
             previous_output = projected_output
             next_hiddens.append(hidden)

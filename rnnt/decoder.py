@@ -57,7 +57,7 @@ class BaseDecoder(nn.Module):
             outputs_lstm, hidden = LSTM(previous_output) if hiddens is None else LSTM(previous_output, hiddens[i])
             if input_lengths is not None: outputs_lstm, _ = nn.utils.rnn.pad_packed_sequence(outputs_lstm)
             outputs_lstm = outputs_lstm.transpose(0, 1)
-            projected_output = Projection(LN(outputs_lstm))
+            projected_output = nn.Tanh(Projection(LN(outputs_lstm)))
             previous_output = projected_output
             next_hiddens.append(hidden)
 
