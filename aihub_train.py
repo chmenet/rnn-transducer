@@ -128,6 +128,9 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
 
     if visualizer is not None:
         visualizer.add_scalar('cer', cer, epoch)
+        for tag, value in model.named_parameters():
+            tag = tag.replace('.', '/')
+            visualizer.add_histogram(tag, value.data.cpu().numpy(), epoch)
 
     return cer
 
