@@ -1,8 +1,13 @@
 jamo
 hangul_jamo
-pathlib
-os
 torch
-yaml
+pyaml
 shutil
+librosa
 tensorboardX
+tensorboard
+editdistance
+libsndfile1
+unidecode
+inflect
+pytorch_lamb
