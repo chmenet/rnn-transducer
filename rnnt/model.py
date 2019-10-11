@@ -117,7 +117,7 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
                     if encoder_output.is_cuda:
                         decoder_input = decoder_input.cuda()
                     decoder_hidden = n.h
-                    decoder_output, decoder_hidden = decoder(decoder_input, hiddens=decoder_hidden)
+                    decoder_output, decoder_hidden = decoder(decoder_input, hidden=decoder_hidden)
 
                     # decode for one step using decoder
                     logits = joint(encoder_output[t].view(-1), decoder_output.view(-1))
@@ -183,15 +183,15 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
     return utterances
 
 class BeamSearchNode(object):
-    def __init__(self, hiddenstate, previousNode, wordId, logProb, length):
+    def __init__(self, hiddentate, previousNode, wordId, logProb, length):
         '''
-        :param hiddenstate:
+        :param hiddentate:
         :param previousNode:
         :param wordId:
         :param logProb:
         :param length:
         '''
-        self.h = hiddenstate
+        self.h = hiddentate
         self.prevNode = previousNode
         self.wordid = wordId
         self.logp = logProb
@@ -331,7 +331,7 @@ class Transducer(nn.Module):
                     if enc_state.is_cuda:
                         token = token.cuda()
 
-                    dec_state, hidden = self.decoder(token, hiddens=hidden)
+                    dec_state, hidden = self.decoder(token, hidden=hidden)
             return token_list
 
         results = []

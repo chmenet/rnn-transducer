@@ -55,13 +55,13 @@ training:
     fp16_run: True
     dynamic_loss_scaling: True
     seed: 2019
-    num_gpu: 1
+    num_gpu: 2
     epochs: 300
     max_grad_norm: 200
     visualization: True
     show_interval: 10
     save_interval: 1
-    save_model: aihub_q3_fp16
+    save_model: aihub_q3_basicrnnt
 optim:
     type: sgd
     lr: 0.0001
