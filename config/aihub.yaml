@@ -4,18 +4,18 @@ feature_type: mel-spectrogram
 data:
     base_path: ./AIhub
     name: AIhub
-    frame_rate: 60
-    batch_size: 16
+    frame_rate: 30
+    right_context_width: 1
+    left_context_width: 1
+    batch_size: 80
     encoding: True
     short_first: False
     shuffle: True
     feature_flag: feats.txt
     text_flag: targets.txt
     train: ./data/AIhub/train/
-    dev: ./data/AIhub/dev/  
+    dev: ./data/AIhub/dev/
     test: ./data/AIhub/test/
-    left_context_width: 5
-    right_context_width: 0
 hparam:
     n_mel_channels: 80
     sampling_rate: 16000
@@ -29,44 +29,43 @@ model:
     type: transducer
     enc:
         type: lstm
-        hidden_size: 2048
-        output_size: 2048
-        projection_size: 640
-        n_layers: 8
-        bidirectional: False
+        hidden_size: 128
+        output_size: 128
+        n_layers: 3
+        bidirectional: True
     dec:
         type: lstm
-        hidden_size: 2048
-        output_size: 2048
-        projection_size: 640
-        n_layers: 2
+        hidden_size: 256
+        output_size: 128
+        n_layers: 1
     joint:
-        input_size: 1280
-        inner_size: 640
+        input_size: 256
+        inner_size: 128
     vocab_size: 80
     share_weight: False
     feature_dim: 80
-    stacking: 6
+    stacking: 3
+    dropout: 0.3
     backend: c++
 training:
-    load_model: False #./egs/AIhub/exp/aihub_test_beam_0910_enlen_noeos/aihub_test_beam_0910_enlen_noeos.epoch1650.chkpt
-    load_encoder: False
-    load_decoder: False
+    load_model: False #./egs/AIhub/exp/aihub_q3/aihub_q3.epoch19.chkpt
+    load_encoder: False #True
+    load_decoder: False #True
     eval_or_not: True
     fp16_run: True
     dynamic_loss_scaling: True
     seed: 2019
     num_gpu: 1
-    epochs: 30
+    epochs: 300
     max_grad_norm: 200
     visualization: True
     show_interval: 10
     save_interval: 1
-    save_model: aihub_q3_stream
+    save_model: aihub_q3_fp16
 optim:
     type: sgd
     lr: 0.0001
     momentum: 0.9
-    decay_ratio: 0.99
+    decay_ratio: 0.9
     weight_decay: 0
-    begin_to_adjust_lr: 100
+    begin_to_adjust_lr: 1000

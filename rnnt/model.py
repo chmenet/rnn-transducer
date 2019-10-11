@@ -1,40 +1,13 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.nn import Module
-from rnnt.encoder import BaseEncoder
-from rnnt.decoder import BaseDecoder
+from rnnt.encoder import build_encoder
+from rnnt.decoder import build_decoder
 from warprnnt_pytorch import RNNTLoss
-import warp_rnnt._C as warp_rnnt_core
-import warp_rnnt
-import numpy as np
+
 from queue import PriorityQueue
 import operator
 from rnnt.fp16_optimizer import fp32_to_fp16, fp16_to_fp32
-
-class RNNTLoss_(Module):
-    """
-    Parameters:
-        blank (int, optional): blank label. Default: 0.
-        reduction (string, optional): Specifies the reduction to apply to the output:
-            'none' | 'mean' | 'sum'. 'none': no reduction will be applied,
-            'mean': the output losses will be divided by the target lengths and
-            then the mean over the batch is taken. Default: 'mean'
-    """
-    def __init__(self, blank=0, reduction='mean'):
-        super(RNNTLoss_, self).__init__()
-        self.blank = blank
-        self.reduction = reduction
-        self.loss = warp_rnnt._WRNNT.apply
-
-    def forward(self, acts, labels, act_lens, label_lens):
-        """
-        acts: Tensor of (batch x seqLength x labelLength x outputDim) containing output from network
-        labels: 2 dimensional Tensor containing all the targets of the batch with zero padded
-        act_lens: Tensor of size (batch) containing size of each output sequence from the network
-        label_lens: Tensor of (batch) containing label length of each example
-        """
-        return self.loss(acts, labels, act_lens, label_lens, self.blank)
 
 def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None):
     '''
@@ -270,17 +243,9 @@ class Transducer(nn.Module):
         # define encoder
         self.config = config.model
         self.fp16_run = config.training.fp16_run
-        self.encoder = BaseEncoder(
-            input_size=config.model.feature_dim * config.model.stacking,
-            hidden_size=config.model.enc.hidden_size,
-            projection_size=config.model.enc.projection_size,
-            n_layers=config.model.enc.n_layers)
+        self.encoder = build_encoder(config.model)
         # define decoder
-        self.decoder = BaseDecoder(
-            input_size=config.model.vocab_size,
-            hidden_size=config.model.dec.hidden_size,
-            projection_size=config.model.dec.projection_size,
-            n_layers=config.model.dec.n_layers)
+        self.decoder = build_decoder(config.model)
         # define JointNet
         self.joint = JointNet(
             input_size=config.model.joint.input_size,
@@ -293,7 +258,6 @@ class Transducer(nn.Module):
             self.joint.project_layer.weight = self.decoder.embedding.weight
 
         self.crit = RNNTLoss()
-        self.crit2 = RNNTLoss_()
 
     def parse_input(self, inputs):
         inputs = fp32_to_fp16(inputs) if self.fp16_run else inputs
@@ -313,7 +277,7 @@ class Transducer(nn.Module):
         dec_state, _ = self.decoder(concat_targets, targets_length.add(1))
 
         logits = self.joint(enc_state, dec_state)
-        logits = F.log_softmax(logits, dim=-1)
+        #logits = F.log_softmax(logits, dim=-1)
         logits = self.parse_output(logits)
 
         # loss1, grad  = warp_rnnt_core.rnnt_loss(logits, targets.int(), inputs_length.int(), targets_length.int())
