@@ -43,7 +43,7 @@ class BaseEncoder(nn.Module):
 def build_encoder(config):
     if config.enc.type == 'lstm':
         return BaseEncoder(
-            input_size=config.feature_dim,
+            input_size=config.feature_dim*config.stacking,
             hidden_size=config.enc.hidden_size,
             output_size=config.enc.output_size,
             n_layers=config.enc.n_layers,
