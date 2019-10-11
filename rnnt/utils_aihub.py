@@ -43,7 +43,7 @@ def init_logger(log_file=None):
 
 
 def computer_cer(preds, labels):
-    dist = sum(editdistance.eval(list(label), pred) for label, pred in zip(labels, preds))
+    dist = sum(editdistance.eval(label, pred) for label, pred in zip(labels, preds))
     total = sum(len(l) for l in labels)
     return dist, total
 
