@@ -2,20 +2,20 @@ units_type: word
 feature_source: AIhub
 feature_type: mel-spectrogram
 data:
-    base_path: ./AIhub
+    base_path: D:\Data\Audio\Dataset\AI-hub
     name: AIhub
     frame_rate: 30
     right_context_width: 1
     left_context_width: 1
-    batch_size: 80
+    batch_size: 10
     encoding: True
-    short_first: False
-    shuffle: True
+    short_first: True
+    shuffle: False
     feature_flag: feats.txt
     text_flag: targets.txt
     train: ./data/AIhub/train/
     dev: ./data/AIhub/dev/
-    test: ./data/AIhub/test/
+    test: ./data/AIhub/dev/
 hparam:
     n_mel_channels: 80
     sampling_rate: 16000
@@ -55,13 +55,13 @@ training:
     fp16_run: True
     dynamic_loss_scaling: True
     seed: 2019
-    num_gpu: 2
+    num_gpu: 1
     epochs: 300
     max_grad_norm: 200
     visualization: True
     show_interval: 10
     save_interval: 1
-    save_model: aihub_q3_basicrnnt
+    save_model: aihub_basicrnnt_dlfix_shortfirst
 optim:
     type: sgd
     lr: 0.0001
