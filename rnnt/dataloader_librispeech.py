@@ -54,6 +54,10 @@ class AudioDataset(Dataset):
         self.left_context_width = config.data.left_context_width
         self.right_context_width = config.data.right_context_width
         self.frame_rate = config.data.frame_rate
+        if self.config.short_first and type == 'train':
+            self.sorted_list = sorted(self.targets_dict.items(), key=lambda x: len(x[1]), reverse=False)
+        else:
+            self.sorted_list = None
 
     def get_mel(self, filename):
         audio, sampling_rate = load_wav_to_torch(filename)
@@ -68,7 +72,11 @@ class AudioDataset(Dataset):
         return melspec
 
     def __getitem__(self, index):
-        utt_id = self.feats_list[index]
+        if self.sorted_list is not None:
+            utt_id = self.sorted_list[index][0]
+        else:
+            utt_id = self.feats_list[index]
+
         feats_path = self.feats_dict[utt_id]
         features = self.get_mel(feats_path)
         features = features.transpose(0, 1)

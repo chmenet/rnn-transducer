@@ -9,8 +9,8 @@ data:
     left_context_width: 1
     batch_size: 16
     encoding: True
-    short_first: False
-    shuffle: True
+    short_first: True
+    shuffle: False
     feature_flag: feats.txt
     text_flag: targets.txt
     train: ./LibriSpeech/train/
@@ -61,7 +61,7 @@ training:
     visualization: True
     show_interval: 10
     save_interval: 1
-    save_model: librispeech_1014_asc
+    save_model: librispeech_1014_global_sort
 optim:
     type: sgd
     lr: 0.0001
