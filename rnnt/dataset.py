@@ -2,10 +2,9 @@ import numpy as np
 import os
 import rnnt.layers as layers
 from rnnt.utils import load_wav_to_torch
-import text
 from text import text_to_sequence
-import torch.nn as nn
 import torch
+from torch.utils.data import DataLoader
 #from pathlib import Path, PureWindowsPath
 
 
@@ -38,7 +37,7 @@ class Dataset:
     def get_targets_list(self):
         targets_list = []
         targets_dict = {}
-        with open(self.targets, 'r') as fid:
+        with open(self.targets, 'r', encoding='utf-8') as fid:
             for line in fid:
                 key, sentence = line.strip().split('|')
                 targets_list.append(key)
@@ -69,13 +68,13 @@ class AudioDataset(Dataset):
         melspec = torch.squeeze(melspec, 0)
         return melspec
 
-    def __getitem__(self, index):
+    def __getitem__(self, index, is_test=False):
         utt_id = self.feats_list[index]
 
         feats_path = self.feats_dict[utt_id]
-        features = self.get_mel(os.path.join(self.config.base_path, feats_path))
+        features_org = self.get_mel(os.path.join(self.config.base_path, feats_path))
         #print(features.shape)
-        features = features.transpose(0,1)
+        features = features_org.transpose(0,1)
         #print(features.shape)
         features = self.concat_frame(features)
         #print(features.shape)
@@ -86,17 +85,21 @@ class AudioDataset(Dataset):
         #print(features.shape, '\n')
         targets = self.targets_dict[utt_id] #np.fromstring([1:-1], dtype=int, sep=',')
         targets = np.asarray(text_to_sequence(targets, ['korean_cleaners']))
-        return targets, features
+
+        if(is_test):
+            return targets, features, features_org
+        else:
+            return targets, features
 
     def __len__(self):
         return self.lengths
 
     def concat_frame(self, features):
         time_steps, features_dim = features.shape
-        concated_features = np.zeros(
+        concated_features = np.ones(
             shape=[time_steps, features_dim *
                    (1 + self.left_context_width + self.right_context_width)],
-            dtype=np.float32)
+            dtype=np.float32) * -100.0
         # middle part is just the uttarnce
         concated_features[:, self.left_context_width * features_dim:
                           (self.left_context_width + 1) * features_dim] = features
@@ -129,8 +132,9 @@ class TextMelCollate():
     """
     Zero-pads model inputs and targets based on number of frames per step
     """
-    def __init__(self, n_frames_per_step):
+    def __init__(self, n_frames_per_step, is_test=False):
         self.n_frames_per_step = n_frames_per_step
+        self.is_test = is_test
 
     def __call__(self, batch):
         """
@@ -139,12 +143,19 @@ class TextMelCollate():
         ------
         batch: [[text_normalized, mel_normalized], ...]
         """
-        # Right zero-pad all one-hot text sequences to max input length
-        # targets_length, ids_sorted_decreasing = torch.sort(
-        #     torch.LongTensor([len(x[0]) for x in batch]),
-        #     dim=0, descending=True)
+        # if(self.is_test):
+        #     #print(batch.shape)
+        #     #Right zero-pad all one-hot text sequences to max input length
+        #     targets_length, ids_sorted_decreasing = torch.sort(
+        #          torch.LongTensor([len(x[0]) for x in batch]),
+        #          dim=0, descending=True)
+        #     for x in batch:
+        #         print(x[0], len(x[0]))
+        #     print(targets_length)
+
         num_batch = len(batch)
         targets_length = torch.LongTensor([len(x[0]) for x in batch])
+
         max_target_len = targets_length.max()
         text_padded = torch.LongTensor(len(batch), max_target_len)
         text_padded.zero_()
@@ -156,17 +167,86 @@ class TextMelCollate():
         #print(batch[0][1].shape, batch[0][1])
         num_mels = batch[0][1].size(0)
         max_mel_len = max([x[1].size(1) for x in batch])
+
         if max_mel_len % self.n_frames_per_step != 0:
             max_mel_len += self.n_frames_per_step - max_mel_len % self.n_frames_per_step
             assert max_mel_len % self.n_frames_per_step == 0
 
         # include mel padded and gate padded
         mel_padded = torch.FloatTensor(len(batch), max_mel_len, num_mels)
-        mel_padded.zero_()
+        mel_padded.fill_(-100.0)
         mel_lengths = torch.LongTensor(len(batch))
         for i in range(num_batch):
             mel = batch[i][1]
             mel = torch.transpose(mel, 0, 1)
             mel_padded[i, :mel.size(0), :] = mel
             mel_lengths[i] = mel.size(0)
+            if (self.is_test):
+                print('batch[i][1].shape',batch[i][1].shape)
+                print('mel.shape', mel.shape)
+        if(self.is_test):
+            print('mel_padded.shape', mel_padded.shape)
+
+        if (self.is_test):
+            print('==output==')
+            print('mel_lengths', mel_lengths)
+            print('text_padded', text_padded)
+            print('targets_length',targets_length)
+
         return mel_padded,  mel_lengths, text_padded, targets_length
+
+def collate_test():
+
+    from rnnt.utils import AttrDict
+    import yaml
+    path = './config/aihub.yaml'
+    with open(path, 'r') as f:
+        config = AttrDict(yaml.load(f, Loader=yaml.FullLoader))
+    torch.cuda.manual_seed(config.training.seed)
+    collate_fn = TextMelCollate(config.data.frame_rate, is_test=True)
+    print(collate_fn)
+
+    torch.backends.cudnn.deterministic = True
+    test_dataset = AudioDataset(config, 'test')
+    test_data = torch.utils.data.DataLoader(
+        test_dataset, batch_size=config.data.batch_size,
+        shuffle=config.data.shuffle, collate_fn=collate_fn)
+
+    for batch in enumerate(test_data):
+        a, b = batch
+
+def feature_test():
+    import matplotlib.pyplot as plt
+    from rnnt.utils import AttrDict
+    import yaml
+    path = './config/aihub.yaml'
+    with open(path, 'r') as f:
+        config = AttrDict(yaml.load(f, Loader=yaml.FullLoader))
+    torch.cuda.manual_seed(config.training.seed)
+    torch.backends.cudnn.deterministic = True
+    test_dataset = AudioDataset(config, 'test')
+
+    targets, features, feature_org = test_dataset.__getitem__(1, is_test=True)
+    print(features.shape)
+    print(np.quantile(features, 0.0))
+    print(np.quantile(features, 0.25))
+    print(np.quantile(features, 0.50))
+    print(np.quantile(features, 0.75))
+    print(np.quantile(features, 1))
+
+    # Display matrix
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    cax = ax.matshow(feature_org, interpolation='nearest')
+    fig.colorbar(cax)
+    plt.show()
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    cax = ax.matshow(features, interpolation='nearest')
+    fig.colorbar(cax)
+    plt.show()
+
+if __name__ == '__main__':
+    feature_test()
+    collate_test()
