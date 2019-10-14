@@ -1,3 +1,11 @@
 AIhub/wavs/KsponSpeech_0007/KsponSpeech_006174.wav
 AIhub/wavs/KsponSpeech_0007/KsponSpeech_006175.wav
 AIhub/wavs/KsponSpeech_0007/KsponSpeech_006176.wav
+AIhub/wavs/KsponSpeech_0001/KsponSpeech_000003.wav
+AIhub/wavs/KsponSpeech_0001/KsponSpeech_000005.wav
+AIhub/wavs/KsponSpeech_0001/KsponSpeech_000008.wav
+AIhub/wavs/KsponSpeech_0001/KsponSpeech_000012.wav
+AIhub/wavs/KsponSpeech_0001/KsponSpeech_000013.wav
+AIhub/wavs/KsponSpeech_0001/KsponSpeech_000014.wav
+AIhub/wavs/KsponSpeech_0001/KsponSpeech_000015.wav
+AIhub/wavs/KsponSpeech_0001/KsponSpeech_000017.wav
