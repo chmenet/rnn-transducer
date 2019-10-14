@@ -61,7 +61,7 @@ training:
     visualization: True
     show_interval: 10
     save_interval: 1
-    save_model: librispeech_1014
+    save_model: librispeech_1014_asc
 optim:
     type: sgd
     lr: 0.0001
