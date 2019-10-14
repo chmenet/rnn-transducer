@@ -70,7 +70,7 @@ class AudioDataset(Dataset):
     def __getitem__(self, index):
         utt_id = self.feats_list[index]
         feats_path = self.feats_dict[utt_id]
-        features = self.get_mel(feats_path)
+        features = self.get_mel(os.path.join(self.config.base_path,feats_path))
         features = features.transpose(0, 1)
         features = self.concat_frame(features)
         features = self.subsampling(features)
@@ -133,13 +133,14 @@ class TextMelCollate():
         batch: [[text_normalized, mel_normalized], ...]
         """
         # Right zero-pad all one-hot text sequences to max input length
-        num_batch = len(batch)
-        targets_length = torch.LongTensor([len(x[0]) for x in batch])
-        max_target_len = targets_length.max()
+        targets_length, ids_sorted_decreasing = torch.sort(
+            torch.LongTensor([len(x[0]) for x in batch]),
+            dim=0, descending=True)
+        max_target_len = targets_length[0]
         text_padded = torch.LongTensor(len(batch), max_target_len)
         text_padded.zero_()
-        for i in range(num_batch):
-            text = torch.from_numpy(batch[i][0])
+        for i in range(len(ids_sorted_decreasing)):
+            text = torch.from_numpy(batch[ids_sorted_decreasing[i]][0])
             text_padded[i, :text.size(0)] = text
 
         # Right zero-pad mel-spec
@@ -153,8 +154,8 @@ class TextMelCollate():
         mel_padded = torch.FloatTensor(len(batch), max_mel_len, num_mels)
         mel_padded.zero_()
         mel_lengths = torch.LongTensor(len(batch))
-        for i in range(num_batch):
-            mel = batch[i][1]
+        for i in range(len(ids_sorted_decreasing)):
+            mel = batch[ids_sorted_decreasing[i]][1]
             mel = torch.transpose(mel, 0, 1)
             mel_padded[i, :mel.size(0), :] = mel
             mel_lengths[i] = mel.size(0)

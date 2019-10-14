@@ -97,7 +97,6 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
     batch_steps = len(validating_data)
     with torch.no_grad():
         for step, (inputs, inputs_length, targets, targets_length) in enumerate(validating_data):
-
             if config.training.num_gpu > 0:
                 inputs, inputs_length = inputs.cuda(), inputs_length.cuda()
                 targets, targets_length = targets.cuda(), targets_length.cuda()
@@ -107,9 +106,9 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
             inputs = inputs[:, :max_inputs_length, :]
             targets = targets[:, :max_targets_length]
             if config.training.num_gpu > 1:
-                preds = model.module.recognize(inputs, inputs_length)
+                preds = model.module.greedy_recognize(inputs, inputs_length)
             else:
-                preds = model.recognize(inputs, inputs_length)
+                preds = model.greedy_recognize(inputs, inputs_length)
             transcripts = [targets.cpu().numpy()[i][:targets_length[i].item()]
                            for i in range(targets.size(0))]
             dist, num_words = computer_cer(preds, transcripts)
@@ -120,6 +119,11 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
             if step % config.training.show_interval == 0:
                 process = step / batch_steps * 100
                 logger.info('-Validation-Epoch:%d(%.5f%%), CER: %.5f %%' % (epoch, process, cer))
+            if visualizer is not None:
+                visualizer.add_histogram('inputs', inputs.data.cpu().numpy(), epoch)
+                visualizer.add_histogram('inputs_length', inputs_length.cpu().numpy(), epoch)
+                visualizer.add_histogram('targets', targets.data.cpu().numpy(), epoch)
+                visualizer.add_histogram('targets_length', targets_length.cpu().numpy(), epoch)
 
         val_loss = total_loss / (step + 1)
         logger.info('-Validation-Epoch:%4d, AverageLoss:%.5f, AverageCER: %.5f %%' %
@@ -127,6 +131,7 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
 
     if visualizer is not None:
         visualizer.add_scalar('cer', cer, epoch)
+
         for tag, value in model.named_parameters():
             tag = tag.replace('.', '/')
             visualizer.add_histogram(tag, value.data.cpu().numpy(), epoch)
@@ -173,7 +178,7 @@ def main():
         torch.manual_seed(config.training.seed)
     logger.info('Set random seed: %d' % config.training.seed)
 
-    model = Transducer(config)
+    model = Transducer(config).cuda()
 
     if config.training.fp16_run:
         model = batchnorm_to_float(model.half())
@@ -211,9 +216,9 @@ def main():
                 (n_params - dec - enc))
 
     learning_rate = config.optim.lr
-    optimizer = Lamb(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay, betas=(.9, .999), adam= True)
+    #optimizer = Lamb(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay, betas=(.9, .999), adam= True)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay)
 
-    #optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay)
     if config.training.fp16_run:
         optimizer = FP16_Optimizer(optimizer, dynamic_loss_scale=config.training.dynamic_loss_scaling)
 
@@ -223,10 +228,10 @@ def main():
         optimizer.load_state_dict(checkpoint['optimizer'])
         start_epoch = checkpoint['epoch'] + 1
         iteration = checkpoint['iteration'] + 1
-        learning_rate = checkpoint['learning_rate']
+        learning_rate = 0.0001 #checkpoint['learning_rate']
         logger.info('Load Optimizer State!')
     else:
-        start_epoch = 1 
+        start_epoch = 1
 
 
 
@@ -238,22 +243,22 @@ def main():
         visualizer = None
 
     for epoch in range(start_epoch, config.training.epochs):
-
         iteration = train(epoch, config, model, training_data,
               optimizer, logger, iteration, learning_rate, visualizer)
         _ = eval(epoch, config, model, validate_data, logger, visualizer)
+
 
         if config.training.eval_or_not and (epoch % config.training.save_interval) == 0:
             save_name = os.path.join(exp_name, '%s.epoch%d.chkpt' % (config.training.save_model, epoch))
             save_model(model, optimizer, iteration, learning_rate, config, save_name)
             logger.info('Epoch %d model has been saved.' % epoch)
 
-        if epoch%10==0: #>= config.optim.begin_to_adjust_lr:
+        if (epoch%10)==0: #>= config.optim.begin_to_adjust_lr:
             learning_rate *= config.optim.decay_ratio
             # early stop
-            if optimizer.lr < 1e-6:
-                logger.info('The learning rate is too low to train.')
-                break
+            #if optimizer.lr < 1e-6:
+            #    logger.info('The learning rate is too low to train.')
+            #    break
 
     logger.info('The training process is OVER!')
 

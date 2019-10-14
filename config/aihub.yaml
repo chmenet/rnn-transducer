@@ -7,7 +7,7 @@ data:
     frame_rate: 30
     right_context_width: 1
     left_context_width: 1
-    batch_size: 80
+    batch_size: 128
     encoding: True
     short_first: False
     shuffle: True
@@ -48,20 +48,20 @@ model:
     dropout: 0.3
     backend: c++
 training:
-    load_model: False #./egs/AIhub/exp/aihub_q3/aihub_q3.epoch19.chkpt
+    load_model: False #./egs/AIhub/exp/aihub_1011_adam/aihub_1011_adam.epoch5.chkpt
     load_encoder: False #True
     load_decoder: False #True
     eval_or_not: True
     fp16_run: True
     dynamic_loss_scaling: True
     seed: 2019
-    num_gpu: 1
+    num_gpu: 2
     epochs: 300
     max_grad_norm: 200
     visualization: True
     show_interval: 10
     save_interval: 1
-    save_model: aihub_q3_fp16
+    save_model: aihub_1014_large_bs
 optim:
     type: sgd
     lr: 0.0001
