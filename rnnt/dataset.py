@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 
 
 class Dataset:
-    def __init__(self, config, type):
+    def __init__(self, config, type, is_test=True):
 
         self.type = type
         self.name = config.data.name
@@ -20,6 +20,22 @@ class Dataset:
 
         self.feats_list, self.feats_dict = self.get_feats_list()
         self.targets_list, self.targets_dict = self.get_targets_list()
+
+        self.short_first = config.data.short_first
+
+        if(self.short_first):
+            sorted_list = [ind for ind, text in sorted(self.targets_dict.items(), key=lambda x: len(x[1]), reverse=False)]
+            self.feats_list = sorted_list
+            self.targets_list = sorted_list
+
+        if(is_test):
+            print(self.feats_list)
+            print(self.feats_dict)
+            print(self.targets_list)
+            print(self.targets_dict)
+            sorted_list =[ind for ind, text in sorted(self.targets_dict.items(), key=lambda x: len(x[1]), reverse=False)]
+            print(sorted_list)
+
 
     def __len__(self):
         raise NotImplementedError
@@ -214,6 +230,20 @@ def collate_test():
 
     for batch in enumerate(test_data):
         a, b = batch
+
+def sort_test():
+    from rnnt.utils import AttrDict
+    import yaml
+    path = './config/aihub.yaml'
+    with open(path, 'r') as f:
+        config = AttrDict(yaml.load(f, Loader=yaml.FullLoader))
+    config.data.short_first = True
+    torch.cuda.manual_seed(config.training.seed)
+    torch.backends.cudnn.deterministic = True
+    test_dataset = AudioDataset(config, 'test')
+    for i in range(config.data.batch_size):
+        targets, features, feature_org = test_dataset.__getitem__(i, is_test=True)
+        print(targets, len(targets))
 
 def feature_test():
     import matplotlib.pyplot as plt
