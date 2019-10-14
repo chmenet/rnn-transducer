@@ -33,8 +33,8 @@ def train(epoch, config, model, training_data, optimizer, logger, iteration, lea
 
     for step, (inputs, inputs_length, targets, targets_length) in enumerate(training_data):
 
-        for param_group in optimizer.param_groups:
-            param_group['lr'] = learning_rate
+        # for param_group in optimizer.param_groups:
+        #     param_group['lr'] = learning_rate
 
         if config.training.num_gpu > 0:
             inputs, inputs_length = inputs.cuda(), inputs_length.cuda()
@@ -220,8 +220,8 @@ def main():
                 (n_params - dec - enc))
 
     learning_rate = config.optim.lr
-    #optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay)
-    optimizer = Lamb(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay, betas=(.9, .999), adam= True)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay)
+    #optimizer = Lamb(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay, betas=(.9, .999), adam= True)
     if config.training.fp16_run:
         optimizer = FP16_Optimizer(optimizer, dynamic_loss_scale=config.training.dynamic_loss_scaling)
 
