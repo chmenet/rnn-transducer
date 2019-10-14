@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 
 
 class Dataset:
-    def __init__(self, config, type, is_test=True):
+    def __init__(self, config, type, is_test=False):
 
         self.type = type
         self.name = config.data.name
