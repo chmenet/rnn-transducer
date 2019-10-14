@@ -5,6 +5,7 @@ pyaml
 shutil
 librosa
 tensorboardX
+tensorboard
 editdistance
 libsndfile1
 unidecode
