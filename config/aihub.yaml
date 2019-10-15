@@ -66,7 +66,7 @@ training:
     save_model: aihub_basicrnnt_nfeat
 optim:
     type: sgd
-    lr: 0.0001
+    lr: 0.001
     momentum: 0.9
     decay_ratio: 0.9
     weight_decay: 0
