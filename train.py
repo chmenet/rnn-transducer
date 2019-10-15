@@ -233,7 +233,7 @@ def main():
         optimizer.load_state_dict(checkpoint['optimizer'])
         start_epoch = checkpoint['epoch'] + 1
         iteration = checkpoint['iteration'] + 1
-        learning_rate = checkpoint['learning_rate']
+        #learning_rate = checkpoint['learning_rate']
         logger.info('Load Optimizer State!')
     else:
         start_epoch = 1
