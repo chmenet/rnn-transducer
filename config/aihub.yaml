@@ -9,8 +9,9 @@ data:
     left_context_width: 1
     batch_size: 64
     encoding: True
-    short_first: True
-    shuffle: False
+    short_first: False
+    short_train : True
+    shuffle: True
     feature_flag: feats.txt
     text_flag: targets.txt
     train: ./data/AIhub/train/
