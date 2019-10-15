@@ -75,9 +75,6 @@ def griffin_lim(magnitudes, stft_fn, n_iters=30):
     return signal
 
 def mel_normalize(x, max_abs_value=4.0, min_level_db=-100):
-    print(x)
-    print(max_abs_value)
-
     return torch.clamp((2*max_abs_value)*(x - min_level_db)/(-min_level_db) - max_abs_value,
                        min=-max_abs_value, max = max_abs_value)
 
