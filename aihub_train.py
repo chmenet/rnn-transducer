@@ -7,7 +7,6 @@ import torch
 import torch.nn as nn
 import torch.utils.data
 from rnnt.model_aihub import Transducer
-#from rnnt.model import Transducer
 from rnnt.optim import Optimizer
 from rnnt.dataloader_aihub import AudioDataset, TextMelCollate
 from tensorboardX import SummaryWriter
@@ -228,7 +227,7 @@ def main():
         optimizer.load_state_dict(checkpoint['optimizer'])
         start_epoch = checkpoint['epoch'] + 1
         iteration = checkpoint['iteration'] + 1
-        learning_rate = 0.0001 #checkpoint['learning_rate']
+        learning_rate = checkpoint['learning_rate']
         logger.info('Load Optimizer State!')
     else:
         start_epoch = 1
@@ -253,12 +252,12 @@ def main():
             save_model(model, optimizer, iteration, learning_rate, config, save_name)
             logger.info('Epoch %d model has been saved.' % epoch)
 
-        if (epoch%10)==0: #>= config.optim.begin_to_adjust_lr:
+        if (epoch%10) == 0 and epoch >= config.optim.begin_to_adjust_lr:
             learning_rate *= config.optim.decay_ratio
             # early stop
-            #if optimizer.lr < 1e-6:
-            #    logger.info('The learning rate is too low to train.')
-            #    break
+            if learning_rate < 1e-6:
+                logger.info('The learning rate is too low to train.')
+                break
 
     logger.info('The training process is OVER!')
 
