@@ -62,7 +62,7 @@ training:
     visualization: True
     show_interval: 10
     save_interval: 1
-    save_model: aihub_basicrnnt_dlfix_shortfirst
+    save_model: aihub_basicrnnt_nfeat
 optim:
     type: sgd
     lr: 0.0001
