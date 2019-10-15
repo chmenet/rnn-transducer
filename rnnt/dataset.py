@@ -7,6 +7,7 @@ import torch
 from torch.utils.data import DataLoader
 #from pathlib import Path, PureWindowsPath
 
+max_abs_mel_value = 4.0
 
 class Dataset:
     def __init__(self, config, type, is_test=False):
@@ -120,7 +121,7 @@ class AudioDataset(Dataset):
         concated_features = np.ones(
             shape=[time_steps, features_dim *
                    (1 + self.left_context_width + self.right_context_width)],
-            dtype=np.float32) * -100.0
+            dtype=np.float32) * -max_abs_mel_value
         # middle part is just the uttarnce
         concated_features[:, self.left_context_width * features_dim:
                           (self.left_context_width + 1) * features_dim] = features
@@ -185,7 +186,7 @@ class TextMelCollate():
 
         # include mel padded and gate padded
         mel_padded = torch.FloatTensor(len(batch), max_mel_len, num_mels)
-        mel_padded.fill_(-100.0)
+        mel_padded.fill_(-max_abs_mel_value)
         mel_lengths = torch.LongTensor(len(batch))
         for i in range(len(ids_sorted_decreasing)):
             mel = batch[ids_sorted_decreasing[i]][1]
@@ -210,7 +211,7 @@ def collate_test():
 
     from rnnt.utils import AttrDict
     import yaml
-    path = './config/aihub.yaml'
+    path = './config/aihub_test.yaml'
     with open(path, 'r') as f:
         config = AttrDict(yaml.load(f, Loader=yaml.FullLoader))
     torch.cuda.manual_seed(config.training.seed)
@@ -229,7 +230,7 @@ def collate_test():
 def sort_test():
     from rnnt.utils import AttrDict
     import yaml
-    path = './config/aihub.yaml'
+    path = './config/aihub_test.yaml'
     with open(path, 'r') as f:
         config = AttrDict(yaml.load(f, Loader=yaml.FullLoader))
     config.data.short_first = True
@@ -244,7 +245,7 @@ def feature_test():
     import matplotlib.pyplot as plt
     from rnnt.utils import AttrDict
     import yaml
-    path = './config/aihub.yaml'
+    path = './config/aihub_test.yaml'
     with open(path, 'r') as f:
         config = AttrDict(yaml.load(f, Loader=yaml.FullLoader))
     torch.cuda.manual_seed(config.training.seed)

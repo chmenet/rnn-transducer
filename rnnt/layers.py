@@ -146,16 +146,16 @@ class TacotronSTFT(torch.nn.Module):
         assert(torch.min(y.data) >= -1)
         assert(torch.max(y.data) <= 1)
 
-        #print('y' ,y.max(), y.mean(), y.min())
+        print('y' ,y.max(), y.mean(), y.min())
         magnitudes, phases = self.stft_fn.transform(y)
         magnitudes = magnitudes.data
-        #print('stft_fn', magnitudes.max(), magnitudes.mean(), magnitudes.min())
+        print('stft_fn', magnitudes.max(), magnitudes.mean(), magnitudes.min())
         mel_output = torch.matmul(self.mel_basis, torch.abs(magnitudes)**magnitude_power)
-        #print('_linear_to_mel', mel_output.max(), mel_output.mean(), mel_output.min())
+        print('_linear_to_mel', mel_output.max(), mel_output.mean(), mel_output.min())
         mel_output = self.spectral_normalize(mel_output) - ref_level_db
-        #print('_amp_to_db', mel_output.max(), mel_output.mean(), mel_output.min())
+        print('_amp_to_db', mel_output.max(), mel_output.mean(), mel_output.min())
         mel_output = mel_normalize(mel_output, self.max_abs_mel_value)
-        #print('_normalize', mel_output.max(), mel_output.mean(), mel_output.min())
+        print('_normalize', mel_output.max(), mel_output.mean(), mel_output.min())
         #spec = mel_denormalize(mel_output)
         #print('_denormalize', spec.max(), spec.mean(), spec.min())
         #spec = self.spectral_de_normalize(spec + ref_level_db)**(1/magnitude_power)
