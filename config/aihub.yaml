@@ -2,12 +2,12 @@ units_type: word
 feature_source: AIhub
 feature_type: mel-spectrogram
 data:
-    base_path: D:\Data\Audio\Dataset\AI-hub
+    base_path: ./AIhub
     name: AIhub
     frame_rate: 30
     right_context_width: 1
     left_context_width: 1
-    batch_size: 10
+    batch_size: 64
     encoding: True
     short_first: True
     shuffle: False
@@ -55,7 +55,7 @@ training:
     fp16_run: True
     dynamic_loss_scaling: True
     seed: 2019
-    num_gpu: 1
+    num_gpu: 2
     epochs: 300
     max_grad_norm: 200
     visualization: True
