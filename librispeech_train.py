@@ -33,7 +33,6 @@ def train(epoch, config, model, training_data, optimizer, logger, iteration, lea
     batch_steps = len(training_data)
 
     for step, (inputs, inputs_length, targets, targets_length) in enumerate(training_data):
-        learning_rate *= config.optim.decay_ratio
         for param_group in optimizer.param_groups:
             param_group['lr'] = learning_rate
             
@@ -88,6 +87,8 @@ def train(epoch, config, model, training_data, optimizer, logger, iteration, lea
                 (epoch, total_loss / (step + 1), end_epoch - start_epoch))
     optimizer.current_epoch = epoch
 
+    return iteration
+
 
 def eval(epoch, config, model, validating_data, logger, visualizer=None):
     model.eval()
@@ -126,6 +127,9 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
 
     if visualizer is not None:
         visualizer.add_scalar('cer', cer, epoch)
+        for tag, value in model.named_parameters():
+            tag = tag.replace('.', '/')
+            visualizer.add_histogram(tag, value.data.cpu().numpy(), epoch)
 
     return cer
 
@@ -236,7 +240,7 @@ def main():
         visualizer = None
 
     for epoch in range(start_epoch, config.training.epochs):
-        train(epoch, config, model, training_data,
+        iteration = train(epoch, config, model, training_data,
               optimizer, logger, iteration, learning_rate, visualizer)
         _ = eval(epoch, config, model, validate_data, logger, visualizer)
 
@@ -246,13 +250,13 @@ def main():
             logger.info('Epoch %d model has been saved.' % epoch)
 
         if epoch >= config.optim.begin_to_adjust_lr:
-            optimizer.decay_lr()
+            learning_rate *= config.optim.decay_ratio
             # early stop
-            if optimizer.lr < 1e-6:
+            if learning_rate < 1e-6:
                 logger.info('The learning rate is too low to train.')
                 break
             logger.info('Epoch %d update learning rate: %.6f' %
-                        (epoch, optimizer.lr))
+                        (epoch, learning_rate))
     logger.info('The training process is OVER!')
 
 
