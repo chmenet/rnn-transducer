@@ -168,7 +168,7 @@ class TextMelCollate():
         targets_length, ids_sorted_decreasing = torch.sort(
             torch.LongTensor([len(x[0]) for x in batch]),
             dim=0, descending=False)
-        max_target_len = targets_length[0]
+        max_target_len = targets_length[-1]
         text_padded = torch.LongTensor(len(batch), max_target_len)
         text_padded.zero_()
         for i in range(len(ids_sorted_decreasing)):
