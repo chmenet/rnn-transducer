@@ -47,6 +47,10 @@ class LinearNorm(torch.nn.Module):
     def forward(self, x):
         return self.linear_layer(x)
 
+def Embedding(num_embeddings, embedding_dim, padding_idx, std=0.01):
+    m = torch.nn.Embedding(num_embeddings, embedding_dim, padding_idx=padding_idx)
+    m.weight.data.normal_(0, std)
+    return m
 
 class ConvNorm(torch.nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size=1, stride=1,
@@ -70,14 +74,14 @@ class ConvNorm(torch.nn.Module):
 
 
 class TacotronSTFT(torch.nn.Module):
-    def __init__(self, hparams):
+    def __init__(self, config):
         super(TacotronSTFT, self).__init__()
-        self.n_mel_channels = hparams.n_mel_channels
-        self.sampling_rate = hparams.sampling_rate
-        self.stft_fn = STFT(hparams.filter_length, hparams.hop_length, hparams.win_length)
-        self.max_abs_mel_value = hparams.max_abs_mel_value
+        self.n_mel_channels = config.n_mel_channels
+        self.sampling_rate = config.sampling_rate
+        self.stft_fn = STFT(config.filter_length, config.hop_length, config.win_length)
+        self.max_abs_mel_value = config.max_abs_mel_value
         mel_basis = librosa_mel_fn(
-            hparams.sampling_rate, hparams.filter_length, hparams.n_mel_channels, hparams.mel_fmin, hparams.mel_fmax)
+            config.sampling_rate, config.filter_length, config.n_mel_channels, config.mel_fmin, config.mel_fmax)
         mel_basis = torch.from_numpy(mel_basis).float()
         self.register_buffer('mel_basis', mel_basis)
 
@@ -135,7 +139,6 @@ class TacotronSTFT(torch.nn.Module):
         PARAMS
         ------
         y: Variable(torch.FloatTensor) with shape (B, T) in range [-1, 1]
-
         RETURNS
         -------
         mel_output: torch.FloatTensor of shape (B, n_mel_channels, T)
@@ -153,7 +156,7 @@ class TacotronSTFT(torch.nn.Module):
         #print('_amp_to_db', mel_output.max(), mel_output.mean(), mel_output.min())
         mel_output = mel_normalize(mel_output, self.max_abs_mel_value)
         #print('_normalize', mel_output.max(), mel_output.mean(), mel_output.min())
-        #spec = mel_denormalize(mel_output, self.max_abs_mel_value)
+        #spec = mel_denormalize(mel_output)
         #print('_denormalize', spec.max(), spec.mean(), spec.min())
         #spec = self.spectral_de_normalize(spec + ref_level_db)**(1/magnitude_power)
         #print('db_to_amp', spec.max(), spec.mean(), spec.min())
