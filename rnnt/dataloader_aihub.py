@@ -76,6 +76,7 @@ class AudioDataset(Dataset):
             utt_id = self.sorted_list[index][0]
         else:
             utt_id = self.feats_list[index]
+        feats_path = self.feats_dict[utt_id]
         features = self.get_mel(os.path.join(self.config.base_path,feats_path))
         features = features.transpose(0, 1)
         features = self.concat_frame(features)
