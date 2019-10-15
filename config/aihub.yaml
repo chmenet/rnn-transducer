@@ -7,7 +7,7 @@ data:
     frame_rate: 30
     right_context_width: 1
     left_context_width: 1
-    batch_size: 64
+    batch_size: 256
     encoding: True
     short_first: False
     short_train : True
