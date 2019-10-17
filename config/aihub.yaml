@@ -30,20 +30,22 @@ hparam:
     max_abs_mel_value: 4.0
 model:
     type: transducer
-    enc:
-        type: lstm
-        hidden_size: 128
-        output_size: 128
-        n_layers: 3
-        bidirectional: True
-    dec:
-        type: lstm
-        hidden_size: 256
-        output_size: 128
-        n_layers: 1
-    joint:
-        input_size: 256
-        inner_size: 128
+        enc:
+            type: lstm
+            hidden_size: 1024
+            output_size: 1024
+            projection_size: 320
+            n_layers: 4
+            bidirectional: False
+        dec:
+            type: lstm
+            hidden_size: 1024
+            output_size: 1024
+            projection_size: 320
+            n_layers: 1
+        joint:
+            input_size: 640
+            inner_size: 320
     vocab_size: 80
     share_weight: False
     feature_dim: 80
@@ -51,9 +53,9 @@ model:
     dropout: 0.3
     backend: c++
 training:
-    load_model: ./egs/AIhub/exp/aihub_basicrnnt_nfeat_32/aihub_basicrnnt_nfeat_32.epoch19.chkpt
-    load_encoder: True
-    load_decoder: True
+    load_model: False
+    load_encoder: False
+    load_decoder: False
     eval_or_not: True
     fp16_run: True
     dynamic_loss_scaling: True
@@ -64,7 +66,7 @@ training:
     visualization: True
     show_interval: 10
     save_interval: 1
-    save_model: aihub_basicrnnt_nfeat_32
+    save_model: aihub_streaming_rnnt
 optim:
     type: sgd
     lr: 0.0001
