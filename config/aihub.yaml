@@ -10,7 +10,7 @@ data:
     batch_size: 32
     encoding: True
     short_first: False
-    short_train : True
+    short_train : False
     shuffle: True
     feature_flag: feats.txt
     text_flag: targets.txt
