@@ -77,6 +77,7 @@ class AudioDataset(Dataset):
         self.left_context_width = config.data.left_context_width
         self.right_context_width = config.data.right_context_width
         self.frame_rate = config.data.frame_rate
+        self.cleaner = config.data.cleaner
 
     def get_mel(self, filename):
         audio, sampling_rate = load_wav_to_torch(filename)
@@ -107,7 +108,7 @@ class AudioDataset(Dataset):
         features = features.transpose_(0, 1)
         #print(features.shape, '\n')
         targets = self.targets_dict[utt_id] #np.fromstring([1:-1], dtype=int, sep=',')
-        targets = np.asarray(text_to_sequence(targets, ['korean_cleaners']))
+        targets = np.asarray(text_to_sequence(targets, [self.cleaner]))
 
         if(is_test):
             return targets, features, features_org
