@@ -7,11 +7,11 @@ data:
     frame_rate: 30
     right_context_width: 1
     left_context_width: 1
-    batch_size: 64
+    batch_size: 32
     encoding: True
-    short_first: True
+    short_first: False
     short_train : True
-    shuffle: False
+    shuffle: True
     feature_flag: feats.txt
     text_flag: targets.txt
     train: ./data/AIhub/train/
@@ -51,23 +51,23 @@ model:
     dropout: 0.3
     backend: c++
 training:
-    load_model: False #./egs/AIhub/exp/aihub_q3/aihub_q3.epoch19.chkpt
-    load_encoder: False #True
-    load_decoder: False #True
+    load_model: ./egs/AIhub/exp/aihub_basicrnnt_nfeat_32/aihub_basicrnnt_nfeat_32.epoch19.chkpt
+    load_encoder: True
+    load_decoder: True
     eval_or_not: True
     fp16_run: True
     dynamic_loss_scaling: True
     seed: 2019
-    num_gpu: 2
+    num_gpu: 1
     epochs: 300
     max_grad_norm: 200
     visualization: True
     show_interval: 10
     save_interval: 1
-    save_model: aihub_basicrnnt_nfeat_adam
+    save_model: aihub_basicrnnt_nfeat_32
 optim:
     type: sgd
-    lr: 0.001
+    lr: 0.0001
     momentum: 0.9
     decay_ratio: 0.9
     weight_decay: 0
