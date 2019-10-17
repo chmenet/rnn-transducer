@@ -75,11 +75,14 @@ def griffin_lim(magnitudes, stft_fn, n_iters=30):
     return signal
 
 def mel_normalize(x, max_abs_value=4.0, min_level_db=-100):
-    return torch.clamp((2*max_abs_value)*(x - min_level_db)/(-min_level_db) - max_abs_value,
-                       min=-max_abs_value, max = max_abs_value)
+    # return torch.clamp((2*max_abs_value)*(x - min_level_db)/(-min_level_db) - max_abs_value,
+    #                    min=-max_abs_value, max = max_abs_value)
+
+    return x.add_(-min_level_db).mul_(2*max_abs_value).mul_(-1/min_level_db).add_(-max_abs_value).clamp_(min=-max_abs_value, max = max_abs_value)
 
 def mel_denormalize(x, max_abs_value=4.0, min_level_db=-100):
-    return (torch.clamp(x, min=-max_abs_value, max = max_abs_value) + max_abs_value)*(-min_level_db)/(2*max_abs_value) + min_level_db
+    #return (torch.clamp(x, min=-max_abs_value, max = max_abs_value) + max_abs_value)*(-min_level_db)/(2*max_abs_value) + min_level_db
+    return x.clamp_(min=-max_abs_value, max = max_abs_value).add_(max_abs_value).mul_(min_level_db/2*max_abs_value).add(min_level_db)
 
 def dynamic_range_compression(x, C=20, clip_val=1e-5):
     """
@@ -87,8 +90,8 @@ def dynamic_range_compression(x, C=20, clip_val=1e-5):
     ------
     C: compression factor
     """
-    return torch.log10(torch.clamp(x, min=clip_val)) * C
-
+    #return torch.log10(torch.clamp(x, min=clip_val)) * C
+    return x.clamp_(min=clip_val).log10_().mul_(C)
 
 def dynamic_range_decompression(x, C=20):
     """
@@ -96,4 +99,5 @@ def dynamic_range_decompression(x, C=20):
     ------
     C: compression factor used to compress
     """
-    return torch.pow(10, x/C)
+    return torch.pow(10, x.mul_(C))
+    #return x.mul_(1/C)

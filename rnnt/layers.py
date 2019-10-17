@@ -111,11 +111,11 @@ class TacotronSTFT(torch.nn.Module):
         #print('mel: ', mel.max(), mel.min())
         spec = mel_denormalize(mel, self.max_abs_mel_value)
         #print('spec: ', spec.max(), spec.min())
-        magnitudes = self.spectral_de_normalize(spec + ref_level_db) ** (1 / magnitude_power)
+        magnitudes = self.spectral_de_normalize(spec + ref_level_db).pow_(1 / magnitude_power)
         #print('Magnitude: ', Magnitude.max(), Magnitude.min())
-        pow_spec = (magnitudes**2)/1024 # if filter_length = 1024
+        pow_spec = (magnitudes.pow_(2).mul_(1/1024)) # if filter_length = 1024
         #print('pow_spec: ', pow_spec.max(), pow_spec.min())
-        db_pow_spec = torch.log(torch.clamp(pow_spec,min=1e-5))*20 #db
+        db_pow_spec = pow_spec.clamp_(min=1e-5).log_().mul_(20) #db
         #print('db_pow_spec: ', db_pow_spec.max(), db_pow_spec.min())
         mcc = dct(db_pow_spec,'ortho' )
         return mcc
@@ -125,11 +125,11 @@ class TacotronSTFT(torch.nn.Module):
         assert (torch.max(y.data) <= 1)
         magnitudes, phases = self.stft_fn.transform(y)
         #print('magnitudes: ', magnitudes.max(), magnitudes.min())
-        pow_spec = (1/1024)*magnitudes**2
+        pow_spec = magnitudes.pow_(2).mul_(1/1024)
         #print('pow_spec: ', pow_spec.max(), pow_spec.min())
-        mel_spectrogram = torch.matmul(self.mel_basis, pow_spec).squeeze(0).transpose(0,1)
+        mel_spectrogram = torch.matmul(self.mel_basis, pow_spec).squeeze_(0).transpose_(0,1)
         #print('mel_spectrogram: ', mel_spectrogram.max(), mel_spectrogram.min())
-        db_mel_spectrogram = torch.log10(torch.clamp(pow_spec,min=1e-5))*20 #db
+        db_mel_spectrogram = pow_spec.clamp_(min=1e-5).log10_().mul_(20) #db
         #print('db_mel_spectrogram: ', db_mel_spectrogram.max(), db_mel_spectrogram.min())
         mcc = dct(db_mel_spectrogram,'ortho')
         return mcc
@@ -150,9 +150,10 @@ class TacotronSTFT(torch.nn.Module):
         magnitudes, phases = self.stft_fn.transform(y)
         magnitudes = magnitudes.data
         #print('stft_fn', magnitudes.max(), magnitudes.mean(), magnitudes.min())
-        mel_output = torch.matmul(self.mel_basis, torch.abs(magnitudes)**magnitude_power)
+        #mel_output = torch.matmul(self.mel_basis, torch.abs(magnitudes)**magnitude_power)
+        mel_output = torch.matmul(self.mel_basis, magnitudes.abs_().pow_(magnitude_power))
         #print('_linear_to_mel', mel_output.max(), mel_output.mean(), mel_output.min())
-        mel_output = self.spectral_normalize(mel_output) - ref_level_db
+        mel_output = self.spectral_normalize(mel_output).add_(- ref_level_db)
         #print('_amp_to_db', mel_output.max(), mel_output.mean(), mel_output.min())
         mel_output = mel_normalize(mel_output, self.max_abs_mel_value)
         #print('_normalize', mel_output.max(), mel_output.mean(), mel_output.min())
