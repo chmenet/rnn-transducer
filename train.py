@@ -159,7 +159,7 @@ def main():
     shutil.copyfile(opt.config, os.path.join(exp_name, 'config.yaml'))
     logger.info('Save config info.')
 
-    num_workers = config.training.num_gpu * 2
+    num_workers = config.training.num_gpu
     collate_fn = TextMelCollate(config.data.frame_rate)
     train_dataset = AudioDataset(config, 'train')
     training_data = torch.utils.data.DataLoader(

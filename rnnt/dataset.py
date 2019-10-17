@@ -87,7 +87,8 @@ class AudioDataset(Dataset):
         audio_norm = audio_norm.unsqueeze(0)
         audio_norm = torch.autograd.Variable(audio_norm, requires_grad=False)
         melspec = self.stft.mel_spectrogram(audio_norm)
-        melspec = torch.squeeze(melspec, 0)
+        #melspec = torch.squeeze(melspec, 0)
+        melspec.squeeze_(dim=0)
         return melspec
 
     def __getitem__(self, index, is_test=False):
@@ -96,14 +97,14 @@ class AudioDataset(Dataset):
         feats_path = self.feats_dict[utt_id]
         features_org = self.get_mel(os.path.join(self.config.base_path, feats_path))
         #print(features.shape)
-        features = features_org.transpose(0,1)
+        features = features_org.transpose_(0,1)
         #print(features.shape)
         features = self.concat_frame(features)
         #print(features.shape)
         features = self.subsampling(features)
         #print(features.shape)
         features = torch.from_numpy(features)
-        features = features.transpose(0, 1)
+        features = features.transpose_(0, 1)
         #print(features.shape, '\n')
         targets = self.targets_dict[utt_id] #np.fromstring([1:-1], dtype=int, sep=',')
         targets = np.asarray(text_to_sequence(targets, ['korean_cleaners']))
