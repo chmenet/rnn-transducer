@@ -161,6 +161,14 @@ def main():
 
     num_workers = config.training.num_gpu
     collate_fn = TextMelCollate(config.data.frame_rate)
+
+    if config.training.num_gpu > 0:
+        torch.cuda.manual_seed(config.training.seed)
+        torch.backends.cudnn.deterministic = True
+    else:
+        torch.manual_seed(config.training.seed)
+    logger.info('Set random seed: %d' % config.training.seed)
+
     if config.data.random_split == True:
         dataset = AudioDataset(config, 'train')
         train_size = int(config.data.train_set_percentage * len(dataset))
@@ -177,14 +185,8 @@ def main():
     validate_data = torch.utils.data.DataLoader(
         dev_dataset, batch_size=config.data.batch_size * config.training.num_gpu,
         shuffle=False, num_workers=num_workers, collate_fn=collate_fn)
-    logger.info('Load Dev Set!')
 
-    if config.training.num_gpu > 0:
-        torch.cuda.manual_seed(config.training.seed)
-        torch.backends.cudnn.deterministic = True
-    else:
-        torch.manual_seed(config.training.seed)
-    logger.info('Set random seed: %d' % config.training.seed)
+    logger.info('Load Dev Set!')
 
     model = Transducer(config)
 
