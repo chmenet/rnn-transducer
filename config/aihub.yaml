@@ -18,6 +18,8 @@ data:
     dev: ./data/AIhub/dev/
     test: ./data/AIhub/dev/
     cleaner: korean_cleaners
+    random_split: True
+    train_set_percentage: 0.9
 hparam:
     n_mel_channels: 80
     sampling_rate: 16000
@@ -51,9 +53,9 @@ model:
     dropout: 0.3
     backend: c++
 training:
-    load_model: ./egs/AIhub/exp/aihub_basicrnnt_nfeat_32/aihub_basicrnnt_nfeat_32.epoch19.chkpt
-    load_encoder: True
-    load_decoder: True
+    load_model: False #./egs/AIhub/exp/aihub_basicrnnt_nfeat_32/aihub_basicrnnt_nfeat_32.epoch19.chkpt
+    load_encoder: False
+    load_decoder: False
     eval_or_not: True
     fp16_run: True
     dynamic_loss_scaling: True

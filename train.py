@@ -161,13 +161,19 @@ def main():
 
     num_workers = config.training.num_gpu
     collate_fn = TextMelCollate(config.data.frame_rate)
-    train_dataset = AudioDataset(config, 'train')
+    if config.data.random_split == True:
+        dataset = AudioDataset(config, 'train')
+        train_size = int(config.data.train_set_percentage * len(dataset))
+        val_size = len(dataset) - train_size
+        train_dataset, dev_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
+    else:
+        train_dataset = AudioDataset(config, 'train')
+        dev_dataset = AudioDataset(config, 'dev')
     training_data = torch.utils.data.DataLoader(
         train_dataset, batch_size=config.data.batch_size * config.training.num_gpu,
         shuffle=config.data.shuffle, num_workers=num_workers, collate_fn=collate_fn)
     logger.info('Load Train Set!')
 
-    dev_dataset = AudioDataset(config, 'dev')
     validate_data = torch.utils.data.DataLoader(
         dev_dataset, batch_size=config.data.batch_size * config.training.num_gpu,
         shuffle=False, num_workers=num_workers, collate_fn=collate_fn)

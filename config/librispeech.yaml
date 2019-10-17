@@ -18,6 +18,8 @@ data:
     dev: ./LibriSpeech/dev/
     test: ./LibriSpeech/test/
     cleaner: english_cleaners
+    random_split: False
+    train_set_percentage: 0.9
 hparam:
     n_mel_channels: 80
     sampling_rate: 16000
