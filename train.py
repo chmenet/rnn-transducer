@@ -164,12 +164,14 @@ def main():
 
     if config.training.num_gpu > 0:
         torch.cuda.manual_seed(config.training.seed)
+
         torch.backends.cudnn.deterministic = True
     else:
         torch.manual_seed(config.training.seed)
     logger.info('Set random seed: %d' % config.training.seed)
 
     if config.data.random_split == True:
+        torch.manual_seed(config.training.seed)
         dataset = AudioDataset(config, 'train')
         train_size = int(config.data.train_set_percentage * len(dataset))
         val_size = len(dataset) - train_size
