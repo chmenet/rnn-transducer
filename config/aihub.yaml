@@ -30,22 +30,22 @@ hparam:
     max_abs_mel_value: 4.0
 model:
     type: transducer
-        enc:
-            type: lstm
-            hidden_size: 1024
-            output_size: 1024
-            projection_size: 320
-            n_layers: 4
-            bidirectional: False
-        dec:
-            type: lstm
-            hidden_size: 1024
-            output_size: 1024
-            projection_size: 320
-            n_layers: 1
-        joint:
-            input_size: 640
-            inner_size: 320
+    enc:
+        type: lstm
+        hidden_size: 1024
+        output_size: 1024
+        projection_size: 320
+        n_layers: 4
+        bidirectional: False
+    dec:
+        type: lstm
+        hidden_size: 1024
+        output_size: 1024
+        projection_size: 320
+        n_layers: 1
+    joint:
+        input_size: 640
+        inner_size: 320
     vocab_size: 80
     share_weight: False
     feature_dim: 80
