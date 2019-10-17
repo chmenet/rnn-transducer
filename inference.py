@@ -87,7 +87,7 @@ def audio_path_to_text(audio_path, model, stft, config):
     recog_indexes = model.recognize(mel, mel_lengths)
     result = []
     for seq in recog_indexes:
-        result.append(sequence_to_text(seq))
+        result.append(sequence_to_text(seq, [config.data.cleaner]))
     return result
 
 
@@ -131,4 +131,4 @@ if __name__ == '__main__':
     parser.add_argument('-ipath', type=str, default='aihub_test.txt', help='input file path')
     args = parser.parse_args()
 
-    inference(args.config, args.cpath, args.ipath)
+    inference(args.config, args.cpath, args.ipath, args.cleaner)
