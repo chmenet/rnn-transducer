@@ -11,9 +11,6 @@ from rnnt.dataset import AudioDataset, TextMelCollate
 from tensorboardX import SummaryWriter
 from rnnt.utils import AttrDict, init_logger, count_parameters, save_model, computer_cer
 from rnnt.fp16_optimizer import FP16_Optimizer
-from pytorch_lamb import Lamb, log_lamb_rs
-
-#from torchsummary import summary
 
 def batchnorm_to_float(module):
     """Converts batch norm modules to FP32"""
@@ -50,9 +47,7 @@ def train(epoch, config, model, training_data, optimizer, logger, iteration, lea
 
         optimizer.zero_grad()
         start = time.process_time()
-        #cost, loss = model(inputs, inputs_length, targets, targets_length)
         loss = model(inputs, inputs_length, targets, targets_length)
-        #print(loss.shape)
 
         if config.training.num_gpu > 1:
             loss = torch.mean(loss)
@@ -221,7 +216,6 @@ def main():
 
     learning_rate = config.optim.lr
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay)
-    #optimizer = Lamb(model.parameters(), lr=learning_rate, weight_decay=config.optim.weight_decay, betas=(.9, .999), adam= True)
     if config.training.fp16_run:
         optimizer = FP16_Optimizer(optimizer, dynamic_loss_scale=config.training.dynamic_loss_scaling)
 
