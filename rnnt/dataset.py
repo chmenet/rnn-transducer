@@ -49,7 +49,7 @@ class Dataset:
     def get_feats_list(self):
         feats_list = []
         feats_dict = {}
-        with open(self.features, 'r') as fid:
+        with open(self.features, 'r', encoding='utf-8-sig') as fid:
             for line in fid:
                 key, path = line.strip().split('|')
                 feats_list.append(key)
@@ -59,7 +59,7 @@ class Dataset:
     def get_targets_list(self):
         targets_list = []
         targets_dict = {}
-        with open(self.targets, 'r', encoding='utf-8') as fid:
+        with open(self.targets, 'r', encoding='utf-8-sig') as fid:
             for line in fid:
                 key, sentence = line.strip().split('|')
                 targets_list.append(key)
