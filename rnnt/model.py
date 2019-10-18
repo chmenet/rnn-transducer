@@ -1,10 +1,12 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from rnnt.encoder import build_encoder
-from rnnt.decoder import build_decoder
+from torch.nn import Module
+from rnnt.encoder import BaseEncoder, TacoEncoder
+from rnnt.decoder import BaseDecoder
 from warprnnt_pytorch import RNNTLoss
 
+import numpy as np
 from queue import PriorityQueue
 import operator
 from rnnt.fp16_optimizer import fp32_to_fp16, fp16_to_fp32
@@ -117,7 +119,7 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
                     if encoder_output.is_cuda:
                         decoder_input = decoder_input.cuda()
                     decoder_hidden = n.h
-                    decoder_output, decoder_hidden = decoder(decoder_input, hidden=decoder_hidden)
+                    decoder_output, decoder_hidden = decoder(decoder_input, hiddens=decoder_hidden)
 
                     # decode for one step using decoder
                     logits = joint(encoder_output[t].view(-1), decoder_output.view(-1))
@@ -243,9 +245,15 @@ class Transducer(nn.Module):
         # define encoder
         self.config = config.model
         self.fp16_run = config.training.fp16_run
-        self.encoder = build_encoder(config.model)
+        self.encoder = TacoEncoder(
+            in_dim=config.model.feature_dim * config.model.stacking,
+            sizes=[config.model.enc.hidden_size, config.model.enc.hidden_size, config.model.enc.output_size])
         # define decoder
-        self.decoder = build_decoder(config.model)
+        self.decoder = BaseDecoder(
+            input_size=config.model.vocab_size,
+            hidden_size=config.model.dec.hidden_size,
+            projection_size=config.model.dec.projection_size,
+            n_layers=config.model.dec.n_layers)
         # define JointNet
         self.joint = JointNet(
             input_size=config.model.joint.input_size,
@@ -321,7 +329,7 @@ class Transducer(nn.Module):
             dec_state, hidden = self.decoder(zero_token)
             for t in range(lengths):
                 logits = self.joint(enc_state[t].view(-1), dec_state.view(-1))
-                out = F.log_softmax(logits, dim=0).detach()
+                out = F.log_softmax(logits, dim=-1).detach()
                 pred = torch.argmax(out, dim=0)
                 pred = int(pred.item())
                 if pred != 0:
@@ -331,7 +339,7 @@ class Transducer(nn.Module):
                     if enc_state.is_cuda:
                         token = token.cuda()
 
-                    dec_state, hidden = self.decoder(token, hidden=hidden)
+                    dec_state, hidden = self.decoder(token, hiddens=hidden)
             return token_list
 
         results = []
