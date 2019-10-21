@@ -35,14 +35,14 @@ model:
         hidden_size: 1024
         output_size: 1024
         projection_size: 320
-        n_layers: 4
+        n_layers: 8
         bidirectional: False
     dec:
         type: lstm
         hidden_size: 1024
         output_size: 1024
         projection_size: 320
-        n_layers: 1
+        n_layers: 2
     joint:
         input_size: 640
         inner_size: 320
@@ -66,7 +66,7 @@ training:
     visualization: True
     show_interval: 10
     save_interval: 1
-    save_model: aihub_streaming_rnnt
+    save_model: aihub_halfparam
 optim:
     type: sgd
     lr: 0.0001
