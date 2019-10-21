@@ -40,7 +40,7 @@ model:
         hidden_size: 1024
         output_size: 1024
         projection_size: 512
-        n_layers: 1
+        n_layers: 2
     joint:
         input_size: 1024
         inner_size: 512
