@@ -5,6 +5,8 @@ from rnnt.encoder import encoder_for
 from rnnt.decoder import build_decoder
 from warprnnt_pytorch import RNNTLoss
 
+import logging
+
 from queue import PriorityQueue
 import operator
 from rnnt.fp16_optimizer import fp32_to_fp16, fp16_to_fp32
@@ -272,7 +274,9 @@ class Transducer(nn.Module):
         inputs_length = self.parse_input(inputs_length)
         targets = self.parse_input(targets)
         targets_length = self.parse_input(targets_length)
+        logging.info(self.__class__.__name__ + ' input lengths: ' + str(inputs_length))
         enc_state, _ = self.encoder(inputs, inputs_length)
+
         concat_targets = F.pad(targets, pad=(1, 0, 0, 0), value=0)
         dec_state, _ = self.decoder(concat_targets, targets_length.add(1))
 

@@ -392,6 +392,8 @@ class Encoder(torch.nn.Module):
             prev_states = [None] * len(self.enc)
         assert len(prev_states) == len(self.enc)
 
+        logging.info(self.__class__.__name__ + ' input lengths: ' + str(ilens))
+
         current_states = []
         for module, prev_state in zip(self.enc, prev_states):
             xs_pad, ilens, states = module(xs_pad, ilens, prev_state=prev_state)
