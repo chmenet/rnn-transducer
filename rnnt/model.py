@@ -275,7 +275,7 @@ class Transducer(nn.Module):
         targets = self.parse_input(targets)
         targets_length = self.parse_input(targets_length)
         logging.info(self.__class__.__name__ + ' input lengths: ' + str(inputs_length))
-        enc_state, _ = self.encoder(inputs, inputs_length)
+        enc_state, _, _ = self.encoder(inputs, inputs_length)
 
         concat_targets = F.pad(targets, pad=(1, 0, 0, 0), value=0)
         dec_state, _ = self.decoder(concat_targets, targets_length.add(1))

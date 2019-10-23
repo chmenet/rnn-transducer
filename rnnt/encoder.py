@@ -244,11 +244,7 @@ class RNN(torch.nn.Module):
         :return: batch of hidden state sequences (B, Tmax, eprojs)
         :rtype: torch.Tensor
         """
-        #logging.info(self.__class__.__name__ + ' input lengths: ' + str(ilens))
 
-        if ilens is not None:
-            sorted_seq_lengths, ilens = torch.sort(ilens, descending=True)
-            xs_pad = xs_pad[ilens]
 
         xs_pack = pack_padded_sequence(xs_pad, ilens, batch_first=True)
         self.nbrnn.flatten_parameters()
@@ -263,11 +259,6 @@ class RNN(torch.nn.Module):
         projected = torch.tanh(self.l_last(
             ys_pad.contiguous().view(-1, ys_pad.size(2))))
         xs_pad = projected.view(ys_pad.size(0), ys_pad.size(1), -1)
-
-        if ilens is not None:
-            _, desorted_indices = torch.sort(ilens, descending=False)
-            xs_pad, _ = pad_packed_sequence(xs_pad, batch_first=True)
-            xs_pad = xs_pad[desorted_indices]
 
         return xs_pad, ilens, states  # x: utt list of frame x dim
 
@@ -306,7 +297,7 @@ class VGG2L(torch.nn.Module):
         :return: batch of padded hidden state sequences (B, Tmax // 4, 128 * D // 4)
         :rtype: torch.Tensor
         """
-        logging.info(self.__class__.__name__ + ' input lengths: ' + str(ilens))
+        #logging.info(self.__class__.__name__ + ' input lengths: ' + str(ilens))
 
         # x: utt x frame x dim
         # xs_pad = F.pad_sequence(xs_pad)
@@ -388,21 +379,38 @@ class Encoder(torch.nn.Module):
         :return: batch of hidden state sequences (B, Tmax, eprojs)
         :rtype: torch.Tensor
         """
+
+        #logging.info(self.__class__.__name__ + ' input lengths1: ' + str(ilens))
+
+        if ilens is not None:
+            sorted_seq_lengths, indexs = torch.sort(ilens, descending=True)
+            xs_pad = xs_pad[indexs]
+
+        #logging.info(self.__class__.__name__ + ' sorted input lengths: ' + str(sorted_seq_lengths))
+
         if prev_states is None:
             prev_states = [None] * len(self.enc)
         assert len(prev_states) == len(self.enc)
 
-        logging.info(self.__class__.__name__ + ' input lengths: ' + str(ilens))
+        #logging.info(self.__class__.__name__ + ' input lengths: ' + str(input_lengths))
 
         current_states = []
+        ilnes  = sorted_seq_lengths
         for module, prev_state in zip(self.enc, prev_states):
-            xs_pad, ilens, states = module(xs_pad, ilens, prev_state=prev_state)
+            #logging.info(module.__class__.__name__ + ' input lengths: ' + str(ilnes))
+            xs_pad, ilnes, states = module(xs_pad, ilnes, prev_state=prev_state)
             current_states.append(states)
 
-        # make mask to remove bias value in padded part
-        mask = to_device(self, make_pad_mask(ilens).unsqueeze(-1))
+        if ilens is not None:
+            _, desorted_indices = torch.sort(indexs, descending=False)
+            xs_pad = xs_pad[desorted_indices]
 
-        return xs_pad.masked_fill(mask, 0.0), ilens, current_states
+        #logging.info(self.__class__.__name__ + ' input lengths2: ' + str(ilens))
+
+        # make mask to remove bias value in padded part
+        mask = to_device(self, make_pad_mask(ilnes).unsqueeze(-1))
+
+        return xs_pad.masked_fill(mask, 0.0), ilnes, current_states
 
 
 def encoder_for(config):
