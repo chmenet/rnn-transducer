@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from rnnt.encoder import build_encoder
+from rnnt.encoder import encoder_for
 from rnnt.decoder import build_decoder
 from warprnnt_pytorch import RNNTLoss
 
@@ -243,7 +243,7 @@ class Transducer(nn.Module):
         # define encoder
         self.config = config.model
         self.fp16_run = config.training.fp16_run
-        self.encoder = build_encoder(config.model)
+        self.encoder = encoder_for(config.model)
         # define decoder
         self.decoder = build_decoder(config.model)
         # define JointNet

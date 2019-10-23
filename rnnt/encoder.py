@@ -1,54 +1,420 @@
+import logging
+import six
+
+import numpy as np
 import torch
-import torch.nn as nn
+import torch.nn.functional as F
+from torch.nn.utils.rnn import pack_padded_sequence
+from torch.nn.utils.rnn import pad_packed_sequence
 
+# from espnet.nets.e2e_asr_common import get_vgg2l_odim
+# from espnet.nets.pytorch_backend.nets_utils import make_pad_mask
+# from espnet.nets.pytorch_backend.nets_utils import to_device
 
-class BaseEncoder(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size, n_layers, dropout=0.2, bidirectional=True):
-        super(BaseEncoder, self).__init__()
+def get_vgg2l_odim(idim, in_channel=3, out_channel=128):
+    idim = idim / in_channel
+    idim = np.ceil(np.array(idim, dtype=np.float32) / 2)  # 1st max pooling
+    idim = np.ceil(np.array(idim, dtype=np.float32) / 2)  # 2nd max pooling
+    return int(idim) * out_channel  # numer of channels
 
-        self.lstm = nn.LSTM(
-            input_size=input_size,
-            hidden_size=hidden_size,
-            num_layers=n_layers,
-            batch_first=True,
-            dropout=dropout,
-            bidirectional=bidirectional
-        )
+def to_device(m, x):
+    """Send tensor into the device of the module.
 
-        self.output_proj = nn.Linear(2 * hidden_size if bidirectional else hidden_size,
-                                     output_size,
-                                     bias=True)
+    Args:
+        m (torch.nn.Module): Torch module.
+        x (Tensor): Torch tensor.
 
-    def forward(self, inputs, input_lengths):
-        assert inputs.dim() == 3
+    Returns:
+        Tensor: Torch tensor located in the same place as torch module.
 
-        if input_lengths is not None:
-            sorted_seq_lengths, indices = torch.sort(input_lengths, descending=True)
-            inputs = inputs[indices]
-            inputs = nn.utils.rnn.pack_padded_sequence(inputs, sorted_seq_lengths, batch_first=True)
+    """
+    assert isinstance(m, torch.nn.Module)
+    device = next(m.parameters()).device
+    return x.to(device)
 
-        self.lstm.flatten_parameters()
-        outputs, hidden = self.lstm(inputs)
+def make_pad_mask(lengths, xs=None, length_dim=-1):
+    """Make mask tensor containing indices of padded part.
 
-        if input_lengths is not None:
-            _, desorted_indices = torch.sort(indices, descending=False)
-            outputs, _ = nn.utils.rnn.pad_packed_sequence(outputs, batch_first=True)
-            outputs = outputs[desorted_indices]
+    Args:
+        lengths (LongTensor or List): Batch of lengths (B,).
+        xs (Tensor, optional): The reference tensor. If set, masks will be the same shape as this tensor.
+        length_dim (int, optional): Dimension indicator of the above tensor. See the example.
 
-        logits = self.output_proj(outputs)
+    Returns:
+        Tensor: Mask tensor containing indices of padded part.
 
-        return logits, hidden
+    Examples:
+        With only lengths.
 
+        >>> lengths = [5, 3, 2]
+        >>> make_non_pad_mask(lengths)
+        masks = [[0, 0, 0, 0 ,0],
+                 [0, 0, 0, 1, 1],
+                 [0, 0, 1, 1, 1]]
 
-def build_encoder(config):
-    if config.enc.type == 'lstm':
-        return BaseEncoder(
-            input_size=config.feature_dim*config.stacking,
-            hidden_size=config.enc.hidden_size,
-            output_size=config.enc.output_size,
-            n_layers=config.enc.n_layers,
-            dropout=config.dropout,
-            bidirectional=config.enc.bidirectional
-        )
+        With the reference tensor.
+
+        >>> xs = torch.zeros((3, 2, 4))
+        >>> make_pad_mask(lengths, xs)
+        tensor([[[0, 0, 0, 0],
+                 [0, 0, 0, 0]],
+                [[0, 0, 0, 1],
+                 [0, 0, 0, 1]],
+                [[0, 0, 1, 1],
+                 [0, 0, 1, 1]]], dtype=torch.uint8)
+        >>> xs = torch.zeros((3, 2, 6))
+        >>> make_pad_mask(lengths, xs)
+        tensor([[[0, 0, 0, 0, 0, 1],
+                 [0, 0, 0, 0, 0, 1]],
+                [[0, 0, 0, 1, 1, 1],
+                 [0, 0, 0, 1, 1, 1]],
+                [[0, 0, 1, 1, 1, 1],
+                 [0, 0, 1, 1, 1, 1]]], dtype=torch.uint8)
+
+        With the reference tensor and dimension indicator.
+
+        >>> xs = torch.zeros((3, 6, 6))
+        >>> make_pad_mask(lengths, xs, 1)
+        tensor([[[0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0],
+                 [1, 1, 1, 1, 1, 1]],
+                [[0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1]],
+                [[0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1]]], dtype=torch.uint8)
+        >>> make_pad_mask(lengths, xs, 2)
+        tensor([[[0, 0, 0, 0, 0, 1],
+                 [0, 0, 0, 0, 0, 1],
+                 [0, 0, 0, 0, 0, 1],
+                 [0, 0, 0, 0, 0, 1],
+                 [0, 0, 0, 0, 0, 1],
+                 [0, 0, 0, 0, 0, 1]],
+                [[0, 0, 0, 1, 1, 1],
+                 [0, 0, 0, 1, 1, 1],
+                 [0, 0, 0, 1, 1, 1],
+                 [0, 0, 0, 1, 1, 1],
+                 [0, 0, 0, 1, 1, 1],
+                 [0, 0, 0, 1, 1, 1]],
+                [[0, 0, 1, 1, 1, 1],
+                 [0, 0, 1, 1, 1, 1],
+                 [0, 0, 1, 1, 1, 1],
+                 [0, 0, 1, 1, 1, 1],
+                 [0, 0, 1, 1, 1, 1],
+                 [0, 0, 1, 1, 1, 1]]], dtype=torch.uint8)
+
+    """
+    if length_dim == 0:
+        raise ValueError('length_dim cannot be 0: {}'.format(length_dim))
+
+    if not isinstance(lengths, list):
+        lengths = lengths.tolist()
+    bs = int(len(lengths))
+    if xs is None:
+        maxlen = int(max(lengths))
     else:
-        raise NotImplementedError
+        maxlen = xs.size(length_dim)
+
+    seq_range = torch.arange(0, maxlen, dtype=torch.int64)
+    seq_range_expand = seq_range.unsqueeze(0).expand(bs, maxlen)
+    seq_length_expand = seq_range_expand.new(lengths).unsqueeze(-1)
+    mask = seq_range_expand >= seq_length_expand
+
+    if xs is not None:
+        assert xs.size(0) == bs, (xs.size(0), bs)
+
+        if length_dim < 0:
+            length_dim = xs.dim() + length_dim
+        # ind = (:, None, ..., None, :, , None, ..., None)
+        ind = tuple(slice(None) if i in (0, length_dim) else None
+                    for i in range(xs.dim()))
+        mask = mask[ind].expand_as(xs).to(xs.device)
+    return mask
+
+
+class RNNP(torch.nn.Module):
+    """RNN with projection layer module
+
+    :param int idim: dimension of inputs
+    :param int elayers: number of encoder layers
+    :param int cdim: number of rnn units (resulted in cdim * 2 if bidirectional)
+    :param int hdim: number of projection units
+    :param np.ndarray subsample: list of subsampling numbers
+    :param float dropout: dropout rate
+    :param str typ: The RNN type
+    """
+
+    def __init__(self, idim, elayers, cdim, hdim, subsample, dropout, typ="blstm"):
+        super(RNNP, self).__init__()
+        bidir = typ[0] == "b"
+        for i in six.moves.range(elayers):
+            if i == 0:
+                inputdim = idim
+            else:
+                inputdim = hdim
+            rnn = torch.nn.LSTM(inputdim, cdim, dropout=dropout, num_layers=1, bidirectional=bidir,
+                                batch_first=True) if "lstm" in typ \
+                else torch.nn.GRU(inputdim, cdim, dropout=dropout, num_layers=1, bidirectional=bidir, batch_first=True)
+            setattr(self, "%s%d" % ("birnn" if bidir else "rnn", i), rnn)
+            # bottleneck layer to merge
+            if bidir:
+                setattr(self, "bt%d" % i, torch.nn.Linear(2 * cdim, hdim))
+            else:
+                setattr(self, "bt%d" % i, torch.nn.Linear(cdim, hdim))
+
+        self.elayers = elayers
+        self.cdim = cdim
+        self.subsample = subsample
+        self.typ = typ
+        self.bidir = bidir
+
+    def forward(self, xs_pad, ilens, prev_state=None):
+        """RNNP forward
+
+        :param torch.Tensor xs_pad: batch of padded input sequences (B, Tmax, idim)
+        :param torch.Tensor ilens: batch of lengths of input sequences (B)
+        :param torch.Tensor prev_state: batch of previous RNN states
+        :return: batch of hidden state sequences (B, Tmax, hdim)
+        :rtype: torch.Tensor
+        """
+        # logging.info(self.__class__.__name__ + ' input lengths: ' + str(ilens))
+        elayer_states = []
+        for layer in six.moves.range(self.elayers):
+            xs_pack = pack_padded_sequence(xs_pad, ilens, batch_first=True)
+            rnn = getattr(self, ("birnn" if self.bidir else "rnn") + str(layer))
+            rnn.flatten_parameters()
+            if prev_state is not None and rnn.bidirectional:
+                prev_state = reset_backward_rnn_state(prev_state)
+            ys, states = rnn(xs_pack, hx=None if prev_state is None else prev_state[layer])
+            elayer_states.append(states)
+            # ys: utt list of frame x cdim x 2 (2: means bidirectional)
+            ys_pad, ilens = pad_packed_sequence(ys, batch_first=True)
+            sub = self.subsample[layer + 1]
+            if sub > 1:
+                ys_pad = ys_pad[:, ::sub]
+                ilens = [int(i + 1) // sub for i in ilens]
+            # (sum _utt frame_utt) x dim
+            projected = getattr(self, 'bt' + str(layer)
+                                )(ys_pad.contiguous().view(-1, ys_pad.size(2)))
+            xs_pad = torch.tanh(projected.view(ys_pad.size(0), ys_pad.size(1), -1))
+
+        return xs_pad, ilens, elayer_states  # x: utt list of frame x dim
+
+
+class RNN(torch.nn.Module):
+    """RNN module
+
+    :param int idim: dimension of inputs
+    :param int elayers: number of encoder layers
+    :param int cdim: number of rnn units (resulted in cdim * 2 if bidirectional)
+    :param int hdim: number of final projection units
+    :param float dropout: dropout rate
+    :param str typ: The RNN type
+    """
+
+    def __init__(self, idim, elayers, cdim, hdim, dropout, typ="blstm"):
+        super(RNN, self).__init__()
+        bidir = typ[0] == "b"
+        self.nbrnn = torch.nn.LSTM(idim, cdim, elayers, batch_first=True,
+                                   dropout=dropout, bidirectional=bidir) if "lstm" in typ \
+            else torch.nn.GRU(idim, cdim, elayers, batch_first=True, dropout=dropout,
+                              bidirectional=bidir)
+        if bidir:
+            self.l_last = torch.nn.Linear(cdim * 2, hdim)
+        else:
+            self.l_last = torch.nn.Linear(cdim, hdim)
+        self.typ = typ
+
+    def forward(self, xs_pad, ilens, prev_state=None):
+        """RNN forward
+
+        :param torch.Tensor xs_pad: batch of padded input sequences (B, Tmax, D)
+        :param torch.Tensor ilens: batch of lengths of input sequences (B)
+        :param torch.Tensor prev_state: batch of previous RNN states
+        :return: batch of hidden state sequences (B, Tmax, eprojs)
+        :rtype: torch.Tensor
+        """
+        logging.info(self.__class__.__name__ + ' input lengths: ' + str(ilens))
+        xs_pack = pack_padded_sequence(xs_pad, ilens, batch_first=True)
+        self.nbrnn.flatten_parameters()
+        if prev_state is not None and self.nbrnn.bidirectional:
+            # We assume that when previous state is passed, it means that we're streaming the input
+            # and therefore cannot propagate backward BRNN state (otherwise it goes in the wrong direction)
+            prev_state = reset_backward_rnn_state(prev_state)
+        ys, states = self.nbrnn(xs_pack, hx=prev_state)
+        # ys: utt list of frame x cdim x 2 (2: means bidirectional)
+        ys_pad, ilens = pad_packed_sequence(ys, batch_first=True)
+        # (sum _utt frame_utt) x dim
+        projected = torch.tanh(self.l_last(
+            ys_pad.contiguous().view(-1, ys_pad.size(2))))
+        xs_pad = projected.view(ys_pad.size(0), ys_pad.size(1), -1)
+        return xs_pad, ilens, states  # x: utt list of frame x dim
+
+
+def reset_backward_rnn_state(states):
+    """Sets backward BRNN states to zeroes - useful in processing of sliding windows over the inputs"""
+    if isinstance(states, (list, tuple)):
+        for state in states:
+            state[1::2] = 0.
+    else:
+        states[1::2] = 0.
+    return states
+
+
+class VGG2L(torch.nn.Module):
+    """VGG-like module
+
+    :param int in_channel: number of input channels
+    """
+
+    def __init__(self, in_channel=1):
+        super(VGG2L, self).__init__()
+        # CNN layer (VGG motivated)
+        self.conv1_1 = torch.nn.Conv2d(in_channel, 64, 3, stride=1, padding=1)
+        self.conv1_2 = torch.nn.Conv2d(64, 64, 3, stride=1, padding=1)
+        self.conv2_1 = torch.nn.Conv2d(64, 128, 3, stride=1, padding=1)
+        self.conv2_2 = torch.nn.Conv2d(128, 128, 3, stride=1, padding=1)
+
+        self.in_channel = in_channel
+
+    def forward(self, xs_pad, ilens, **kwargs):
+        """VGG2L forward
+
+        :param torch.Tensor xs_pad: batch of padded input sequences (B, Tmax, D)
+        :param torch.Tensor ilens: batch of lengths of input sequences (B)
+        :return: batch of padded hidden state sequences (B, Tmax // 4, 128 * D // 4)
+        :rtype: torch.Tensor
+        """
+        logging.info(self.__class__.__name__ + ' input lengths: ' + str(ilens))
+
+        # x: utt x frame x dim
+        # xs_pad = F.pad_sequence(xs_pad)
+
+        # x: utt x 1 (input channel num) x frame x dim
+        xs_pad = xs_pad.view(xs_pad.size(0), xs_pad.size(1), self.in_channel,
+                             xs_pad.size(2) // self.in_channel).transpose(1, 2)
+
+        # NOTE: max_pool1d ?
+        xs_pad = F.relu(self.conv1_1(xs_pad))
+        xs_pad = F.relu(self.conv1_2(xs_pad))
+        xs_pad = F.max_pool2d(xs_pad, 2, stride=2, ceil_mode=True)
+
+        xs_pad = F.relu(self.conv2_1(xs_pad))
+        xs_pad = F.relu(self.conv2_2(xs_pad))
+        xs_pad = F.max_pool2d(xs_pad, 2, stride=2, ceil_mode=True)
+        if torch.is_tensor(ilens):
+            ilens = ilens.cpu().numpy()
+        else:
+            ilens = np.array(ilens, dtype=np.float32)
+        ilens = np.array(np.ceil(ilens / 2), dtype=np.int64)
+        ilens = np.array(
+            np.ceil(np.array(ilens, dtype=np.float32) / 2), dtype=np.int64).tolist()
+
+        # x: utt_list of frame (remove zeropaded frames) x (input channel num x dim)
+        xs_pad = xs_pad.transpose(1, 2)
+        xs_pad = xs_pad.contiguous().view(
+            xs_pad.size(0), xs_pad.size(1), xs_pad.size(2) * xs_pad.size(3))
+        return xs_pad, ilens, None  # no state in this layer
+
+
+class Encoder(torch.nn.Module):
+    """Encoder module
+
+    :param str etype: type of encoder network
+    :param int idim: number of dimensions of encoder network
+    :param int elayers: number of layers of encoder network
+    :param int eunits: number of lstm units of encoder network
+    :param int eprojs: number of projection units of encoder network
+    :param np.ndarray subsample: list of subsampling numbers
+    :param float dropout: dropout rate
+    :param int in_channel: number of input channels
+    """
+
+    def __init__(self, etype, idim, elayers, eunits, eprojs, subsample, dropout, in_channel=1):
+        super(Encoder, self).__init__()
+        typ = etype.lstrip("vgg").rstrip("p")
+        if typ not in ['lstm', 'gru', 'blstm', 'bgru']:
+            logging.error("Error: need to specify an appropriate encoder architecture")
+
+        if etype.startswith("vgg"):
+            if etype[-1] == "p":
+                self.enc = torch.nn.ModuleList([VGG2L(in_channel),
+                                                RNNP(get_vgg2l_odim(idim, in_channel=in_channel), elayers, eunits,
+                                                     eprojs,
+                                                     subsample, dropout, typ=typ)])
+                logging.info('Use CNN-VGG + ' + typ.upper() + 'P for encoder')
+            else:
+                self.enc = torch.nn.ModuleList([VGG2L(in_channel),
+                                                RNN(get_vgg2l_odim(idim, in_channel=in_channel), elayers, eunits,
+                                                    eprojs,
+                                                    dropout, typ=typ)])
+                logging.info('Use CNN-VGG + ' + typ.upper() + ' for encoder')
+        else:
+            if etype[-1] == "p":
+                self.enc = torch.nn.ModuleList(
+                    [RNNP(idim, elayers, eunits, eprojs, subsample, dropout, typ=typ)])
+                logging.info(typ.upper() + ' with every-layer projection for encoder')
+            else:
+                self.enc = torch.nn.ModuleList([RNN(idim, elayers, eunits, eprojs, dropout, typ=typ)])
+                logging.info(typ.upper() + ' without projection for encoder')
+
+    def forward(self, xs_pad, ilens, prev_states=None):
+        """Encoder forward
+
+        :param torch.Tensor xs_pad: batch of padded input sequences (B, Tmax, D)
+        :param torch.Tensor ilens: batch of lengths of input sequences (B)
+        :param torch.Tensor prev_state: batch of previous encoder hidden states (?, ...)
+        :return: batch of hidden state sequences (B, Tmax, eprojs)
+        :rtype: torch.Tensor
+        """
+        if prev_states is None:
+            prev_states = [None] * len(self.enc)
+        assert len(prev_states) == len(self.enc)
+
+        current_states = []
+        for module, prev_state in zip(self.enc, prev_states):
+            xs_pad, ilens, states = module(xs_pad, ilens, prev_state=prev_state)
+            current_states.append(states)
+
+        # make mask to remove bias value in padded part
+        mask = to_device(self, make_pad_mask(ilens).unsqueeze(-1))
+
+        return xs_pad.masked_fill(mask, 0.0), ilens, current_states
+
+
+def encoder_for(config):
+    """Instantiates an encoder module given the program arguments
+
+    :param Namespace args: The arguments
+    :param int or List of integer idim: dimension of input, e.g. 83, or
+                                        List of dimensions of inputs, e.g. [83,83]
+    :param List or List of List subsample: subsample factors, e.g. [1,2,2,1,1], or
+                                        List of subsample factors of each encoder. e.g. [[1,2,2,1,1], [1,2,2,1,1]]
+    :rtype torch.nn.Module
+    :return: The encoder module
+    """
+    # num_encs = getattr(args, "num_encs", 1)  # use getattr to keep compatibility
+    # if num_encs == 1:
+    #     # compatible with single encoder asr mode
+
+    # config.enc.etype, idim, config.enc.
+    return Encoder(config.enc.etype, config.feature_dim * config.stacking, config.enc.elayers, config.enc.eunits, config.enc.eprojs, config.enc.subsample, config.enc.dropout_rate)
+    # elif num_encs >= 1:
+    #     enc_list = torch.nn.ModuleList()
+    #     for idx in range(num_encs):
+    #         enc = Encoder(args.etype[idx], idim[idx], args.elayers[idx], args.eunits[idx], args.eprojs, subsample[idx],
+    #                       args.dropout_rate[idx])
+    #         enc_list.append(enc)
+    #     return enc_list
+    # else:
+    #     raise ValueError("Number of encoders needs to be more than one. {}".format(num_encs))
