@@ -40,7 +40,7 @@ model:
     dec:
         type: lstm
         hidden_size: 256
-        output_size: 128
+        output_size: 256
         n_layers: 1
     joint:
         input_size: 576
