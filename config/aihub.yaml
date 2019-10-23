@@ -36,7 +36,7 @@ model:
         eunits: 320
         eprojs: 320
         subsample: "1_1_1_1_1"
-        dropout-rate: 0.4
+        dropout_rate: 0.4
     dec:
         type: lstm
         hidden_size: 256

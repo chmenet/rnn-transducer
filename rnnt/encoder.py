@@ -244,7 +244,12 @@ class RNN(torch.nn.Module):
         :return: batch of hidden state sequences (B, Tmax, eprojs)
         :rtype: torch.Tensor
         """
-        logging.info(self.__class__.__name__ + ' input lengths: ' + str(ilens))
+        #logging.info(self.__class__.__name__ + ' input lengths: ' + str(ilens))
+
+        if ilens is not None:
+            sorted_seq_lengths, ilens = torch.sort(ilens, descending=True)
+            xs_pad = xs_pad[ilens]
+
         xs_pack = pack_padded_sequence(xs_pad, ilens, batch_first=True)
         self.nbrnn.flatten_parameters()
         if prev_state is not None and self.nbrnn.bidirectional:
@@ -258,6 +263,12 @@ class RNN(torch.nn.Module):
         projected = torch.tanh(self.l_last(
             ys_pad.contiguous().view(-1, ys_pad.size(2))))
         xs_pad = projected.view(ys_pad.size(0), ys_pad.size(1), -1)
+
+        if ilens is not None:
+            _, desorted_indices = torch.sort(ilens, descending=False)
+            xs_pad, _ = pad_packed_sequence(xs_pad, batch_first=True)
+            xs_pad = xs_pad[desorted_indices]
+
         return xs_pad, ilens, states  # x: utt list of frame x dim
 
 
