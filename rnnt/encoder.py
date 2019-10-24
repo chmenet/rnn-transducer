@@ -395,10 +395,10 @@ class Encoder(torch.nn.Module):
         #logging.info(self.__class__.__name__ + ' input lengths: ' + str(input_lengths))
 
         current_states = []
-        ilnes  = sorted_seq_lengths
+        ilens_  = sorted_seq_lengths
         for module, prev_state in zip(self.enc, prev_states):
             #logging.info(module.__class__.__name__ + ' input lengths: ' + str(ilnes))
-            xs_pad, ilnes, states = module(xs_pad, ilnes, prev_state=prev_state)
+            xs_pad, ilens_, states = module(xs_pad, ilens_, prev_state=prev_state)
             current_states.append(states)
 
         if ilens is not None:
@@ -408,9 +408,9 @@ class Encoder(torch.nn.Module):
         #logging.info(self.__class__.__name__ + ' input lengths2: ' + str(ilens))
 
         # make mask to remove bias value in padded part
-        mask = to_device(self, make_pad_mask(ilnes).unsqueeze(-1))
+        mask = to_device(self, make_pad_mask(ilens).unsqueeze(-1))
 
-        return xs_pad.masked_fill(mask, 0.0), ilnes, current_states
+        return xs_pad.masked_fill(mask, 0.0), ilens, current_states
 
 
 def encoder_for(config):
