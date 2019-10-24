@@ -410,7 +410,7 @@ class Encoder(torch.nn.Module):
         # make mask to remove bias value in padded part
         mask = to_device(self, make_pad_mask(ilens).unsqueeze(-1))
 
-        return xs_pad.masked_fill(mask, 0.0), ilens, current_states
+        return xs_pad.masked_fill(mask, 0.0), ilens_, current_states
 
 
 def encoder_for(config):
