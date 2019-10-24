@@ -408,7 +408,7 @@ class Encoder(torch.nn.Module):
         #logging.info(self.__class__.__name__ + ' input lengths2: ' + str(ilens))
 
         # make mask to remove bias value in padded part
-        mask = to_device(self, make_pad_mask(ilens).unsqueeze(-1))
+        mask = to_device(self, make_pad_mask(ilens_).unsqueeze(-1))
 
         return xs_pad.masked_fill(mask, 0.0), ilens_, current_states
 
