@@ -404,7 +404,7 @@ class Encoder(torch.nn.Module):
         if ilens is not None:
             _, desorted_indices = torch.sort(indexs, descending=False)
             xs_pad = xs_pad[desorted_indices]
-
+        ilens_ = ilens_[desorted_indices]
         #logging.info(self.__class__.__name__ + ' input lengths2: ' + str(ilens))
 
         # make mask to remove bias value in padded part

@@ -274,8 +274,12 @@ class Transducer(nn.Module):
         inputs_length = self.parse_input(inputs_length)
         targets = self.parse_input(targets)
         targets_length = self.parse_input(targets_length)
-        logging.info(self.__class__.__name__ + ' input lengths: ' + str(inputs_length))
+        #logging.info(self.__class__.__name__ + ' input lengths: ' + str(inputs_length))
         enc_state, inputs_length, _ = self.encoder(inputs, inputs_length)
+        if torch.cuda.is_available():
+            devid = torch.cuda.current_device()
+            inputs_length = inputs_length.cuda()#.to('cuda:{}'.format(devid))
+        #logging.info(self.__class__.__name__ + ' input lengths: ' + str(inputs_length))
 
         concat_targets = F.pad(targets, pad=(1, 0, 0, 0), value=0)
         dec_state, _ = self.decoder(concat_targets, targets_length.add(1))
@@ -302,7 +306,10 @@ class Transducer(nn.Module):
         batch_size = inputs.size(0)
         inputs = self.parse_input(inputs)
         inputs_length = self.parse_input(inputs_length)
-        enc_states, _ = self.encoder(inputs, inputs_length)
+        enc_states, inputs_length, _ = self.encoder(inputs, inputs_length)
+        if torch.cuda.is_available():
+            #devid = torch.cuda.current_device()
+            inputs_length = inputs_length.cuda()  # .to('cuda:{}'.format(devid))
         results = beam_search(self.decoder, self.joint, batch_size, inputs_length, enc_states)
 
         return results
@@ -313,7 +320,10 @@ class Transducer(nn.Module):
         inputs_length = self.parse_input(inputs_length)
         batch_size = inputs.size(0)
 
-        enc_states, _ = self.encoder(inputs, inputs_length)
+        enc_states, inputs_length, _ = self.encoder(inputs, inputs_length)
+        if torch.cuda.is_available():
+            # devid = torch.cuda.current_device()
+            inputs_length = inputs_length.cuda()  # .to('cuda:{}'.format(devid))
 
         zero_token = torch.LongTensor([[0]])
         if inputs.is_cuda:
