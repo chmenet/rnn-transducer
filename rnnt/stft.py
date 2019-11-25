@@ -157,9 +157,7 @@ class STFT(torch.nn.Module):
             self.forward_basis,
             stride=hop_length,
             padding=0)
-        print(forward_transform.shape)
         cutoff = int((filter_length / 2) + 1)
-        print(filter_length)
         real_part = forward_transform[:, :cutoff, :]
         imag_part = forward_transform[:, cutoff:, :]
 

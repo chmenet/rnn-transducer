@@ -61,9 +61,6 @@ def deploy(config, cpath, output):
     partial_test_encoder_output = test_encoder_output[:,0,:].view(-1)
     partial_test_decoder_output = test_decoder_output.view(-1)
 
-    print(partial_test_encoder_output.shape)
-    print(partial_test_decoder_output.shape)
-
     traced_joint = torch.jit.trace(joint, (partial_test_encoder_output, partial_test_decoder_output))
 
     traced_encoder.to(device)

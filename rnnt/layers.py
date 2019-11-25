@@ -95,14 +95,14 @@ class TacotronSTFT(torch.nn.Module):
 
     def transform2(self, y):
         result = torch.stft(y, n_fft=1024, hop_length=256, win_length =1024)
-        print(result.shape)
+        #print(result.shape)
         real = result[:, :, :, 0]
         imag = result[:, :, :, 1]
         magnitude = torch.sqrt(real ** 2 + imag ** 2)
         phase = torch.autograd.Variable(
             torch.atan2(imag.data, real.data))
-        print(phase.shape, phase.min(), phase.max())
-        print(magnitude.shape, magnitude.min(), magnitude.max())
+        #print(phase.shape, phase.min(), phase.max())
+        #print(magnitude.shape, magnitude.min(), magnitude.max())
         return magnitude, phase
 
     def cepstrum_from_mel(self, mel, ref_level_db = 20, magnitude_power=1.5):

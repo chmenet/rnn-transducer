@@ -35,8 +35,8 @@ def deployTest(config_path, model_path, fext_path, testfile_path):
     input_paths = f.readlines()
     f.close()
 
-    real_test(config, model, fExtractor, input_paths)
     dummy_test(model)
+    real_test(config, model, fExtractor, input_paths)
 
 
 if __name__ == '__main__':
