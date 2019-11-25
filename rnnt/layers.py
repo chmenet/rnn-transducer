@@ -134,7 +134,7 @@ class TacotronSTFT(torch.nn.Module):
         mcc = dct(db_mel_spectrogram,'ortho')
         return mcc
 
-    def mel_spectrogram(self, y, ref_level_db = 20, magnitude_power=1.5):
+    def mel_spectrogram(self, y, ref_level_db = 20, magnitude_power=1.5, isDebugging = False):
         """Computes mel-spectrograms from a batch of waves
         PARAMS
         ------
@@ -146,19 +146,96 @@ class TacotronSTFT(torch.nn.Module):
         assert(torch.min(y.data) >= -1)
         assert(torch.max(y.data) <= 1)
 
-        #print('y' ,y.max(), y.mean(), y.min())
+        if(isDebugging): print('y' ,y.max(), y.mean(), y.min())
         magnitudes, phases = self.stft_fn.transform(y)
         magnitudes = magnitudes.data
-        #print('stft_fn', magnitudes.max(), magnitudes.mean(), magnitudes.min())
+        if(isDebugging): print('stft_fn', magnitudes.max(), magnitudes.mean(), magnitudes.min())
         #mel_output = torch.matmul(self.mel_basis, torch.abs(magnitudes)**magnitude_power)
+
+        # power magnitude to mel_basis
         mel_output = torch.matmul(self.mel_basis, magnitudes.abs_().pow_(magnitude_power))
-        #print('_linear_to_mel', mel_output.max(), mel_output.mean(), mel_output.min())
+        if(isDebugging): print('_linear_to_mel', mel_output.max(), mel_output.mean(), mel_output.min())
+
+        # mel_basis to db with clipping, - ref_level_dbz
         mel_output = self.spectral_normalize(mel_output).add_(- ref_level_db)
-        #print('_amp_to_db', mel_output.max(), mel_output.mean(), mel_output.min())
+        if(isDebugging): print('_amp_to_db', mel_output.max(), mel_output.mean(), mel_output.min())
+
+        # normalized any scale to [-4,4]
         mel_output = mel_normalize(mel_output, self.max_abs_mel_value)
-        #print('_normalize', mel_output.max(), mel_output.mean(), mel_output.min())
+        if(isDebugging): print('_normalize', mel_output.max(), mel_output.mean(), mel_output.min())
+
         #spec = mel_denormalize(mel_output)
         #print('_denormalize', spec.max(), spec.mean(), spec.min())
         #spec = self.spectral_de_normalize(spec + ref_level_db)**(1/magnitude_power)
         #print('db_to_amp', spec.max(), spec.mean(), spec.min())
         return mel_output
+
+    # for torch script
+    def forward(self, y: torch.Tensor):
+        # torch script는 self.var \in 기본 변수 {float, int, ..}의 참조를 허용하지 않음.
+        ref_level_db = 20.0
+        magnitude_power = 1.5
+        C = 20
+        clip_val = 1e-5
+        max_abs_value = 4.0
+        min_level_db = -100
+        max_len_featre = 300
+
+        left_context_width = 1
+        right_context_width = 1
+
+        frame_rate = 30
+
+        # melbasis and power spectrogram
+        magnitudes = self.stft_fn.forward(y)
+
+        mel_output = torch.matmul(self.mel_basis, magnitudes.abs_().pow_(magnitude_power))
+
+        # clip and db scale
+        mel_output.clamp_(min=clip_val).log10_().mul_(C).add_(- ref_level_db)
+
+        # normalized mel
+        mel_output.add_(-min_level_db).mul_(2 * max_abs_value).mul_(-1 / min_level_db).add_(-max_abs_value).clamp_(min=-max_abs_value, max=max_abs_value)
+
+        mel_output.transpose_(1, 2).squeeze_(0)
+
+        features = mel_output
+
+        # concat frames
+        time_steps, features_dim = features.shape
+
+        concated_features = torch.zeros(
+            time_steps, features_dim *
+                   (1 + left_context_width + right_context_width),
+            dtype=torch.float32)
+        # middle part is just the uttarnce
+        concated_features[:, left_context_width * features_dim:
+                             (left_context_width + 1) * features_dim] = features
+
+        for i in range(left_context_width):
+            # add left context
+            concated_features[i + 1:time_steps,
+            (left_context_width - i - 1) * features_dim:
+            (left_context_width - i) * features_dim] = features[0:time_steps - i - 1, :]
+
+        for i in range(right_context_width):
+            # add right context
+            concated_features[0:time_steps - i - 1,
+            (right_context_width + i + 1) * features_dim:
+            (right_context_width + i + 2) * features_dim] = features[i + 1:time_steps, :]
+
+        # subsampled features
+        features = concated_features
+
+        interval = int(frame_rate / 10)
+        temp_mat = [features[i]
+                    for i in range(0, features.shape[0], interval)]
+        subsampled_features = torch.stack(temp_mat)
+
+        # last shape
+        time_steps, features_dim = subsampled_features.shape
+        tend = time_steps if time_steps < max_len_featre else max_len_featre
+        last_feature = torch.ones(max_len_featre, features_dim, dtype=torch.float32)*-4.0
+        last_feature[:tend, :] = subsampled_features[:tend, :]
+
+        return last_feature.unsqueeze_(0)

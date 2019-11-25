@@ -236,6 +236,23 @@ class JointNet(nn.Module):
 
         return outputs
 
+class DeployJointNet(nn.Module):
+    def __init__(self, jointnet: JointNet):
+        super(DeployJointNet, self).__init__()
+
+        self.forward_layer = jointnet.forward_layer
+
+        self.tanh = nn.Tanh()
+        self.project_layer = jointnet.project_layer
+
+    def forward(self, enc_state, dec_state):
+        concat_state = torch.cat((enc_state, dec_state), dim=-1)
+        outputs = self.forward_layer(concat_state)
+
+        outputs = self.tanh(outputs)
+        outputs = self.project_layer(outputs)
+
+        return outputs
 
 class Transducer(nn.Module):
     def __init__(self, config):
@@ -340,3 +357,30 @@ class Transducer(nn.Module):
             results.append(decoded_seq)
 
         return results
+
+
+class GreedySearch(torch.nn.Module):
+    def __init__(self, encoder, decoder, joint):
+        super(GreedySearch, self).__init__()
+        self.encoder = encoder
+        self.decoder = decoder
+        self.joint = joint
+
+    def forward(self, input_seq : torch.Tensor, max_length : int):
+        enc_states, _ = self.encoder(input_seq)
+        zero_token = torch.ones(1, 1, dtype=torch.long)
+        zero_hidden = torch.zeros(1, 1, 256, dtype=torch.float)
+        zero_hidden = (zero_hidden, zero_hidden)
+        token_list = torch.zeros([0], dtype=torch.long)
+
+        dec_state, hidden = self.decoder(zero_token, zero_hidden)
+        for t in range(max_length):
+            logits = self.joint(enc_states[:,t,:].view(-1), dec_state.view(-1))
+            out = F.softmax(logits, dim=-1)
+            pred = torch.argmax(out, dim=-1)
+            pred = pred.unsqueeze(0)
+            if int(pred.item()) != 0:
+                token_list = torch.cat((token_list, pred), dim=0)
+                token = pred.unsqueeze(0)
+                dec_state, hidden = self.decoder(token, hidden)
+        return token_list

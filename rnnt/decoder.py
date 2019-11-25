@@ -43,6 +43,24 @@ class BaseDecoder(nn.Module):
 
         return outputs, hidden
 
+class DeployBaseDecoder(nn.Module):
+    def __init__(self, decoder : BaseDecoder):
+        super(DeployBaseDecoder, self).__init__()
+
+        self.embedding = decoder.embedding
+        self.lstm = decoder.lstm
+        self.output_proj = decoder.output_proj
+
+    def forward(self, inputs, hidden):
+
+        embed_inputs = self.embedding(inputs)
+
+        self.lstm.flatten_parameters()
+        outputs, hidden = self.lstm(embed_inputs, hidden)
+
+        outputs = self.output_proj(outputs)
+
+        return outputs, hidden
 
 def build_decoder(config):
     if config.dec.type == 'lstm':

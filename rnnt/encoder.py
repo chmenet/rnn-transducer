@@ -14,7 +14,6 @@ class BaseEncoder(nn.Module):
             dropout=dropout,
             bidirectional=bidirectional
         )
-
         self.output_proj = nn.Linear(2 * hidden_size if bidirectional else hidden_size,
                                      output_size,
                                      bias=True)
@@ -39,6 +38,17 @@ class BaseEncoder(nn.Module):
 
         return logits, hidden
 
+class DeployBaseEncoder(nn.Module):
+    def __init__(self, encoder: BaseEncoder):
+        super(DeployBaseEncoder, self).__init__()
+        self.lstm = encoder.lstm
+        self.output_proj = encoder.output_proj
+
+    def forward(self, inputs):
+        self.lstm.flatten_parameters()
+        outputs, hidden = self.lstm(inputs)
+        logits = self.output_proj(outputs)
+        return logits, hidden
 
 def build_encoder(config):
     if config.enc.type == 'lstm':

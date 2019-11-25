@@ -134,7 +134,37 @@ class STFT(torch.nn.Module):
 
         return inverse_transform
 
-    def forward(self, input_data):
-        self.magnitude, self.phase = self.transform(input_data)
-        reconstruction = self.inverse(self.magnitude, self.phase)
-        return reconstruction
+    # for torch script
+    def forward(self, input_data: torch.Tensor):
+        # torch script는 self.var \in 기본 변수 {float, int, ..}의 참조를 허용하지 않음.
+        filter_length = 400
+        hop_length = 160
+        num_batches = input_data.size(0)
+        num_samples = input_data.size(1)
+
+        # self.num_samples = num_samples
+
+        # similar to librosa, reflect-pad the input
+        input_data = input_data.view(num_batches, 1, num_samples)
+        input_data = F.pad(
+            input_data.unsqueeze(1),
+            (int(filter_length / 2), int(filter_length / 2), 0, 0),
+            mode='reflect')
+        input_data = input_data.squeeze(1)
+
+        forward_transform = F.conv1d(
+            input_data,
+            self.forward_basis,
+            stride=hop_length,
+            padding=0)
+        print(forward_transform.shape)
+        cutoff = int((filter_length / 2) + 1)
+        print(filter_length)
+        real_part = forward_transform[:, :cutoff, :]
+        imag_part = forward_transform[:, cutoff:, :]
+
+        magnitude = torch.sqrt(real_part.pow(2) + imag_part.pow(2))
+        # phase = torch.autograd.Variable(
+        #     torch.atan2(imag_part.data, real_part.data))
+
+        return magnitude
