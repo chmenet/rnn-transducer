@@ -31,6 +31,8 @@ hparam:
     mel_fmax: 8000.0
     max_wav_value: 32768.0
     max_abs_mel_value: 4.0
+    isPadding: False
+    paddingSize: 3.0
 model:
     type: transducer
     enc:

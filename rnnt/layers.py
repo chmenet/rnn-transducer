@@ -80,6 +80,8 @@ class TacotronSTFT(torch.nn.Module):
         self.sampling_rate = config.sampling_rate
         self.stft_fn = STFT(config.filter_length, config.hop_length, config.win_length)
         self.max_abs_mel_value = config.max_abs_mel_value
+        self.isPadding = config.isPadding
+        self.paddingSize = config.paddingSize
         mel_basis = librosa_mel_fn(
             config.sampling_rate, config.filter_length, config.n_mel_channels, config.mel_fmin, config.mel_fmax)
         mel_basis = torch.from_numpy(mel_basis).float()
@@ -145,6 +147,10 @@ class TacotronSTFT(torch.nn.Module):
         """
         assert(torch.min(y.data) >= -1)
         assert(torch.max(y.data) <= 1)
+        if(self.isPadding):
+            middle = np.random.uniform(0, self.paddingSize)
+            y = np.insert(y, 0, [0.]* self.sampling_rate* middle)
+            y = np.append(y, [0.]* self.sampling_rate* (3.0 - middle))
 
         if(isDebugging): print('y' ,y.max(), y.mean(), y.min())
         magnitudes, phases = self.stft_fn.transform(y)
