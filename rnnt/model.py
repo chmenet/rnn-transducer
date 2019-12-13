@@ -9,7 +9,7 @@ from queue import PriorityQueue
 import operator
 from rnnt.fp16_optimizer import fp32_to_fp16, fp16_to_fp32
 
-def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None):
+def beam_search(decoder, joint, batch_size, inputs_length, beam_size=4, encoder_outputs=None):
     '''
     :param target_tensor: target indexes tensor of shape [B, T] where B is the batch size and T is the maximum length of the output sentence
     :param decoder_hidden: input tensor of shape [1, B, H] for start of the decoding
@@ -17,7 +17,6 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
     :return: decoded_batch
     '''
 
-    beam_width = 3
     topk = 1  # how many sentence do you want to generate
     utterances = []
 
@@ -86,9 +85,9 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
                         t = t+1
                         continue
                     # PUT HERE REAL BEAM SEARCH OF TOP
-                    log_prob, indexes = torch.topk(out, beam_width)  # remove node except top k
+                    log_prob, indexes = torch.topk(out, beam_size)  # remove node except top k
                     nextnodes = []
-                    for new_k in range(beam_width):
+                    for new_k in range(beam_size):
                         decoded_t = indexes[new_k].view(1, -1)
                         log_p = log_prob[new_k].item()
                         if decoded_t.item() == 0:
@@ -128,9 +127,9 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
                         nextnodes.append((score, n))
                         continue
                     # PUT HERE REAL BEAM SEARCH OF TOP
-                    log_prob, indexes = torch.topk(out, beam_width)
+                    log_prob, indexes = torch.topk(out, beam_size)
 
-                    for new_k in range(beam_width):
+                    for new_k in range(beam_size):
                         decoded_t = indexes[new_k].view(1, -1)
                         log_p = log_prob[new_k].item()
                         if decoded_t.item() == 0:
@@ -141,7 +140,7 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
 
                 nextnodes.sort(key=lambda element: element[0])
                 # put them into queue
-                if len(nextnodes) <= beam_width:
+                if len(nextnodes) <= beam_size:
                     for i in range(len(nextnodes)):
                         score, nn = nextnodes[i]
                         nodes.put((score, nn))
@@ -150,12 +149,12 @@ def beam_search(decoder, joint, batch_size, inputs_length, encoder_outputs=None)
                         score, n = nodes.get()
                         prev_topk.append((score, n))
                 else:
-                    for i in range(beam_width):
+                    for i in range(beam_size):
                         score, nn = nextnodes[i]
                         nodes.put((score, nn))
-                    qsize += len(nextnodes) - beam_width
+                    qsize += len(nextnodes) - beam_size
                     prev_topk = []
-                    for i in range(beam_width):
+                    for i in range(beam_size):
                         score, n = nodes.get()
                         prev_topk.append((score, n))
                 t = t+1
@@ -301,13 +300,13 @@ class Transducer(nn.Module):
         return loss
 
 
-    def recognize(self, inputs, inputs_length):
+    def recognize(self, inputs, inputs_length, beam_size=4):
 
         batch_size = inputs.size(0)
         inputs = self.parse_input(inputs)
         inputs_length = self.parse_input(inputs_length)
         enc_states, _ = self.encoder(inputs, inputs_length)
-        results = beam_search(self.decoder, self.joint, batch_size, inputs_length, enc_states)
+        results = beam_search(self.decoder, self.joint, batch_size, inputs_length, beam_size, enc_states)
 
         return results
 

@@ -84,11 +84,15 @@ def audio_path_to_text(audio_path, model, stft, config):
     if config.training.num_gpu > 0:
         mel, mel_lengths = mel.cuda(), mel_lengths.cuda()
     # print(mel.shape)
-    recog_indexes = model.recognize(mel, mel_lengths)
+    recog_indexes = model.recognize(mel, mel_lengths, 4)
+    recog_indexes2 = model.greedy_recognize(mel, mel_lengths)
     result = []
+    result2 = []
     for seq in recog_indexes:
         result.append(sequence_to_text(seq, [config.data.cleaner]))
-    return result
+    for seq in recog_indexes2:
+        result2.append(sequence_to_text(seq, [config.data.cleaner]))
+    return result, result2
 
 
 def inference(config, cpath, ipath):
@@ -124,6 +128,7 @@ if __name__ == '__main__':
         python inference.py -config egs/AIhub/exp/aihub_test/config.yaml -cpath egs/AIhub/exp/aihub_test/aihub_test.epoch0.chkpt -ipath aihub_test.txt
         python inference.py -config egs/AIhub/exp/AIhub/config.yaml -cpath ./egs/AIhub/exp/aihub_test_beam_0910.chkpt -ipath aihub_test.txt
         python inference.py -config egs/AIhub/exp/aihub_q3_fp16/config.yaml -cpath egs/AIhub/exp/aihub_q3_fp16/aihub_q3_fp16.epoch32.chkpt -ipath aihub_test.txt
+        python inference.py -config best_cnfig.yaml -cpath best_model.chkpt -ipath aihub_test.txt
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('-config', type=str, default='config/aihub.yaml')
@@ -131,4 +136,4 @@ if __name__ == '__main__':
     parser.add_argument('-ipath', type=str, default='aihub_test.txt', help='input file path')
     args = parser.parse_args()
 
-    inference(args.config, args.cpath, args.ipath, args.cleaner)
+    inference(args.config, args.cpath, args.ipath)

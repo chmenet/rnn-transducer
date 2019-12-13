@@ -1,13 +1,14 @@
 units_type: word
 feature_source: AIhub
 feature_type: mel-spectrogram
+beam_size: 4
 data:
     base_path: ./AIhub
     name: AIhub
     frame_rate: 30
     right_context_width: 1
     left_context_width: 1
-    batch_size: 32
+    batch_size: 128
     encoding: True
     short_first: False
     short_train : False
@@ -16,9 +17,9 @@ data:
     text_flag: targets.txt
     train: ./data/AIhub/train/
     dev: ./data/AIhub/dev/
-    test: ./data/AIhub/dev/
+    test: ./data/AIhub/test/
     cleaner: korean_cleaners
-    random_split: True
+    random_split: False
     train_set_percentage: 0.9
 hparam:
     n_mel_channels: 80
@@ -53,11 +54,11 @@ model:
     dropout: 0.3
     backend: c++
 training:
-    load_model: False #./egs/AIhub/exp/aihub_basicrnnt_nfeat_32/aihub_basicrnnt_nfeat_32.epoch19.chkpt
+    load_model: False #./best_model.chkpt
     load_encoder: False
     load_decoder: False
     eval_or_not: True
-    fp16_run: True
+    fp16_run: False
     dynamic_loss_scaling: True
     seed: 2019
     num_gpu: 1
@@ -66,7 +67,7 @@ training:
     visualization: True
     show_interval: 10
     save_interval: 1
-    save_model: aihub_basicrnnt_nfeat_32
+    save_model: aihub_best
 optim:
     type: sgd
     lr: 0.0001
