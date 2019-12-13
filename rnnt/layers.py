@@ -148,9 +148,12 @@ class TacotronSTFT(torch.nn.Module):
         assert(torch.min(y.data) >= -1)
         assert(torch.max(y.data) <= 1)
         if(self.isPadding):
+            t_length = y.size(1)
+            y_ = torch.zeros(1,t_length + int(self.sampling_rate* (3.0)),dtype=torch.float32)
             middle = np.random.uniform(0, self.paddingSize)
-            y = np.insert(y, 0, [0.]* self.sampling_rate* middle)
-            y = np.append(y, [0.]* self.sampling_rate* (3.0 - middle))
+            middle_point = int(self.sampling_rate* middle)
+            y_[:,middle_point:t_length+middle_point] = y
+            y = y_
 
         if(isDebugging): print('y' ,y.max(), y.mean(), y.min())
         magnitudes, phases = self.stft_fn.transform(y)
