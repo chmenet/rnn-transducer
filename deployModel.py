@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 import yaml, argparse
 from rnnt.utils import AttrDict
 from rnnt.model import GreedySearch
@@ -10,7 +11,11 @@ from rnnt.model import JointNet, DeployJointNet
 device = torch.device('cpu')
 max_len_feature = 300
 
-def deploy(config, cpath, output):
+def dynamic_quantization(model, dtype=torch.qint8, targetLayers={nn.LSTM, nn.Linear}):
+    quantized_model = torch.quantization.quantize_dynamic(model, targetLayers, dtype)
+    return quantized_model
+
+def deploy(config, cpath, output, quantization):
     device = torch.device('cpu')
 
     configfile = open(config)
@@ -39,50 +44,39 @@ def deploy(config, cpath, output):
     decoder = DeployBaseDecoder(decoder)
     joint = DeployJointNet(joint)
 
-    ####### save trained model to traced script model (.pt) ########
-    ## dummy inputs
-    inputs = torch.ones_like(torch.empty(1,max_len_feature,240, device=device)).mul_(-4)
-    zero_token = torch.LongTensor([[0]], device=device)
+    encoder=encoder.to(device)
+    decoder=decoder.to(device)
+    joint=joint.to(device)
+    encoder.eval()
+    decoder.eval()
+    joint.eval()
 
-    ## encoder
-    traced_encoder = torch.jit.trace(encoder, (inputs))
-    test_encoder_output, hidden = traced_encoder(inputs)
-    a, b = hidden
-    a_ = torch.reshape(a, (1, 1, -1))[:, :, :256]
-    b_ = torch.reshape(b, (1, 1, -1))[:, :, :256]
-    hidden_ = (a_, b_)
+    traced_script_module = GreedySearch(encoder, decoder, joint)
+    inputs = torch.ones_like(torch.empty(1, max_len_feature, 240, device=device)).mul_(0)
+    print('Testing the original model: ', traced_script_module.forward(inputs, [300]))
 
-    ## decoder
-    ## 주의: 디코더 레이어가 1개 이상일 때는, n_layer를 고려한 hidden을 제작해야됨
-    traced_decoder = torch.jit.trace(decoder, (zero_token, hidden_))
-    test_decoder_output, test_hidden = traced_decoder(zero_token, hidden_)
-
-    ## processed intermediate output from inputs
-    partial_test_encoder_output = test_encoder_output[:,0,:].view(-1)
-    partial_test_decoder_output = test_decoder_output.view(-1)
-
-    traced_joint = torch.jit.trace(joint, (partial_test_encoder_output, partial_test_decoder_output))
-
-    traced_encoder.to(device)
-    traced_decoder.to(device)
-    traced_joint.to(device)
-    traced_encoder.eval()
-    traced_decoder.eval()
-    traced_joint.eval()
-
-    traced_script_module = GreedySearch(traced_encoder, traced_decoder, traced_joint)
+    traced_script_module.to(device).eval()
+    testCondition = ""
+    if (quantization):
+        traced_script_module = dynamic_quantization(traced_script_module)
+        testCondition = " with dynamic quantization"
     traced_script_module = torch.jit.script(traced_script_module)
     traced_script_module.save(output)
+    print('Testing the jitscript model{}: '.format(testCondition),traced_script_module.forward(inputs, [300]))
 
 if __name__ == '__main__':
     """
         usage
-        python deployModel.py -config best_config.yaml -cpath best_model.chkpt
+        python deployModel.py -config best_config.yaml -cpath best_model.chkpt -output asr.pt
+        python deployModel.py -config best_config.yaml -cpath best_model.chkpt -output asr_8bit.pt -quantization
+        python deployModel.py -config aihub_engkey.yaml -cpath egs/speech_commands/exp/aihub_engkey/aihub_engkey.epoch4.chkpt -output asr_ft.pt
+        python deployModel.py -config best_config.yaml -cpath best_model.chkpt -output asr_test.pt
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('-config', type=str, default='config/aihub.yaml')
     parser.add_argument('-cpath', type=str, help='checkpoint path')
     parser.add_argument('-output', type=str, default='asr.pt')
+    parser.add_argument('-quantization', action='store_true')
     args = parser.parse_args()
 
-    deploy(args.config, args.cpath, args.output)
+    deploy(args.config, args.cpath, args.output, args.quantization)

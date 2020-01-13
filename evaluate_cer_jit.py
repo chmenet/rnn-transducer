@@ -32,19 +32,24 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
     with torch.no_grad():
         for step, (inputs, inputs_length, targets, targets_length) in enumerate(validating_data):
 
-            if config.training.num_gpu > 0:
-                inputs, inputs_length = inputs.cuda(), inputs_length.cuda()
-                targets, targets_length = targets.cuda(), targets_length.cuda()
+            # if config.training.num_gpu > 0:
+            #     inputs, inputs_length = inputs.cuda(), inputs_length.cuda()
+            #     targets, targets_length = targets.cuda(), targets_length.cuda()
 
             max_inputs_length = inputs_length.max().item()
             max_targets_length = targets_length.max().item()
             inputs = inputs[:, :max_inputs_length, :]
             targets = targets[:, :max_targets_length]
 
-            preds = model.greedy_recognize(inputs, inputs_length) if config.beam_size ==1 else model.recognize(inputs, inputs_length, config.beam_size)
+            #preds = model.greedy_recognize(inputs, inputs_length) if config.beam_size ==1 else model.recognize(inputs, inputs_length, config.beam_size)
+            inputs_length = inputs_length.tolist()
+            preds = model.forward(inputs, inputs_length)
 
             transcripts = [targets.cpu().numpy()[i][:targets_length[i].item()]
                            for i in range(targets.size(0))]
+            # print(preds)
+            # print(transcripts)
+
             dist, num_words = computer_cer(preds, transcripts)
             total_dist += dist
             total_word += num_words
@@ -71,14 +76,14 @@ def eval(epoch, config, model, validating_data, logger, visualizer=None):
 def main():
     """
     usage:
-        python evaluate_cer.py -config=config/aihub.py
-        python evaluate_cer.py -config=best_config.yaml -cpath=best_model.pt
-        python evaluate_cer.py -config aihub_engkey.yaml -cpath egs/speech_commands/exp/aihub_engkey/aihub_engkey.epoch4.chkpt
+        python evaluate_cer_jit.py -config=config/aihub.py
+        python evaluate_cer_jit.py -config=best_config.yaml -cpath=best_model.pt
+        python evaluate_cer_jit.py -config aihub_engkey.yaml -cpath egs/speech_commands/exp/aihub_engkey/aihub_engkey.epoch4.chkpt
     :return:
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('-config', type=str, default='best_config.yaml')
-    parser.add_argument('-cpath', type=str, default='best_model.chkpt')
+    parser.add_argument('-model', type=str, default='asr.pt')
     parser.add_argument('-log', type=str, default='evaluation_log.log')
     parser.add_argument('-mode', type=str, default='continue')
     opt = parser.parse_args()
@@ -87,6 +92,9 @@ def main():
     config = AttrDict(yaml.load(configfile, Loader=yaml.FullLoader))
     config.training.load_model = True
     config.beam_size = 1
+    # There is no lengths param in the encoder of jit script. So, padding in inputs makes error.
+    # To reduce error, we use 1 size of batch.
+    config.data.batch_size = 1
 
     exp_name = os.path.join('egs', config.data.name, 'exp', config.training.save_model)
     if not os.path.isdir(exp_name):
@@ -134,51 +142,9 @@ def main():
 
     logger.info('Load test Set!')
 
-    model = Transducer(config)
+    model = torch.jit.load(opt.model)
 
-    if config.training.load_model:
-        checkpoint = torch.load(opt.cpath)
-        model.encoder.load_state_dict(checkpoint['encoder'])
-        model.decoder.load_state_dict(checkpoint['decoder'])
-        model.joint.load_state_dict(checkpoint['joint'])
-        logger.info('Loaded model from %s' % config.training.load_model)
-    elif config.training.load_encoder or config.training.load_decoder:
-        if config.training.load_encoder:
-            checkpoint = torch.load(config.training.load_encoder)
-            model.encoder.load_state_dict(checkpoint['encoder'])
-            logger.info('Loaded encoder from %s' %
-                        config.training.load_encoder)
-        if config.training.load_decoder:
-            checkpoint = torch.load(config.training.load_decoder)
-            model.decoder.load_state_dict(checkpoint['decoder'])
-            logger.info('Loaded decoder from %s' %
-                        config.training.load_decoder)
-
-    if config.training.num_gpu > 0:
-        model = model.cuda()
-        if config.training.num_gpu > 1:
-            device_ids = list(range(config.training.num_gpu))
-            model = torch.nn.DataParallel(model, device_ids=device_ids)
-        logger.info('Loaded the model to %d GPUs' % config.training.num_gpu)
-
-    if config.training.fp16_run:
-        model = batchnorm_to_float(model.half())
-
-    n_params, enc, dec = count_parameters(model)
-    logger.info('# the number of parameters in the whole model: %d' % n_params)
-    logger.info('# the number of parameters in the Encoder: %d' % enc)
-    logger.info('# the number of parameters in the Decoder: %d' % dec)
-    logger.info('# the number of parameters in the JointNet: %d' %
-                (n_params - dec - enc))
-
-    if opt.mode == 'continue':
-        #optimizer.load_state_dict(checkpoint['optimizer'])
-        start_epoch = checkpoint['epoch'] + 1
-        iteration = checkpoint['iteration'] + 1
-        #learning_rate = checkpoint['learning_rate']
-        logger.info('Load Optimizer State!')
-    else:
-        start_epoch = 1
+    start_epoch = 1
 
     # create a visualizer
     if config.training.visualization:

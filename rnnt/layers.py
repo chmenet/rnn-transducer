@@ -188,7 +188,6 @@ class TacotronSTFT(torch.nn.Module):
         clip_val = 1e-5
         max_abs_value = 4.0
         min_level_db = -100
-        max_len_featre = 300
 
         left_context_width = 1
         right_context_width = 1
@@ -241,10 +240,4 @@ class TacotronSTFT(torch.nn.Module):
                     for i in range(0, features.shape[0], interval)]
         subsampled_features = torch.stack(temp_mat)
 
-        # last shape
-        time_steps, features_dim = subsampled_features.shape
-        tend = time_steps if time_steps < max_len_featre else max_len_featre
-        last_feature = torch.ones(max_len_featre, features_dim, dtype=torch.float32)*-4.0
-        last_feature[:tend, :] = subsampled_features[:tend, :]
-
-        return last_feature.unsqueeze_(0)
+        return subsampled_features.unsqueeze_(0)

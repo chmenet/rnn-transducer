@@ -8,6 +8,8 @@ from warprnnt_pytorch import RNNTLoss
 from queue import PriorityQueue
 import operator
 from rnnt.fp16_optimizer import fp32_to_fp16, fp16_to_fp32
+from torch.quantization import QuantStub, DeQuantStub
+from typing import Dict, List, Tuple
 
 def beam_search(decoder, joint, batch_size, inputs_length, beam_size=4, encoder_outputs=None):
     '''
@@ -356,21 +358,58 @@ class GreedySearch(torch.nn.Module):
         self.decoder = decoder
         self.joint = joint
 
-    def forward(self, input_seq : torch.Tensor, max_length : int):
+    def forward(self, input_seq : torch.Tensor, lengths : List[int]):
         enc_states, _ = self.encoder(input_seq)
-        zero_token = torch.ones(1, 1, dtype=torch.long)
+        zero_token = torch.zeros(1, 1, dtype=torch.long)
         zero_hidden = torch.zeros(1, 1, 256, dtype=torch.float)
         zero_hidden = (zero_hidden, zero_hidden)
-        token_list = torch.zeros([0], dtype=torch.long)
 
         dec_state, hidden = self.decoder(zero_token, zero_hidden)
-        for t in range(max_length):
-            logits = self.joint(enc_states[:,t,:].view(-1), dec_state.view(-1))
-            out = F.softmax(logits, dim=-1)
-            pred = torch.argmax(out, dim=-1)
-            pred = pred.unsqueeze(0)
-            if int(pred.item()) != 0:
-                token_list = torch.cat((token_list, pred), dim=0)
-                token = pred.unsqueeze(0)
-                dec_state, hidden = self.decoder(token, hidden)
-        return token_list
+
+        results = [[79]]
+        results.pop()
+
+        for i in range(enc_states.size(0)):
+            token_list = [79]
+            token_list.pop()
+            enc_state = enc_states[i]
+            for t in range(lengths[i]):
+                logits = self.joint(enc_state[t].view(-1).unsqueeze(0), dec_state.view(-1).unsqueeze(0))
+                out = F.softmax(logits, dim=1)
+                pred = torch.argmax(out, dim=1)
+                value = int(pred.item())
+                if value != 0:
+                    token_list.append(value)
+                    token = pred.unsqueeze(0)
+                    dec_state, hidden = self.decoder(token, hidden)
+            results.append(token_list)
+        return results
+
+# It isn't works for post training static quantization and quantization aware training.
+# Because of the bidirectional LSTM(forward LSTM is fine). Also, other layers are fine.
+
+# class GreedySearch8bit(torch.nn.Module):
+#     def __init__(self, encoder, decoder, joint):
+#         super(GreedySearch8bit, self).__init__()
+#         self.encoder = encoder
+#         self.decoder = decoder
+#         self.joint = joint
+#         self.quant = QuantStub()
+#         self.dequant = DeQuantStub()
+#     def forward(self, input_seq : torch.Tensor, max_length : int):
+#         enc_states, _ = self.encoder(self.quant(input_seq))
+#         zero_token = torch.zeros(1, 1, dtype=torch.long)
+#         zero_hidden = torch.zeros(1, 1, 256, dtype=torch.float)
+#         zero_hidden = (zero_hidden, zero_hidden)
+#         token_list = []
+#
+#         dec_state, hidden = self.decoder(self.quant(zero_token), self.quant(zero_hidden))
+#         for t in range(max_length):
+#             logits = self.joint(enc_states[:,t,:].view(-1).unsqueeze(0), dec_state.view(-1).unsqueeze(0))
+#             out = F.softmax(logits, dim=-1)
+#             pred = torch.argmax(out, dim=-1)
+#             if int(pred.item()) != 0:
+#                 token_list.append(int(self.quant(pred).item()))
+#                 token = pred.unsqueeze(0)
+#                 dec_state, hidden = self.decoder(token, hidden)
+#         return [token_list]

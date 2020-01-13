@@ -7,12 +7,6 @@ from rnnt.utils import load_wav_to_torch
 
 max_len_featre = 300
 
-def dummy_test(model):
-    inputs = torch.rand(1, max_len_featre, 80 * 3)
-    result = model.forward(inputs, max_len_featre).cpu().tolist()
-    print('=' * 5 + 'Dummy test' + '=' * 5)
-    print(sequence_to_text(result))
-
 def real_test(config, model, fExtractor, input_paths):
     print('=' * 5 + 'Real test' + '=' * 5)
     for i, ipath in enumerate(input_paths):
@@ -20,8 +14,8 @@ def real_test(config, model, fExtractor, input_paths):
         audio_norm = audio / config.hparam.max_wav_value
         audio_norm = audio_norm.unsqueeze(0)
         iFeature = fExtractor.forward(audio_norm)
-        result = model.forward(iFeature, iFeature.size(1))
-        result = result.cpu().tolist()
+        result = model.forward(iFeature, [iFeature.size(1)])
+        result = result[0]
         print('{}th: '.format(i), sequence_to_text(result))
 
 def deployTest(config_path, model_path, fext_path, testfile_path):
@@ -35,7 +29,7 @@ def deployTest(config_path, model_path, fext_path, testfile_path):
     input_paths = f.readlines()
     f.close()
 
-    dummy_test(model)
+    #dummy_test(model)
     real_test(config, model, fExtractor, input_paths)
 
 
@@ -43,6 +37,8 @@ if __name__ == '__main__':
     """
         usage
         python deployTest.py
+        python deployTest.py -model asr.pt -fext fExtractor.pt
+        python deployTest.py -model asr_8bit.pt -fext fExtractor.pt
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('-config', type=str, default='config/aihub.yaml')

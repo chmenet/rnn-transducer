@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 
-
 class BaseEncoder(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, n_layers, dropout=0.2, bidirectional=True):
         super(BaseEncoder, self).__init__()
@@ -44,11 +43,25 @@ class DeployBaseEncoder(nn.Module):
         self.lstm = encoder.lstm
         self.output_proj = encoder.output_proj
 
-    def forward(self, inputs):
-        self.lstm.flatten_parameters()
+    def forward(self, inputs:torch.Tensor):
         outputs, hidden = self.lstm(inputs)
         logits = self.output_proj(outputs)
         return logits, hidden
+
+# It isn't works for post training static quantization and quantization aware training.
+# Because of the bidirectional LSTM(forward LSTM is fine). Also, other layers are fine.
+
+# class DeployBaseEncoder8bit(nn.Module):
+#     def __init__(self, encoder: BaseEncoder):
+#         super(DeployBaseEncoder8bit, self).__init__()
+#         self.lstm = encoder.lstm
+#         self.output_proj = encoder.output_proj
+#
+#     def forward(self, inputs):
+#         #self.lstm.flatten_parameters()
+#         outputs, hidden = self.lstm(inputs)
+#         logits = self.output_proj(outputs)
+#         return logits, hidden
 
 def build_encoder(config):
     if config.enc.type == 'lstm':
